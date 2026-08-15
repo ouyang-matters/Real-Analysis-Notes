@@ -296,12 +296,10 @@
   % --- Background geometry (TikZ overlay, behind everything) ---
   \begin{tikzpicture}[remember picture, overlay]
     %
-    % Large tinted hexagon: top-right, partially clipped.
-    \coordinate (hex-center) at ([xshift=-3.7in, yshift=-1.2in] current page.north east);
-    \fill[\SeriesTint, opacity=0.75]
-      (hex-center) ++(0:3.4in)
-      \foreach \a in {60,120,...,300} { -- +(\a:3.4in) }
-      -- cycle;
+    % Geometric background image: top-right corner.
+    \node[anchor=north east, inner sep=0pt, opacity=0.85]
+      at ([xshift=0.15in, yshift=0.15in] current page.north east)
+      {\includegraphics[width=8in]{bg_hexagons.png}};
     %
   \end{tikzpicture}%
   %
