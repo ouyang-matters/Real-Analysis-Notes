@@ -156,7 +156,7 @@ for numeral, title_en, title_zh, authors, date_en, date_zh in ARTICLES:
 
     for lang, title, date, series, is_zh in [
         ("en", title_en, date_en, SERIES_NAME_EN, False),
-        ("zh", title_zh, date_zh, SERIES_NAME_ZH, True),
+        ("zh", title_zh, date_zh, SERIES_NAME_EN, True),
     ]:
         # 1:1 square
         w, h = 10.8, 10.8
