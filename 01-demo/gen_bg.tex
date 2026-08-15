@@ -7,12 +7,13 @@
 \begin{tikzpicture}
 
 % Canvas
-\fill[ra-bg] (0,0) rectangle (14,12);
+\fill[ra-bg] (0,0) rectangle (8,5);
+\clip (0,0) rectangle (8,5);
 
-% One large regular hexagon, slightly rotated
-\fill[ra-fill, opacity=0.8, rotate around={15:(9.3,7.8)}]
-  (9.3,7.8) -- ++(30:4.5) -- ++(330:4.5) -- ++(270:4.5)
-            -- ++(210:4.5) -- ++(150:4.5) -- cycle;
+% Large hexagon, center at top-right corner, only lower-left portion visible
+\fill[ra-fill, opacity=0.8, rotate around={15:(7.5,4.5)}]
+  (7.5,4.5) -- ++(30:5.5) -- ++(330:5.5) -- ++(270:5.5)
+            -- ++(210:5.5) -- ++(150:5.5) -- cycle;
 
 \end{tikzpicture}
 \end{document}
