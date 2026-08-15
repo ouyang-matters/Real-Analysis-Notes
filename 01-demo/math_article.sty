@@ -296,10 +296,11 @@
   % --- Background geometry (TikZ overlay, behind everything) ---
   \begin{tikzpicture}[remember picture, overlay]
     %
-    % Large tinted circle: top-right, partially clipped.
+    % Large tinted hexagon: top-right, partially clipped.
     \fill[\SeriesTint, opacity=0.75]
       ([xshift=0.6in, yshift=-0.8in] current page.north east)
-      circle (3.4in);
+      ++(3.4in, 0)
+      \foreach \a in {60,120,...,360} { -- ++(\a:3.4in) };
     %
   \end{tikzpicture}%
   %
