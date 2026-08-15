@@ -296,10 +296,11 @@
   % --- Background geometry (TikZ overlay, behind everything) ---
   \begin{tikzpicture}[remember picture, overlay]
     %
-    % Geometric background image: top-right corner.
-    \node[anchor=north east, inner sep=0pt, opacity=0.85]
-      at ([xshift=0.15in, yshift=0.15in] current page.north east)
-      {\includegraphics[width=8in]{bg_hexagons.png}};
+    % Large hexagon, partially off-page at top-right.
+    % Page boundary naturally clips the upper-right portion.
+    \fill[\SeriesTint, opacity=0.8, rotate around={15:([xshift=-1.5in, yshift=-1.0in] current page.north east)}]
+      ([xshift=-1.5in, yshift=-1.0in] current page.north east)
+      ++(0:4.5in) \foreach \a in {60,120,...,300} { -- +(\a:4.5in) } -- cycle;
     %
   \end{tikzpicture}%
   %
