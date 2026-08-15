@@ -1,72 +1,60 @@
 \documentclass[tikz,border=0pt]{standalone}
-\usetikzlibrary{calc}
 
 \definecolor{ra-deep}{HTML}{CC5500}
 \definecolor{ra-mid}{HTML}{E8913A}
-\definecolor{ra-light}{HTML}{F0A050}
 \definecolor{ra-pale}{HTML}{F5DCC8}
 \definecolor{ra-cream}{HTML}{FFF5EB}
+\definecolor{ra-bg}{HTML}{FBFAF7}
+
+\newcommand{\hexagon}[3]{%
+  % #1=center, #2=radius, #3=style
+  \fill[#3] (#1) ++(0:#2)
+    \foreach \a in {60,120,...,300} { -- +(\a:#2) } -- cycle;
+}
 
 \begin{document}
 \begin{tikzpicture}
 
-% Canvas: 8in x 5in (will sit in top-right of A4)
-\fill[ra-cream] (0,0) rectangle (8,5);
+% Canvas
+\fill[ra-bg] (0,0) rectangle (8,5);
 
-% Large overlapping hexagons at different opacities
-\foreach \cx/\cy/\r/\col/\op in {
-  5.5/3.2/2.8/ra-pale/0.7,
-  3.0/2.5/2.2/ra-pale/0.5,
-  6.5/1.0/1.8/ra-pale/0.6,
-  1.5/4.0/1.5/ra-pale/0.4
-} {
-  \fill[\col, opacity=\op]
-    (\cx,\cy) ++(0:\r)
-    \foreach \a in {60,120,...,300} { -- +(\a:\r) }
-    -- cycle;
+% Honeycomb grid — regular tessellation, fading from right to left
+% Hex radius
+\def\r{0.72}
+% Row spacing: 1.5*r vertical, sqrt(3)*r horizontal
+\pgfmathsetmacro{\dx}{1.5*\r}
+\pgfmathsetmacro{\dy}{sqrt(3)*\r}
+
+% Draw honeycomb cells — opacity fades toward bottom-left
+\foreach \row in {0,1,...,5} {
+  \foreach \col in {0,1,...,6} {
+    \pgfmathsetmacro{\cx}{1.2 + \col*2*\dx + mod(\row,2)*\dx}
+    \pgfmathsetmacro{\cy}{0.5 + \row*\dy}
+    % Opacity based on position: stronger top-right, weaker bottom-left
+    \pgfmathsetmacro{\dist}{(\cx + \cy) / 13}
+    \pgfmathsetmacro{\op}{min(0.35, \dist * 0.4)}
+    \fill[ra-pale, opacity=\op, rotate around={30:(\cx,\cy)}]
+      (\cx,\cy) ++(0:\r)
+      \foreach \a in {60,120,...,300} { -- +(\a:\r) } -- cycle;
+    % Outline
+    \pgfmathsetmacro{\lineop}{min(0.2, \dist * 0.25)}
+    \draw[ra-mid, opacity=\lineop, line width=0.4pt, rotate around={30:(\cx,\cy)}]
+      (\cx,\cy) ++(0:\r)
+      \foreach \a in {60,120,...,300} { -- +(\a:\r) } -- cycle;
+  }
 }
 
-% Medium hexagons with stronger color
-\foreach \cx/\cy/\r/\col/\op in {
-  5.0/3.5/1.6/ra-light/0.3,
-  3.5/1.5/1.3/ra-light/0.25,
-  6.8/3.8/1.1/ra-mid/0.2,
-  2.0/3.0/1.0/ra-light/0.2,
-  7.0/2.0/0.9/ra-mid/0.25
+% A few accent-filled hexagons in the top-right area
+\foreach \cx/\cy/\op in {
+  6.3/4.0/0.25,
+  5.2/3.4/0.18,
+  7.0/3.0/0.20,
+  6.8/4.5/0.15,
+  5.8/2.2/0.12
 } {
-  \fill[\col, opacity=\op]
+  \fill[ra-mid, opacity=\op, rotate around={30:(\cx,\cy)}]
     (\cx,\cy) ++(0:\r)
-    \foreach \a in {60,120,...,300} { -- +(\a:\r) }
-    -- cycle;
-}
-
-% Small accent hexagons
-\foreach \cx/\cy/\r/\col/\op in {
-  4.2/4.2/0.6/ra-mid/0.35,
-  6.0/2.5/0.5/ra-deep/0.2,
-  5.5/1.2/0.55/ra-mid/0.3,
-  3.0/3.8/0.45/ra-deep/0.15,
-  7.2/4.2/0.5/ra-mid/0.25,
-  1.8/1.5/0.4/ra-mid/0.2
-} {
-  \fill[\col, opacity=\op]
-    (\cx,\cy) ++(0:\r)
-    \foreach \a in {60,120,...,300} { -- +(\a:\r) }
-    -- cycle;
-}
-
-% Thin hexagon outlines for texture
-\foreach \cx/\cy/\r/\op in {
-  4.8/3.0/2.0/0.12,
-  6.2/3.5/1.4/0.10,
-  3.2/2.0/1.6/0.08,
-  5.5/4.5/0.8/0.15,
-  7.0/1.5/0.7/0.12
-} {
-  \draw[ra-deep, opacity=\op, line width=0.5pt]
-    (\cx,\cy) ++(0:\r)
-    \foreach \a in {60,120,...,300} { -- +(\a:\r) }
-    -- cycle;
+    \foreach \a in {60,120,...,300} { -- +(\a:\r) } -- cycle;
 }
 
 \end{tikzpicture}
