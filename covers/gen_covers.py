@@ -133,7 +133,7 @@ def make_cover(numeral, title, authors, date, series_name,
 
 %% Numeral
 \node[anchor=south east,
-  font=\itshape\fontsize{"""
+  font=\fontsize{"""
     + f"{numeral_size}"
     + r"""}{"""
     + f"{numeral_size}"
@@ -162,7 +162,7 @@ for numeral, title_en, title_zh, authors, date_en, date_zh in ARTICLES:
         w, h = 10.8, 10.8
         tex = make_cover(numeral, title, authors, date, series,
             width_cm=w, height_cm=h, is_zh=is_zh,
-            hex_cx_frac=0.62, hex_cy_frac=0.68, hex_r=5.5,
+            hex_cx_frac=0.64, hex_cy_frac=0.70, hex_r=6.2,
             title_size=18, title_lead=24, numeral_size=44,
             title_width_frac=0.65, series_size=6,
             numeral_xshift=-0.8, numeral_yshift=0.6,
@@ -176,7 +176,7 @@ for numeral, title_en, title_zh, authors, date_en, date_zh in ARTICLES:
         w, h = 23.5, 10.0
         tex = make_cover(numeral, title, authors, date, series,
             width_cm=w, height_cm=h, is_zh=is_zh,
-            hex_cx_frac=0.65, hex_cy_frac=0.65, hex_r=7.0,
+            hex_cx_frac=0.67, hex_cy_frac=0.68, hex_r=8.0,
             title_size=20, title_lead=27, numeral_size=50,
             title_width_frac=0.45, series_size=7,
             numeral_xshift=-1.0, numeral_yshift=0.6,
