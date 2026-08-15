@@ -297,10 +297,11 @@
   \begin{tikzpicture}[remember picture, overlay]
     %
     % Large tinted hexagon: top-right, partially clipped.
+    \coordinate (hex-center) at ([xshift=-0.4in, yshift=-1.2in] current page.north east);
     \fill[\SeriesTint, opacity=0.75]
-      ([xshift=0.6in, yshift=-0.8in] current page.north east)
-      ++(3.4in, 0)
-      \foreach \a in {60,120,...,360} { -- ++(\a:3.4in) };
+      (hex-center) ++(0:3.4in)
+      \foreach \a in {60,120,...,300} { -- +(\a:3.4in) }
+      -- cycle;
     %
   \end{tikzpicture}%
   %
