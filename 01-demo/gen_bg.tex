@@ -1,16 +1,7 @@
 \documentclass[tikz,border=0pt]{standalone}
 
-\definecolor{ra-deep}{HTML}{CC5500}
-\definecolor{ra-mid}{HTML}{E8913A}
-\definecolor{ra-pale}{HTML}{F5DCC8}
-\definecolor{ra-cream}{HTML}{FFF5EB}
+\definecolor{ra-fill}{HTML}{F5DCC8}
 \definecolor{ra-bg}{HTML}{FBFAF7}
-
-\newcommand{\hexagon}[3]{%
-  % #1=center, #2=radius, #3=style
-  \fill[#3] (#1) ++(0:#2)
-    \foreach \a in {60,120,...,300} { -- +(\a:#2) } -- cycle;
-}
 
 \begin{document}
 \begin{tikzpicture}
@@ -18,44 +9,10 @@
 % Canvas
 \fill[ra-bg] (0,0) rectangle (8,5);
 
-% Honeycomb grid — regular tessellation, fading from right to left
-% Hex radius
-\def\r{0.72}
-% Row spacing: 1.5*r vertical, sqrt(3)*r horizontal
-\pgfmathsetmacro{\dx}{1.5*\r}
-\pgfmathsetmacro{\dy}{sqrt(3)*\r}
-
-% Draw honeycomb cells — opacity fades toward bottom-left
-\foreach \row in {0,1,...,5} {
-  \foreach \col in {0,1,...,6} {
-    \pgfmathsetmacro{\cx}{1.2 + \col*2*\dx + mod(\row,2)*\dx}
-    \pgfmathsetmacro{\cy}{0.5 + \row*\dy}
-    % Opacity based on position: stronger top-right, weaker bottom-left
-    \pgfmathsetmacro{\dist}{(\cx + \cy) / 13}
-    \pgfmathsetmacro{\op}{min(0.35, \dist * 0.4)}
-    \fill[ra-pale, opacity=\op, rotate around={30:(\cx,\cy)}]
-      (\cx,\cy) ++(0:\r)
-      \foreach \a in {60,120,...,300} { -- +(\a:\r) } -- cycle;
-    % Outline
-    \pgfmathsetmacro{\lineop}{min(0.2, \dist * 0.25)}
-    \draw[ra-mid, opacity=\lineop, line width=0.4pt, rotate around={30:(\cx,\cy)}]
-      (\cx,\cy) ++(0:\r)
-      \foreach \a in {60,120,...,300} { -- +(\a:\r) } -- cycle;
-  }
-}
-
-% A few accent-filled hexagons in the top-right area
-\foreach \cx/\cy/\op in {
-  6.3/4.0/0.25,
-  5.2/3.4/0.18,
-  7.0/3.0/0.20,
-  6.8/4.5/0.15,
-  5.8/2.2/0.12
-} {
-  \fill[ra-mid, opacity=\op, rotate around={30:(\cx,\cy)}]
-    (\cx,\cy) ++(0:\r)
-    \foreach \a in {60,120,...,300} { -- +(\a:\r) } -- cycle;
-}
+% One large regular hexagon, flat-top orientation
+\fill[ra-fill, opacity=0.8]
+  (4.5,2.5) -- ++(30:2.8) -- ++(330:2.8) -- ++(270:2.8)
+            -- ++(210:2.8) -- ++(150:2.8) -- cycle;
 
 \end{tikzpicture}
 \end{document}
