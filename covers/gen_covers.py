@@ -14,6 +14,12 @@ SERIES_NAME_ZH = "实分析"
 
 # (numeral, en_title, zh_title, authors, date_en, date_zh)
 ARTICLES = [
+    ("I",
+     "Real Numbers, Metrics,\\\\and Measure",
+     "\u5b9e\u6570\u3001\u8ddd\u79bb\u4e0e\u6d4b\u5ea6",
+     "A.~Ouyang",
+     "February 2024 \\quad\\textperiodcentered\\quad Revised August 2026",
+     "2024\u5e742\u6708 \\quad\\textperiodcentered\\quad 2026\u5e748\u6708\u91cd\u5236"),
     ("Sup",
      "Uniform Integrability and the\\\\Vitali Convergence Theorem",
      "一致可积性与 $L^1$ 收敛",
