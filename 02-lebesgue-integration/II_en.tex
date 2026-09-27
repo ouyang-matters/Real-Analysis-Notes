@@ -1,0 +1,1205 @@
+\documentclass[11pt]{article}
+
+\usepackage{math_article}
+\usepackage{series_ra}
+
+% Local fixes for math_article.sty (2026/08/12):
+% (1) `before upper' is set after `attach title to upper' and discards the title;
+% (2) `use counter=mathenv' resets \themathenv to \arabic{mathenv};
+% (3) \label inside a box does not see the box counter, so use \envlabel.
+\tcbset{
+  math-env-base/.append style={before upper={\setlength{\parskip}{0.4em}\tcbtitle\par\smallskip}},
+  math-env-light/.append style={before upper={\setlength{\parskip}{0.4em}\tcbtitle\par\smallskip}},
+}
+\makeatletter
+\AtBeginDocument{\renewcommand{\themathenv}{\thesection.\arabic{mathenv}}}
+\newcommand{\envlabel}[1]{\protected@edef\@currentlabel{\themathenv}\label{#1}}
+\makeatother
+
+\renewcommand{\ArticleNumeral}{II}
+\renewcommand{\ArticleTitle}{Measurable Functions and the Lebesgue Integral}
+\renewcommand{\ArticleAuthor}{Anqiao Ouyang}
+\renewcommand{\ArticleDate}{March 2024 \quad\textperiodcentered\quad Revised September 2026}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduction}
+
+Article I set up the language of measure spaces $(X,\mathcal{F},\mu)$ and, through outer measures and the Carathéodory construction, produced the Lebesgue measure space $(\mathbb{R}^{n},\mathcal{L},m)$. The task of this article is to build an integral on top of a measure.
+
+The Riemann integral we know starts from a partition of the \textbf{domain}: cut $[a,b]$ into small intervals and approximate $f$ on each of them by one of its values. Lebesgue's idea is to partition the \textbf{range} instead: split the values of $f$ into layers
+\[
+y_{0}<y_{1}<\cdots<y_{N},
+\]
+and use the measure to ``weigh'' the set belonging to each layer,
+\[
+\{x:y_{k-1}\leq f(x)<y_{k}\}.
+\]
+For this to make sense these sets must be measurable, which leads naturally to the notion of a \textbf{measurable function}.
+
+The plan is as follows. Section 1 reviews the Riemann integral and explains its limitations with respect to limits. Section 2 treats measurable functions, the notion of ``almost everywhere'', approximation by simple functions, and Lusin's theorem. Section 3 defines the Lebesgue integral successively for non-negative simple functions, non-negative measurable functions and general measurable functions, and establishes its basic properties. Section 4 proves the Monotone Convergence Theorem, Fatou's lemma and the Dominated Convergence Theorem. Section 5 shows how the Lebesgue integral extends the Riemann integral and how it relates to improper integrals.
+
+Normed spaces, the $L^{p}$ spaces and the inequalities of Hölder and Minkowski are deferred to Article III; uniform integrability and the Vitali convergence theorem are treated in the supplementary article on uniform integrability.
+
+\textbf{Conventions.} Throughout, $(X,\mathcal{F},\mu)$ denotes a measure space. On $\mathbb{R}^{n}$ the measure is Lebesgue measure $m$ unless stated otherwise, and we also write $\int_{E}f(x)\,dx$ for $\int_{E}f\,dm$. The set $\{x\in X:f(x)>a\}$ is abbreviated $\{f>a\}$. For $A\subseteq X$, $\mathbf{1}_{A}$ denotes its indicator function: $\mathbf{1}_{A}(x)=1$ if $x\in A$ and $0$ otherwise.
+
+\section{The Riemann Integral and Its Limitations}
+
+\subsection{Partitions and Riemann Sums}
+
+\begin{definition}[Partitions and Riemann sums]
+Let $a<b$. A \textbf{partition} of $[a,b]$ is a finite set
+\[
+P=\{x_{0},x_{1},\ldots,x_{n}\},\qquad a=x_{0}<x_{1}<\cdots<x_{n}=b.
+\]
+Write $\Delta x_{i}=x_{i}-x_{i-1}$ $(1\leq i\leq n)$ and call
+\[
+\|P\|=\max_{1\leq i\leq n}\Delta x_{i}
+\]
+the \textbf{mesh} of $P$. A choice of points $\xi_{i}\in[x_{i-1},x_{i}]$ gives a \textbf{tag} $\xi=(\xi_{1},\ldots,\xi_{n})$ of $P$. For $f:[a,b]\to\mathbb{R}$,
+\[
+S(f,P,\xi)=\sum_{i=1}^{n}f(\xi_{i})\,\Delta x_{i}
+\]
+is the corresponding \textbf{Riemann sum}.
+\end{definition}
+
+\begin{definition}[Riemann integrability]
+A function $f:[a,b]\to\mathbb{R}$ is \textbf{Riemann integrable} on $[a,b]$ if there is a real number $I$ such that for every $\varepsilon>0$ there exists $\delta>0$ with
+\[
+|S(f,P,\xi)-I|<\varepsilon
+\]
+for \textbf{every} partition $P$ with $\|P\|<\delta$ and \textbf{every} tag $\xi$ of $P$. Such an $I$ is unique; it is denoted $\displaystyle\int_{a}^{b}f(x)\,dx$, and we write $\displaystyle I=\lim_{\|P\|\to0}S(f,P,\xi)$. The set of Riemann integrable functions on $[a,b]$ is denoted $\mathcal{R}[a,b]$.
+\end{definition}
+
+\begin{remark}
+The limit is taken as the mesh $\|P\|\to0$, uniformly in the choice of tags. Letting only the number of partition points $n\to\infty$ is not enough. For instance, take $f(x)=x$ on $[0,1]$ and
+\[
+P_{n}=\Big\{0,\tfrac{1}{2n},\tfrac{2}{2n},\ldots,\tfrac{n}{2n},1\Big\}.
+\]
+The number of points tends to infinity, but $[\tfrac12,1]$ is never subdivided. Choosing $\xi=\tfrac12$ or $\xi=1$ on that interval, the Riemann sums tend to $\tfrac18+\tfrac14=\tfrac38$ and $\tfrac18+\tfrac12=\tfrac58$ respectively, whereas the integral equals $\tfrac12$.
+\end{remark}
+
+\begin{proposition}\envlabel{en:prop:bdd}
+If $f\in\mathcal{R}[a,b]$, then $f$ is bounded on $[a,b]$.
+\end{proposition}
+
+\begin{proof}
+Take $\varepsilon=1$ with its $\delta$ and fix a partition $P$ with $\|P\|<\delta$. If $f$ were unbounded, it would be unbounded on some subinterval $[x_{j-1},x_{j}]$. Keeping the tags on the other subintervals fixed and varying only $\xi_{j}$ changes the Riemann sum by $f(\xi_{j})\Delta x_{j}$, which can be made arbitrarily large, contradicting $|S(f,P,\xi)-I|<1$ for all tags.
+\end{proof}
+
+\subsection{Darboux Sums}
+
+\begin{definition}[Darboux sums]
+Let $f$ be bounded on $[a,b]$ and let $P$ be a partition. Put
+\[
+M_{i}=\sup_{[x_{i-1},x_{i}]}f,\qquad m_{i}=\inf_{[x_{i-1},x_{i}]}f.
+\]
+The numbers
+\[
+U(f,P)=\sum_{i=1}^{n}M_{i}\Delta x_{i},\qquad L(f,P)=\sum_{i=1}^{n}m_{i}\Delta x_{i}
+\]
+are the \textbf{upper} and \textbf{lower Darboux sums} of $f$ with respect to $P$.
+\end{definition}
+
+Clearly $L(f,P)\leq S(f,P,\xi)\leq U(f,P)$ for every tag $\xi$, and
+\[
+U(f,P)=\sup_{\xi}S(f,P,\xi),\qquad L(f,P)=\inf_{\xi}S(f,P,\xi).
+\]
+
+\begin{lemma}\envlabel{en:lem:refine}
+Let $f$ be bounded.
+\begin{enumerate}
+  \item If $Q\supseteq P$ (we say $Q$ \textbf{refines} $P$), then $L(f,P)\leq L(f,Q)\leq U(f,Q)\leq U(f,P)$.
+  \item For any two partitions $P,P'$, $L(f,P)\leq U(f,P')$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(i) It suffices to add one point $y$ inside some $[x_{j-1},x_{j}]$. The suprema of $f$ over $[x_{j-1},y]$ and $[y,x_{j}]$ are at most $M_{j}$, so the upper sum does not increase; likewise the lower sum does not decrease. (ii) By (i), $L(f,P)\leq L(f,P\cup P')\leq U(f,P\cup P')\leq U(f,P')$.
+\end{proof}
+
+\begin{lemma}\envlabel{en:lem:mesh}
+Let $|f|\leq M$ and let $Q$ be a partition with $N$ interior points (points other than $a,b$). Then for every partition $P$,
+\[
+U(f,P)-L(f,P)\leq U(f,Q)-L(f,Q)+4MN\|P\|.
+\]
+\end{lemma}
+
+\begin{proof}
+Insert the interior points of $Q$ into $P$ one at a time to obtain $P\cup Q$. Each inserted point $y$ lies in some subinterval $J$ of the current partition, with $|J|\leq\|P\|$, and the upper sum changes by
+\[
+0\leq \sup_{J}f\cdot|J|-\big(\sup_{J'}f\cdot|J'|+\sup_{J''}f\cdot|J''|\big)\leq 2M|J|\leq 2M\|P\|,
+\]
+where $J',J''$ are the two pieces of $J$. Hence $U(f,P)\leq U(f,P\cup Q)+2MN\|P\|$ and similarly $L(f,P)\geq L(f,P\cup Q)-2MN\|P\|$. By Lemma~\ref{en:lem:refine}(i), $U(f,P\cup Q)-L(f,P\cup Q)\leq U(f,Q)-L(f,Q)$. Combining the three inequalities gives the claim.
+\end{proof}
+
+\begin{theorem}[Darboux criterion]\envlabel{en:thm:darboux}
+Let $f$ be bounded on $[a,b]$. The following are equivalent:
+\begin{enumerate}
+  \item $f\in\mathcal{R}[a,b]$;
+  \item for every $\varepsilon>0$ there is a partition $Q$ with $U(f,Q)-L(f,Q)<\varepsilon$.
+\end{enumerate}
+In this case
+\[
+\int_{a}^{b}f(x)\,dx=\inf_{P}U(f,P)=\sup_{P}L(f,P),
+\]
+and for every sequence of partitions with $\|P_{k}\|\to0$ both $U(f,P_{k})$ and $L(f,P_{k})$ converge to $\int_{a}^{b}f(x)\,dx$.
+\end{theorem}
+
+\begin{proof}
+(i)$\Rightarrow$(ii): Let $I=\int_{a}^{b}f$. Given $\varepsilon>0$ take $\delta$ as in the definition. If $\|P\|<\delta$, all Riemann sums lie in $(I-\varepsilon,I+\varepsilon)$; taking the supremum and infimum over tags gives
+\[
+I-\varepsilon\leq L(f,P)\leq U(f,P)\leq I+\varepsilon.
+\]
+This yields (ii), as well as $U(f,P_{k}),L(f,P_{k})\to I$ whenever $\|P_{k}\|\to0$. Together with Lemma~\ref{en:lem:refine}(ii) it also gives $\sup_{P}L=\inf_{P}U=I$.
+
+(ii)$\Rightarrow$(i): Let $I_{*}=\sup_{P}L(f,P)$ and $I^{*}=\inf_{P}U(f,P)$. By Lemma~\ref{en:lem:refine}(ii), $I_{*}\leq I^{*}$; by (ii), $I^{*}-I_{*}<\varepsilon$ for every $\varepsilon$, so they are equal; call the common value $I$. Let $|f|\leq M$. Given $\varepsilon>0$, choose $Q$ with $U(f,Q)-L(f,Q)<\varepsilon$, let $N$ be its number of interior points and put $\delta=\varepsilon/(4MN+1)$. By Lemma~\ref{en:lem:mesh}, $U(f,P)-L(f,P)<2\varepsilon$ whenever $\|P\|<\delta$. Since both $I$ and $S(f,P,\xi)$ lie in $[L(f,P),U(f,P)]$,
+\[
+|S(f,P,\xi)-I|\leq U(f,P)-L(f,P)<2\varepsilon.
+\]
+Hence $f\in\mathcal{R}[a,b]$ with integral $I$.
+\end{proof}
+
+\begin{example}
+Every $f\in C[a,b]$ is Riemann integrable: $f$ is uniformly continuous on the compact interval, so for $\varepsilon>0$ there is $\delta>0$ with $|f(x)-f(y)|<\varepsilon$ whenever $|x-y|<\delta$. If $\|P\|<\delta$, then $M_{i}-m_{i}\leq\varepsilon$ for all $i$, hence $U(f,P)-L(f,P)\leq\varepsilon(b-a)$.
+\end{example}
+
+\subsection{Limitations of the Riemann Integral}
+
+The Riemann integral works well for continuous functions, but its shortcomings appear as soon as limits are involved.
+
+\textbf{(1) Not closed under limits.}
+
+\begin{example}\envlabel{en:ex:dirichlet}
+Enumerate $[0,1]\cap\mathbb{Q}$ as $r_{1},r_{2},\ldots$ and let
+\[
+f_{n}=\mathbf{1}_{\{r_{1},\ldots,r_{n}\}}.
+\]
+For every partition $P$, each $r_{k}$ belongs to at most two subintervals, so $L(f_{n},P)=0$ and $U(f_{n},P)\leq2n\|P\|$. By Theorem~\ref{en:thm:darboux}, $f_{n}\in\mathcal{R}[0,1]$ and $\int_{0}^{1}f_{n}=0$. But $f_{n}$ increases pointwise to the Dirichlet function
+\[
+D=\mathbf{1}_{\mathbb{Q}\cap[0,1]},
+\]
+and since every subinterval contains both rational and irrational points, $U(D,P)=1$ and $L(D,P)=0$ for all $P$; thus $D\notin\mathcal{R}[0,1]$.
+
+So even a uniformly bounded, increasing sequence of Riemann integrable functions may have a pointwise limit that is not Riemann integrable.
+\end{example}
+
+\textbf{(2) Interchanging limits and integrals.} In the Riemann theory the standard sufficient condition is uniform convergence.
+
+\begin{proposition}\envlabel{en:prop:unif}
+Let $f_{n}\in\mathcal{R}[a,b]$ and $f_{n}\to f$ uniformly on $[a,b]$. Then $f\in\mathcal{R}[a,b]$ and
+\[
+\lim_{n\to\infty}\int_{a}^{b}f_{n}(x)\,dx=\int_{a}^{b}f(x)\,dx.
+\]
+\end{proposition}
+
+\begin{proof}
+Given $\varepsilon>0$, choose $n$ with $\sup_{[a,b]}|f_{n}-f|<\varepsilon$. Then $f$ is bounded, and for every partition $P$,
+\[
+U(f,P)-L(f,P)\leq U(f_{n},P)-L(f_{n},P)+2\varepsilon(b-a).
+\]
+Choosing $P$ so that the first term on the right is less than $\varepsilon$, Theorem~\ref{en:thm:darboux} gives $f\in\mathcal{R}[a,b]$. Moreover $|S(f_{n},P,\xi)-S(f,P,\xi)|\leq\varepsilon(b-a)$ for all $P,\xi$; letting $\|P\|\to0$ yields $\big|\int_{a}^{b}f_{n}-\int_{a}^{b}f\big|\leq\varepsilon(b-a)$.
+\end{proof}
+
+\begin{remark}\envlabel{en:rem:unif}
+Uniform convergence is \textbf{sufficient but not necessary}. For example, $f_{n}(x)=x^{n}$ converges on $[0,1]$ to $f=\mathbf{1}_{\{1\}}$, not uniformly, yet
+\[
+\int_{0}^{1}x^{n}\,dx=\frac{1}{n+1}\to0=\int_{0}^{1}f(x)\,dx.
+\]
+The classical theorem of Arzelà states: if $f_{n},f\in\mathcal{R}[a,b]$ are uniformly bounded and $f_{n}\to f$ pointwise, then the integrals converge. Within the Riemann framework this is quite laborious to prove; in the Lebesgue theory it is an immediate consequence of the Dominated Convergence Theorem (Remark~\ref{en:rem:riemann}). The real difficulty of the Riemann theory is that one has to \textbf{know in advance} that the limit $f$ is Riemann integrable, and Example~\ref{en:ex:dirichlet} shows that this cannot be deduced from the integrability of the $f_{n}$.
+\end{remark}
+
+\textbf{(3) Incompleteness.} For $f,g\in\mathcal{R}[a,b]$ put
+\[
+d_{1}(f,g)=\int_{a}^{b}|f(x)-g(x)|\,dx.
+\]
+(Theorem~\ref{en:thm:darboux} easily shows $|f-g|\in\mathcal{R}[a,b]$.) The function $d_{1}$ is symmetric and satisfies the triangle inequality, but $d_{1}(f,g)=0$ does not imply $f=g$: changing a function at one point does not change its integral. Thus $d_{1}$ is only a \textbf{pseudometric}; to obtain a metric space one must identify functions with $d_{1}(f,g)=0$. Even so, the resulting space is not complete.
+
+\begin{example}\envlabel{en:ex:incomplete}
+On $[0,1]$ let $f_{n}(x)=\min\{n,x^{-1/2}\}$ (with $f_{n}(0)=n$). Each $f_{n}$ is continuous and
+\[
+\int_{0}^{1}f_{n}(x)\,dx=n\cdot\frac{1}{n^{2}}+\int_{1/n^{2}}^{1}x^{-1/2}\,dx=2-\frac1n.
+\]
+For $m>n$ we have $f_{m}\geq f_{n}$, hence
+\[
+d_{1}(f_{m},f_{n})=\int_{0}^{1}(f_{m}-f_{n})\,dx=\frac1n-\frac1m<\frac1n,
+\]
+so $(f_{n})$ is a Cauchy sequence.
+
+Suppose $g\in\mathcal{R}[0,1]$ satisfied $d_{1}(f_{n},g)\to0$. By Proposition~\ref{en:prop:bdd} there is $M$ with $|g|\leq M$. Put $c=(M+1)^{-2}$. For $n\geq M+1$ and $x\in[0,c]$ we have $f_{n}(x)\geq M+1$, so $|f_{n}-g|\geq1$ there and
+\[
+d_{1}(f_{n},g)\geq c>0\qquad(n\geq M+1),
+\]
+a contradiction. Hence this Cauchy sequence has no limit in $\mathcal{R}[0,1]$.
+\end{example}
+
+Its ``limit'' ought to be the unbounded function $x^{-1/2}$, which is not in $\mathcal{R}[0,1]$. Completing $(\mathcal{R}[a,b],d_{1})$ produces exactly the space $L^{1}$ studied in Article III.
+
+\textbf{(4) Unbounded functions and unbounded intervals.} The Riemann integral is defined only for bounded functions on bounded intervals. Integrals such as $\int_{0}^{1}x^{-1/2}\,dx$ or $\int_{0}^{\infty}e^{-x}\,dx$ require an additional limiting procedure (improper integrals), and such integrals are not well behaved (see \S\ref{en:sec:improper}).
+
+\subsection{Lebesgue's Idea}
+
+Let $f\geq0$ be bounded. Instead of partitioning the domain, partition the range: choose $0=y_{0}<y_{1}<\cdots<y_{N}$ covering the values of $f$, put
+\[
+E_{k}=\{y_{k-1}\leq f<y_{k}\},
+\]
+and approximate ``the integral of $f$'' from below by
+\[
+\sum_{k=1}^{N}y_{k-1}\,\mu(E_{k}).
+\]
+Such a sum depends only on the measures of the layers, not on whether those sets are made of intervals. It does require every $E_{k}$ to be measurable, and the next section starts from this requirement.
+
+We should also dispel a common misconception: the Lebesgue integral \emph{is} an extension of the (proper) Riemann integral. Every Riemann integrable function is Lebesgue integrable with the same integral (Theorem~\ref{en:thm:RL}). The only genuine incompatibility concerns certain conditionally convergent \textbf{improper} integrals (\S\ref{en:sec:improper}).
+
+\section{Measurable Functions}
+
+\subsection{Definition}
+
+We use the \textbf{extended real line} $\overline{\mathbb{R}}=[-\infty,+\infty]$ with the usual order and the conventions $a+(+\infty)=+\infty$ for $a>-\infty$, $a\cdot(+\infty)=+\infty$ for $a\in(0,+\infty]$, and
+\[
+0\cdot(\pm\infty)=0.
+\]
+The expression $(+\infty)-(+\infty)$ is undefined.
+
+\begin{definition}[Measurable function]
+Let $(X,\mathcal{F})$ be a measurable space and $E\in\mathcal{F}$. A function $f:E\to\overline{\mathbb{R}}$ is \textbf{$\mathcal{F}$-measurable} (or simply \textbf{measurable}) if
+\[
+\{x\in E:f(x)>a\}\in\mathcal{F}\qquad\text{for every }a\in\mathbb{R}.
+\]
+If $(X,\mathcal{F})=(\mathbb{R}^{n},\mathcal{L})$, $f$ is called \textbf{Lebesgue measurable}; if $\mathcal{F}=\mathcal{B}(\mathbb{R}^{n})$, it is called \textbf{Borel measurable}.
+\end{definition}
+
+Since $\mathcal{B}(\mathbb{R}^{n})\subseteq\mathcal{L}(\mathbb{R}^{n})$ (Article I, \S4.5), every Borel measurable function is Lebesgue measurable.
+
+\begin{proposition}\envlabel{en:prop:equiv}
+For $f:E\to\overline{\mathbb{R}}$ the following are equivalent:
+\begin{enumerate}
+  \item $\{f>a\}\in\mathcal{F}$ for all $a\in\mathbb{R}$;
+  \item $\{f\geq a\}\in\mathcal{F}$ for all $a\in\mathbb{R}$;
+  \item $\{f<a\}\in\mathcal{F}$ for all $a\in\mathbb{R}$;
+  \item $\{f\leq a\}\in\mathcal{F}$ for all $a\in\mathbb{R}$.
+\end{enumerate}
+In this case $\{f=+\infty\}$, $\{f=-\infty\}$ and $\{f=a\}$ $(a\in\mathbb{R})$ belong to $\mathcal{F}$.
+\end{proposition}
+
+\begin{proof}
+Since a $\sigma$-algebra is closed under countable intersections and complements,
+\[
+\{f\geq a\}=\bigcap_{k=1}^{\infty}\Big\{f>a-\frac1k\Big\},\quad
+\{f<a\}=E\setminus\{f\geq a\},\quad
+\{f\leq a\}=\bigcap_{k=1}^{\infty}\Big\{f<a+\frac1k\Big\},
+\]
+and $\{f>a\}=E\setminus\{f\leq a\}$ give (i)$\Rightarrow$(ii)$\Rightarrow$(iii)$\Rightarrow$(iv)$\Rightarrow$(i). Finally,
+\[
+\{f=+\infty\}=\bigcap_{k}\{f>k\},\quad \{f=-\infty\}=\bigcap_{k}\{f<-k\},\quad \{f=a\}=\{f\geq a\}\cap\{f\leq a\}.
+\]
+\end{proof}
+
+\begin{proposition}\envlabel{en:prop:borel}
+A real-valued function $f:E\to\mathbb{R}$ is measurable if and only if $f^{-1}(B)\in\mathcal{F}$ for every Borel set $B\subseteq\mathbb{R}$.
+\end{proposition}
+
+\begin{proof}
+Sufficiency is clear (take $B=(a,\infty)$). For necessity, let
+\[
+\mathcal{A}=\{B\subseteq\mathbb{R}:f^{-1}(B)\in\mathcal{F}\}.
+\]
+Since $f^{-1}(\mathbb{R}\setminus B)=E\setminus f^{-1}(B)$ and $f^{-1}\big(\bigcup_{k}B_{k}\big)=\bigcup_{k}f^{-1}(B_{k})$, $\mathcal{A}$ is a $\sigma$-algebra. It contains every $(a,\infty)$, hence every
+\[
+(a,b)=(a,\infty)\setminus\bigcap_{k}\Big(b-\frac1k,\infty\Big),
+\]
+that is, every open interval. By Article I, \S2.5, the open intervals generate $\mathcal{B}(\mathbb{R})$, so $\mathcal{B}(\mathbb{R})\subseteq\mathcal{A}$.
+\end{proof}
+
+\begin{example}
+\leavevmode
+\begin{enumerate}
+  \item $\mathbf{1}_{A}$ is measurable if and only if $A\in\mathcal{F}$: the set $\{\mathbf{1}_{A}>a\}$ is $X$, $A$ or $\varnothing$.
+  \item A continuous $f:\mathbb{R}^{n}\to\mathbb{R}$ is Borel measurable: $\{f>a\}=f^{-1}((a,\infty))$ is open.
+  \item A monotone $f:\mathbb{R}\to\mathbb{R}$ is Borel measurable: $\{f>a\}$ is an interval (possibly empty or unbounded).
+\end{enumerate}
+\end{example}
+
+\subsection{Operations on Measurable Functions}
+
+\begin{proposition}\envlabel{en:prop:alg}
+Let $f,g:E\to\mathbb{R}$ be measurable, $c\in\mathbb{R}$, and let $\varphi:\mathbb{R}\to\mathbb{R}$ be Borel measurable (for example continuous). Then
+\[
+f+g,\quad cf,\quad fg,\quad \max\{f,g\},\quad \min\{f,g\},\quad |f|,\quad \varphi\circ f
+\]
+are measurable.
+\end{proposition}
+
+\begin{proof}
+If $f(x)+g(x)>a$, then $f(x)>a-g(x)$, and there is a rational $q$ with $a-g(x)<q<f(x)$. Hence
+\[
+\{f+g>a\}=\bigcup_{q\in\mathbb{Q}}\big(\{f>q\}\cap\{g>a-q\}\big)\in\mathcal{F}.
+\]
+For $c>0$, $\{cf>a\}=\{f>a/c\}$; for $c<0$, $\{cf>a\}=\{f<a/c\}$; for $c=0$, $cf$ is constant. For $\varphi\circ f$, Proposition~\ref{en:prop:borel} gives
+\[
+\{\varphi\circ f>a\}=f^{-1}\big(\varphi^{-1}((a,\infty))\big)\in\mathcal{F}.
+\]
+In particular $f^{2}$ is measurable, and therefore so is
+\[
+fg=\tfrac14\big((f+g)^{2}-(f-g)^{2}\big).
+\]
+Finally $\{\max\{f,g\}>a\}=\{f>a\}\cup\{g>a\}$, $\{\min\{f,g\}>a\}=\{f>a\}\cap\{g>a\}$, and $|f|=\max\{f,-f\}$.
+\end{proof}
+
+\begin{remark}
+The order of composition matters: if $\varphi$ is merely Lebesgue measurable and $f$ is continuous, $\varphi\circ f$ need not be Lebesgue measurable, because the preimage of a Lebesgue measurable set under a continuous map need not be Lebesgue measurable. This is why $\varphi$ is required to be Borel measurable.
+\end{remark}
+
+\begin{proposition}\envlabel{en:prop:limits}
+Let $f_{n}:E\to\overline{\mathbb{R}}$ $(n\geq1)$ be measurable. Then
+\[
+\sup_{n}f_{n},\qquad\inf_{n}f_{n},\qquad\limsup_{n\to\infty}f_{n},\qquad\liminf_{n\to\infty}f_{n}
+\]
+are measurable; the set
+\[
+C=\Big\{x\in E:\lim_{n\to\infty}f_{n}(x)\text{ exists in }\overline{\mathbb{R}}\Big\}
+\]
+belongs to $\mathcal{F}$; and if $f_{n}\to f$ pointwise on $E$, then $f$ is measurable.
+\end{proposition}
+
+\begin{proof}
+$\{\sup_{n}f_{n}>a\}=\bigcup_{n}\{f_{n}>a\}$ and $\inf_{n}f_{n}=-\sup_{n}(-f_{n})$. Hence
+\[
+\limsup_{n\to\infty}f_{n}=\inf_{k\geq1}\sup_{n\geq k}f_{n},\qquad \liminf_{n\to\infty}f_{n}=\sup_{k\geq1}\inf_{n\geq k}f_{n}
+\]
+are measurable. Moreover $\liminf f_{n}(x)<\limsup f_{n}(x)$ if and only if some rational $q$ lies strictly between them, so
+\[
+E\setminus C=\bigcup_{q\in\mathbb{Q}}\Big(\big\{\liminf_{n}f_{n}<q\big\}\cap\big\{\limsup_{n}f_{n}>q\big\}\Big)\in\mathcal{F}.
+\]
+If $f_{n}\to f$ pointwise, then $f=\limsup_{n}f_{n}$.
+\end{proof}
+
+For a measurable $f:E\to\overline{\mathbb{R}}$ define its \textbf{positive} and \textbf{negative parts}
+\[
+f^{+}=\max\{f,0\},\qquad f^{-}=\max\{-f,0\}.
+\]
+Both are non-negative measurable functions, at most one of them is non-zero at each point, and
+\[
+f=f^{+}-f^{-},\qquad |f|=f^{+}+f^{-}.
+\]
+
+\subsection{Almost Everywhere}
+
+\begin{definition}[Almost everywhere]
+Let $P(x)$ be a statement about points $x\in E$. We say that $P$ holds \textbf{$\mu$-almost everywhere} (a.e.) on $E$ if there is $N\in\mathcal{F}$ with $\mu(N)=0$ such that $P(x)$ holds for all $x\in E\setminus N$.
+\end{definition}
+
+Note that only the set of points where $P$ fails is required to be contained in a null set; that set itself need not be measurable. Typical uses are $f=g$ a.e., $f_{n}\to f$ a.e., and $f<\infty$ a.e.
+
+\begin{example}\envlabel{en:ex:ae}
+\leavevmode
+\begin{enumerate}
+  \item Consider
+  \[
+  f(x)=\begin{cases}2x,&x<2,\\1,&x=2,\\x^{3},&x>2.\end{cases}
+  \]
+  $f$ is discontinuous only at $x=2$ and $m(\{2\})=0$, so $f$ is continuous almost everywhere on $\mathbb{R}$. But $f$ is \textbf{not} almost everywhere equal to any continuous function: if $g$ is continuous and $g=f$ a.e., then $g(x)=2x$ on a dense subset of $(-\infty,2)$ (the complement of a null set is dense), so by continuity $g(x)=2x$ for all $x<2$; likewise $g(x)=x^{3}$ for all $x>2$. Then $g(2)=4=8$, a contradiction.
+  \item The Dirichlet function $D=\mathbf{1}_{\mathbb{Q}}$ satisfies $D=0$ a.e. (as $m(\mathbb{Q})=0$), so it is a.e.\ equal to the continuous function $0$, yet $D$ is discontinuous everywhere.
+\end{enumerate}
+Thus ``continuous almost everywhere'' and ``almost everywhere equal to a continuous function'' are different notions, and neither implies the other.
+\end{example}
+
+\begin{proposition}\envlabel{en:prop:complete}
+Let $(X,\mathcal{F},\mu)$ be complete (for example $(\mathbb{R}^{n},\mathcal{L},m)$).
+\begin{enumerate}
+  \item If $f$ is measurable and $g=f$ a.e., then $g$ is measurable.
+  \item If the $f_{n}$ are measurable and $f_{n}\to f$ a.e., then $f$ is measurable.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(i) Let $N$ be a null set with $f=g$ on $N^{c}$. Then
+\[
+\{g>a\}=\big(\{f>a\}\setminus N\big)\cup\big(\{g>a\}\cap N\big).
+\]
+The first set lies in $\mathcal{F}$; the second is a subset of the null set $N$ and lies in $\mathcal{F}$ by completeness. (ii) By Proposition~\ref{en:prop:limits}, $h=\limsup_{n}f_{n}$ is measurable and $f=h$ a.e.; apply (i).
+\end{proof}
+
+\begin{remark}
+Completeness cannot be dropped. By Article I, \S4.5, the Cantor set $C$ has a subset $A$ that is not a Borel set. Then $\mathbf{1}_{A}=0$ $m$-a.e., but $\mathbf{1}_{A}$ is not Borel measurable. This is one reason for preferring the complete space $(\mathbb{R}^{n},\mathcal{L},m)$. In a general measure space it suffices to remember that the integral (\S3) does not distinguish functions that agree a.e.; hence a function that is undefined or equal to $\pm\infty$ on a null set can be modified there and treated as an everywhere-defined real-valued function.
+\end{remark}
+
+\subsection{Simple Functions}
+
+\begin{definition}[Simple function]
+A measurable function $\varphi:X\to\mathbb{R}$ taking only finitely many real values is called \textbf{simple}. If $c_{1},\ldots,c_{N}$ are its distinct values and $A_{k}=\{\varphi=c_{k}\}$, then the $A_{k}\in\mathcal{F}$ are pairwise disjoint with union $X$, and
+\[
+\varphi=\sum_{k=1}^{N}c_{k}\mathbf{1}_{A_{k}}.
+\]
+This is the \textbf{canonical representation} of $\varphi$.
+\end{definition}
+
+Every finite linear combination $\sum_{i=1}^{n}a_{i}\mathbf{1}_{E_{i}}$ ($a_{i}\in\mathbb{R}$, $E_{i}\in\mathcal{F}$) is simple, and conversely. Note that simple functions take \textbf{finite} real values and are therefore bounded; this point is crucial in Remark~\ref{en:rem:upper}.
+
+\begin{theorem}[Approximation by simple functions]\envlabel{en:thm:simple}
+Let $f:X\to[0,+\infty]$ be measurable. There are simple functions $\varphi_{n}$ with
+\[
+0\leq\varphi_{1}\leq\varphi_{2}\leq\cdots\leq f,\qquad \varphi_{n}(x)\to f(x)\quad(\forall x\in X),
+\]
+and the convergence is uniform on every set on which $f$ is bounded.
+\end{theorem}
+
+\begin{proof}
+For $n\geq1$ let
+\[
+\varphi_{n}=\sum_{k=1}^{n2^{n}}\frac{k-1}{2^{n}}\mathbf{1}_{E_{n,k}}+n\mathbf{1}_{F_{n}},\qquad
+E_{n,k}=\Big\{\frac{k-1}{2^{n}}\leq f<\frac{k}{2^{n}}\Big\},\quad F_{n}=\{f\geq n\}.
+\]
+These sets are measurable by Proposition~\ref{en:prop:equiv}, so $\varphi_{n}$ is simple. Equivalently,
+\[
+\varphi_{n}(x)=\min\big\{n,\;2^{-n}\lfloor2^{n}f(x)\rfloor\big\}\qquad(\varphi_{n}(x)=n\text{ if }f(x)=+\infty).
+\]
+Since $\lfloor2s\rfloor\geq2\lfloor s\rfloor$, we have $2^{-(n+1)}\lfloor2^{n+1}t\rfloor\geq2^{-n}\lfloor2^{n}t\rfloor$, whence $\varphi_{n}\leq\varphi_{n+1}$; clearly $\varphi_{n}\leq f$. If $f(x)=+\infty$, then $\varphi_{n}(x)=n\to+\infty$; if $f(x)<\infty$, then for $n\geq f(x)$,
+\[
+0\leq f(x)-\varphi_{n}(x)<2^{-n}.
+\]
+On $\{f\leq M\}$ this estimate holds for all $n\geq M$ simultaneously.
+\end{proof}
+
+\begin{corollary}\envlabel{en:cor:simple}
+If $f:X\to\overline{\mathbb{R}}$ is measurable, there are simple functions $\varphi_{n}\to f$ pointwise with $|\varphi_{1}|\leq|\varphi_{2}|\leq\cdots\leq|f|$.
+\end{corollary}
+
+\begin{proof}
+Apply Theorem~\ref{en:thm:simple} to $f^{+}$ and $f^{-}$ to obtain $\psi_{n}\uparrow f^{+}$, $\chi_{n}\uparrow f^{-}$, and set $\varphi_{n}=\psi_{n}-\chi_{n}$. Since $f^{+}$ and $f^{-}$ are never simultaneously non-zero, neither are $\psi_{n}$ and $\chi_{n}$, so $|\varphi_{n}|=\psi_{n}+\chi_{n}$ is increasing and bounded by $f^{+}+f^{-}=|f|$.
+\end{proof}
+
+\subsection{Lusin's Theorem}
+
+Littlewood summarized the theory of functions of a real variable in three principles: every measurable set is ``nearly'' a finite union of intervals; every measurable function is ``nearly'' continuous; every pointwise convergent sequence of measurable functions is ``nearly'' uniformly convergent. The precise form of the second principle is Lusin's theorem. (The third is Egorov's theorem, which we do not discuss here.)
+
+\begin{theorem}[Lusin]\envlabel{en:thm:lusin}
+Let $E\subseteq\mathbb{R}^{n}$ be Lebesgue measurable with $m(E)<\infty$, and let $f:E\to\overline{\mathbb{R}}$ be Lebesgue measurable and finite a.e. Then for every $\varepsilon>0$ there is a compact set $F\subseteq E$ with
+\[
+m(E\setminus F)<\varepsilon
+\]
+such that the restriction $f|_{F}:F\to\mathbb{R}$ is continuous.
+\end{theorem}
+
+\begin{proof}
+We use inner regularity (Article I, \S4.6): if $A\in\mathcal{L}$ and $m(A)<\infty$, then for every $\eta>0$ there is a compact $K\subseteq A$ with $m(A\setminus K)<\eta$.
+
+Let $Z=\{|f|=\infty\}$, so $m(Z)=0$, and put $E_{0}=E\setminus Z$; on $E_{0}$ the function $f$ is real-valued. Enumerate the open intervals with rational endpoints as $I_{1},I_{2},\ldots$ and let
+\[
+A_{k}=E_{0}\cap f^{-1}(I_{k}),\qquad B_{k}=E_{0}\setminus A_{k}.
+\]
+These are measurable sets of finite measure. Choose compact sets $K_{k}\subseteq A_{k}$ and $K_{k}'\subseteq B_{k}$ with
+\[
+m(A_{k}\setminus K_{k})<\frac{\varepsilon}{2^{k+2}},\qquad m(B_{k}\setminus K_{k}')<\frac{\varepsilon}{2^{k+2}},
+\]
+so that $m\big(E_{0}\setminus(K_{k}\cup K_{k}')\big)<\varepsilon/2^{k+1}$. Let
+\[
+F=\bigcap_{k=1}^{\infty}(K_{k}\cup K_{k}').
+\]
+$F$ is a closed subset of the compact set $K_{1}\cup K_{1}'$, hence compact, and $F\subseteq E_{0}\subseteq E$. Moreover
+\[
+m(E\setminus F)\leq m(Z)+\sum_{k=1}^{\infty}m\big(E_{0}\setminus(K_{k}\cup K_{k}')\big)<\frac{\varepsilon}{2}.
+\]
+
+It remains to show that $g=f|_{F}$ is continuous. Fix $k$. Since $K_{k}\subseteq A_{k}$, $K_{k}'\subseteq B_{k}$, $A_{k}\cap B_{k}=\varnothing$ and $F\subseteq K_{k}\cup K_{k}'$,
+\[
+g^{-1}(I_{k})=F\cap A_{k}=F\cap K_{k}=F\setminus K_{k}'=F\cap(\mathbb{R}^{n}\setminus K_{k}'),
+\]
+which is relatively open in $F$. Every open subset of $\mathbb{R}$ is a union of some of the $I_{k}$, so the preimage under $g$ of every open set is relatively open in $F$; that is, $g$ is continuous.
+\end{proof}
+
+\begin{remark}\envlabel{en:rem:lusin}
+\leavevmode
+\begin{enumerate}
+  \item The conclusion is that the \textbf{restriction} $f|_{F}$ is continuous, not that $f$ is continuous at the points of $F$. For the Dirichlet function $D$ and $E=[0,1]$, take an open set $U\supseteq\mathbb{Q}\cap[0,1]$ of total measure less than $\varepsilon$; then $F=[0,1]\setminus U$ is compact and $D|_{F}\equiv0$ is continuous, although $D$ is continuous at no point.
+  \item The hypothesis $m(E)<\infty$ can be removed, with $F$ closed: apply the theorem with $\varepsilon/2^{k}$ to $E\cap\{k-1\leq|x|<k\}$ $(k\geq1)$; the union of the resulting compact sets is closed, since every bounded set meets only finitely many of them.
+  \item Combined with the Tietze extension theorem, there is a continuous $g:\mathbb{R}^{n}\to\mathbb{R}$ with $g=f$ on $F$, so $m(\{x\in E:f(x)\neq g(x)\})<\varepsilon$; if $|f|\leq M$, one may also require $|g|\leq M$. This is the precise meaning of ``measurable functions can be approximated arbitrarily well by continuous functions''.
+  \item More generally, Lusin's theorem holds for Radon measures on locally compact Hausdorff spaces; see Rudin, \emph{Real and Complex Analysis}, Theorem 2.24.
+\end{enumerate}
+\end{remark}
+
+\section{The Lebesgue Integral}
+
+Throughout this section $(X,\mathcal{F},\mu)$ is fixed. The integral is defined in three steps: non-negative simple functions, non-negative measurable functions, general measurable functions.
+
+\subsection{Integrals of Non-negative Simple Functions}
+
+\begin{definition}
+Let $\varphi=\sum_{k=1}^{N}c_{k}\mathbf{1}_{A_{k}}$ be the canonical representation of a non-negative simple function ($c_{k}\geq0$). Define
+\[
+\int_{X}\varphi\,d\mu=\sum_{k=1}^{N}c_{k}\,\mu(A_{k})\in[0,+\infty],
+\]
+with the convention $0\cdot\infty=0$. For $E\in\mathcal{F}$ put $\int_{E}\varphi\,d\mu=\int_{X}\varphi\mathbf{1}_{E}\,d\mu$.
+\end{definition}
+
+\begin{remark}
+The convention $0\cdot\infty=0$ ensures that a function which vanishes on a set of infinite measure gets no contribution from that set. For example, the zero function $0=0\cdot\mathbf{1}_{\mathbb{R}}$ on $\mathbb{R}$ has integral $0\cdot m(\mathbb{R})=0$. It does \textbf{not} mean that integrals over sets of infinite measure vanish: if some $c_{k}>0$ has $\mu(A_{k})=\infty$, the integral is $+\infty$.
+\end{remark}
+
+\begin{lemma}\envlabel{en:lem:repr}
+If a non-negative simple function can be written as $\varphi=\sum_{i=1}^{n}a_{i}\mathbf{1}_{E_{i}}$ with $a_{i}\geq0$ and $E_{i}\in\mathcal{F}$ (not necessarily disjoint), then
+\[
+\int_{X}\varphi\,d\mu=\sum_{i=1}^{n}a_{i}\,\mu(E_{i}).
+\]
+In particular, the integral does not depend on the representation.
+\end{lemma}
+
+\begin{proof}
+For $\epsilon=(\epsilon_{1},\ldots,\epsilon_{n})\in\{0,1\}^{n}$ let $G_{\epsilon}=\bigcap_{i=1}^{n}E_{i}^{\epsilon_{i}}$, where $E^{1}=E$ and $E^{0}=E^{c}$. These ``atoms'' are pairwise disjoint, their union is $X$, and
+\[
+E_{i}=\bigsqcup_{\epsilon:\,\epsilon_{i}=1}G_{\epsilon}.
+\]
+On $G_{\epsilon}$ the function $\varphi$ is constant, equal to $b_{\epsilon}=\sum_{i}\epsilon_{i}a_{i}$. By finite additivity,
+\[
+\sum_{i=1}^{n}a_{i}\mu(E_{i})=\sum_{i=1}^{n}a_{i}\sum_{\epsilon:\,\epsilon_{i}=1}\mu(G_{\epsilon})=\sum_{\epsilon}b_{\epsilon}\,\mu(G_{\epsilon}),
+\]
+where we have interchanged finite sums of terms in $[0,\infty]$. On the other hand, in the canonical representation $A_{k}=\bigsqcup_{\epsilon:\,b_{\epsilon}=c_{k}}G_{\epsilon}$, so $\sum_{k}c_{k}\mu(A_{k})$ also equals $\sum_{\epsilon}b_{\epsilon}\mu(G_{\epsilon})$.
+\end{proof}
+
+\begin{proposition}\envlabel{en:prop:simpleint}
+Let $\varphi,\psi$ be non-negative simple functions and $a,b\geq0$.
+\begin{enumerate}
+  \item $\int(a\varphi+b\psi)\,d\mu=a\int\varphi\,d\mu+b\int\psi\,d\mu$;
+  \item if $\varphi\leq\psi$, then $\int\varphi\,d\mu\leq\int\psi\,d\mu$;
+  \item $\nu(E)=\int_{E}\varphi\,d\mu$ is a measure on $\mathcal{F}$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(i) If $\varphi=\sum c_{k}\mathbf{1}_{A_{k}}$ and $\psi=\sum d_{j}\mathbf{1}_{B_{j}}$, then $a\varphi+b\psi=\sum ac_{k}\mathbf{1}_{A_{k}}+\sum bd_{j}\mathbf{1}_{B_{j}}$; apply Lemma~\ref{en:lem:repr}. (ii) $\psi-\varphi$ is a non-negative simple function (here we use that simple functions are finite-valued), so by (i), $\int\psi=\int\varphi+\int(\psi-\varphi)\geq\int\varphi$. (iii) $\varphi\mathbf{1}_{E}=\sum_{k}c_{k}\mathbf{1}_{A_{k}\cap E}$, so $\nu(E)=\sum_{k}c_{k}\mu(A_{k}\cap E)$. Each $E\mapsto\mu(A_{k}\cap E)$ is a measure, and a non-negative linear combination of measures is a measure (series of non-negative terms may be rearranged freely).
+\end{proof}
+
+\subsection{Integrals of Non-negative Measurable Functions}
+
+Let $L^{+}=L^{+}(X,\mathcal{F})$ denote the set of measurable functions $f:X\to[0,+\infty]$.
+
+\begin{definition}
+For $f\in L^{+}$ define
+\[
+\int_{X}f\,d\mu=\sup\Big\{\int_{X}\varphi\,d\mu:\ \varphi\text{ simple},\ 0\leq\varphi\leq f\Big\}\in[0,+\infty],
+\]
+and for $E\in\mathcal{F}$ put $\int_{E}f\,d\mu=\int_{X}f\mathbf{1}_{E}\,d\mu$.
+\end{definition}
+
+By Proposition~\ref{en:prop:simpleint}(ii), if $f$ is itself simple the supremum is attained at $\varphi=f$, so this definition agrees with the previous one.
+
+\begin{proposition}\envlabel{en:prop:posbasic}
+Let $f,g\in L^{+}$ and $E,E'\in\mathcal{F}$.
+\begin{enumerate}
+  \item If $f\leq g$, then $\int f\leq\int g$;
+  \item for $c\in[0,\infty)$, $\int cf=c\int f$;
+  \item if $E\subseteq E'$, then $\int_{E}f\leq\int_{E'}f$;
+  \item if $\mu(E)=0$, then $\int_{E}f=0$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(i) The supremum on the left is taken over a smaller set. (ii) For $c=0$ both sides are $0$; for $c>0$, $\varphi\mapsto c\varphi$ is a bijection between $\{0\leq\varphi\leq f\}$ and $\{0\leq\varphi\leq cf\}$. (iii) Follows from $f\mathbf{1}_{E}\leq f\mathbf{1}_{E'}$ and (i). (iv) If $\varphi$ is simple with $0\leq\varphi\leq f\mathbf{1}_{E}$, then $\varphi$ vanishes outside $E$; in its canonical representation every $A_{k}$ with $c_{k}>0$ is contained in $E$ and hence null, so $\int\varphi=0$.
+\end{proof}
+
+\begin{remark}[On ``upper integrals'']\envlabel{en:rem:upper}
+One might try to use
+\[
+\inf\Big\{\int\varphi\,d\mu:\ \varphi\text{ simple},\ \varphi\geq f\Big\}
+\]
+as an equivalent definition. In general this is \textbf{false}, because simple functions are bounded and take finitely many values:
+\begin{enumerate}
+  \item On $[0,1]$ let $f(x)=x^{-1/2}$ for $x>0$ and $f(0)=0$. Since $f$ is unbounded, no simple $\varphi\geq f$ exists and the infimum is $\inf\varnothing=+\infty$, whereas $\int_{[0,1]}f\,dm=2$ (Example~\ref{en:ex:improper2}).
+  \item On $\mathbb{R}$ let $f(x)=e^{-|x|}$. A simple $\varphi\geq f>0$ is everywhere positive, hence bounded below by its smallest value $c>0$, so $\int\varphi\geq c\cdot m(\mathbb{R})=+\infty$, whereas $\int_{\mathbb{R}}f\,dm=2$.
+\end{enumerate}
+The two quantities do agree when $f$ is bounded and $\mu(X)<\infty$: by Theorem~\ref{en:thm:simple}, $\varphi_{n}\leq f\leq\varphi_{n}+2^{-n}$ for large $n$, so the infimum is at most $\int\varphi_{n}+2^{-n}\mu(X)$; let $n\to\infty$.
+\end{remark}
+
+\subsection{The Monotone Convergence Theorem}
+
+The following theorem is the cornerstone of the whole theory; even the additivity of the integral is proved by means of it.
+
+\begin{theorem}[Monotone Convergence Theorem]\envlabel{en:thm:mct}
+Let $f_{n}\in L^{+}$ with $f_{1}\leq f_{2}\leq\cdots$ pointwise, and $f=\lim_{n}f_{n}$. Then
+\[
+\int_{X}f\,d\mu=\lim_{n\to\infty}\int_{X}f_{n}\,d\mu.
+\]
+\end{theorem}
+
+\begin{proof}
+By Proposition~\ref{en:prop:limits}, $f=\sup_{n}f_{n}\in L^{+}$. By monotonicity, $\int f_{n}$ increases and is bounded by $\int f$, so $\alpha=\lim_{n}\int f_{n}$ exists and $\alpha\leq\int f$.
+
+For the reverse inequality, fix a simple function $0\leq\varphi\leq f$ and $t\in(0,1)$, and let
+\[
+E_{n}=\{f_{n}\geq t\varphi\}.
+\]
+If $\varphi=\sum_{k}c_{k}\mathbf{1}_{A_{k}}$, then $E_{n}=\bigcup_{k}\big(A_{k}\cap\{f_{n}\geq tc_{k}\}\big)$ is measurable. The sets $E_{n}$ increase and $\bigcup_{n}E_{n}=X$: if $\varphi(x)=0$, then $x\in E_{1}$; if $\varphi(x)>0$, then $t\varphi(x)<\varphi(x)\leq f(x)$, so $f_{n}(x)\geq t\varphi(x)$ for large $n$. Therefore
+\[
+\int_{X}f_{n}\,d\mu\geq\int_{E_{n}}f_{n}\,d\mu\geq t\int_{E_{n}}\varphi\,d\mu=t\,\nu(E_{n}),
+\]
+where $\nu(E)=\int_{E}\varphi\,d\mu$ is a measure (Proposition~\ref{en:prop:simpleint}(iii)). By continuity from below (Article I, \S2.3), $\nu(E_{n})\to\nu(X)=\int\varphi$, so $\alpha\geq t\int\varphi$. Letting $t\to1$ and taking the supremum over $\varphi$ gives $\alpha\geq\int f$.
+\end{proof}
+
+\begin{corollary}[Additivity]\envlabel{en:cor:add}
+For $f,g\in L^{+}$, $\int(f+g)\,d\mu=\int f\,d\mu+\int g\,d\mu$.
+\end{corollary}
+
+\begin{proof}
+By Theorem~\ref{en:thm:simple} choose simple $\varphi_{n}\uparrow f$ and $\psi_{n}\uparrow g$; then $\varphi_{n}+\psi_{n}\uparrow f+g$. By Proposition~\ref{en:prop:simpleint}(i), $\int(\varphi_{n}+\psi_{n})=\int\varphi_{n}+\int\psi_{n}$; apply the Monotone Convergence Theorem to all three sequences.
+\end{proof}
+
+\begin{corollary}[Term-by-term integration]\envlabel{en:cor:series}
+Let $f_{k}\in L^{+}$ $(k\geq1)$. Then
+\[
+\int_{X}\sum_{k=1}^{\infty}f_{k}\,d\mu=\sum_{k=1}^{\infty}\int_{X}f_{k}\,d\mu.
+\]
+\end{corollary}
+
+\begin{proof}
+Let $S_{n}=\sum_{k=1}^{n}f_{k}$. By Corollary~\ref{en:cor:add} and induction, $\int S_{n}=\sum_{k=1}^{n}\int f_{k}$. Since $S_{n}$ increases pointwise to $\sum_{k=1}^{\infty}f_{k}$, the Monotone Convergence Theorem gives the result as $n\to\infty$.
+\end{proof}
+
+\begin{corollary}\envlabel{en:cor:measure}
+For $f\in L^{+}$, $\nu(E)=\int_{E}f\,d\mu$ is a measure on $\mathcal{F}$, and $\mu(E)=0$ implies $\nu(E)=0$.
+\end{corollary}
+
+\begin{proof}
+If $E=\bigsqcup_{k}E_{k}$, then $f\mathbf{1}_{E}=\sum_{k}f\mathbf{1}_{E_{k}}$, and Corollary~\ref{en:cor:series} gives countable additivity; the second statement is Proposition~\ref{en:prop:posbasic}(iv).
+\end{proof}
+
+\begin{example}
+Let $\#$ be counting measure on $\mathbb{N}$ ($\#(A)$ is the number of elements of $A$, $\mathcal{F}=\mathcal{P}(\mathbb{N})$). Every $f:\mathbb{N}\to[0,\infty]$ can be written $f=\sum_{j}f(j)\mathbf{1}_{\{j\}}$, so by Corollary~\ref{en:cor:series}
+\[
+\int_{\mathbb{N}}f\,d\#=\sum_{j=1}^{\infty}f(j).
+\]
+Thus series of non-negative terms are special cases of integrals. Applying Corollary~\ref{en:cor:series} to $f_{k}(j)=a_{jk}\geq0$ shows that the order of summation of a non-negative double series may be interchanged:
+\[
+\sum_{j=1}^{\infty}\sum_{k=1}^{\infty}a_{jk}=\sum_{k=1}^{\infty}\sum_{j=1}^{\infty}a_{jk}.
+\]
+\end{example}
+
+\subsection{The Markov and Chebyshev Inequalities}
+
+\begin{proposition}[Markov's inequality]\envlabel{en:prop:markov}
+Let $f\in L^{+}$ and $\lambda\in(0,\infty)$. Then
+\[
+\mu(\{f\geq\lambda\})\leq\frac{1}{\lambda}\int_{X}f\,d\mu.
+\]
+A fortiori the same holds for $\{f>\lambda\}$.
+\end{proposition}
+
+\begin{proof}
+$\lambda\mathbf{1}_{\{f\geq\lambda\}}\leq f$; integrate.
+\end{proof}
+
+\begin{corollary}[Chebyshev's inequality]
+Let $f:X\to\mathbb{R}$ be measurable, $c\in\mathbb{R}$ and $\lambda>0$. Then
+\[
+\mu(\{|f-c|\geq\lambda\})\leq\frac{1}{\lambda^{2}}\int_{X}|f-c|^{2}\,d\mu.
+\]
+\end{corollary}
+
+\begin{proof}
+$\{|f-c|\geq\lambda\}=\{|f-c|^{2}\geq\lambda^{2}\}$; apply Markov's inequality to $|f-c|^{2}$.
+\end{proof}
+
+On a probability space ($\mu(X)=1$), taking $c=\int f\,d\mu$ gives the familiar form $\mathbb{P}(|\xi-\mathbb{E}\xi|\geq\lambda)\leq\operatorname{Var}(\xi)/\lambda^{2}$: the deviation of a random variable from its mean is controlled by its variance. The inequality of Proposition~\ref{en:prop:markov} is usually called Markov's inequality, although in the literature it is also often called Chebyshev's inequality.
+
+\begin{corollary}\envlabel{en:cor:ae}
+Let $f,g\in L^{+}$.
+\begin{enumerate}
+  \item If $\int f<\infty$, then $f<\infty$ a.e.;
+  \item $\int f=0$ if and only if $f=0$ a.e.;
+  \item if $f=g$ a.e., then $\int f=\int g$;
+  \item if $f_{n}\in L^{+}$ and $f_{n}\uparrow f$ a.e., then $\int f_{n}\to\int f$.
+\end{enumerate}
+\end{corollary}
+
+\begin{proof}
+(i) $\{f=\infty\}\subseteq\{f\geq k\}$, so by Markov's inequality $\mu(\{f=\infty\})\leq\frac1k\int f\to0$. (ii) If $\int f=0$, then $\mu(\{f\geq1/k\})\leq k\int f=0$, and $\{f>0\}=\bigcup_{k}\{f\geq1/k\}$. Conversely, if $N=\{f>0\}$ is null, then $\int f=\int_{N}f=0$ (Proposition~\ref{en:prop:posbasic}(iv)). (iii) Let $N$ be a null set with $f=g$ on $N^{c}$. By Corollary~\ref{en:cor:measure},
+\[
+\int f=\int_{N^{c}}f+\int_{N}f=\int_{N^{c}}g+0=\int g.
+\]
+(iv) Let $N$ be a null set such that $f_{n}\uparrow f$ on $N^{c}$. Apply the Monotone Convergence Theorem to $f_{n}\mathbf{1}_{N^{c}}\uparrow f\mathbf{1}_{N^{c}}$ and then use (iii).
+\end{proof}
+
+\subsection{Integrals of General Measurable Functions}
+
+\begin{definition}[Lebesgue integral]\envlabel{en:def:integral}
+Let $f:X\to\overline{\mathbb{R}}$ be measurable. If at least one of $\int f^{+}\,d\mu$ and $\int f^{-}\,d\mu$ is finite, define
+\[
+\int_{X}f\,d\mu=\int_{X}f^{+}\,d\mu-\int_{X}f^{-}\,d\mu\in\overline{\mathbb{R}}.
+\]
+If both are finite, $f$ is called \textbf{integrable} (Lebesgue integrable). The set of integrable real-valued measurable functions is denoted $L^{1}(\mu)=L^{1}(X,\mathcal{F},\mu)$. For $E\in\mathcal{F}$, $\int_{E}f\,d\mu=\int_{X}f\mathbf{1}_{E}\,d\mu$.
+\end{definition}
+
+Since $|f|=f^{+}+f^{-}$, Corollary~\ref{en:cor:add} gives $\int|f|=\int f^{+}+\int f^{-}$, so
+\[
+f\text{ is integrable}\iff\int_{X}|f|\,d\mu<\infty.
+\]
+
+\begin{remark}\envlabel{en:rem:abs}
+\leavevmode
+\begin{enumerate}
+  \item The Lebesgue integral is an \textbf{absolute} integral: $f$ is integrable if and only if $|f|$ is. Hence there is no distinction between ``integrable'' and ``absolutely integrable'' in the Lebesgue theory; the difference between ``convergent'' and ``absolutely convergent'' only arises for improper Riemann integrals (\S\ref{en:sec:improper}).
+  \item If $f$ is integrable, it is finite a.e.\ by Corollary~\ref{en:cor:ae}(i). Modifying $f$ on a null set does not change its integral (Corollary~\ref{en:cor:ae}(iii)), so integrable functions may always be regarded as real-valued. In Article III, $L^{1}$ will be understood as a space of equivalence classes modulo a.e.\ equality, with norm $\|f\|_{1}=\int|f|\,d\mu$.
+  \item A complex-valued $f=u+iv$ is integrable if $u$ and $v$ are, and then $\int f=\int u+i\int v$.
+\end{enumerate}
+\end{remark}
+
+\begin{example}\envlabel{en:ex:int}
+\leavevmode
+\begin{enumerate}
+  \item The Dirichlet function satisfies $D=0$ a.e.\ on $[0,1]$, so $\int_{[0,1]}D\,dm=0$, even though $D\notin\mathcal{R}[0,1]$.
+  \item On $(0,1]$, $1/x\geq2^{k-1}$ on $(2^{-k},2^{-k+1}]$, an interval of measure $2^{-k}$. By Corollary~\ref{en:cor:measure},
+  \[
+  \int_{(0,1]}\frac{dx}{x}=\sum_{k=1}^{\infty}\int_{(2^{-k},2^{-k+1}]}\frac{dx}{x}\geq\sum_{k=1}^{\infty}\frac12=+\infty.
+  \]
+  The integral exists (and equals $+\infty$), but $1/x$ is not integrable.
+  \item On $[-1,1]\setminus\{0\}$ let $f(x)=1/x$. By (ii) and symmetry, $\int f^{+}=\int f^{-}=+\infty$, so $\int f\,dm$ is \textbf{undefined}, even though $f$ is odd and all its symmetric truncations have integral zero.
+\end{enumerate}
+\end{example}
+
+\subsection{Basic Properties}
+
+\begin{theorem}\envlabel{en:thm:basic}
+Let $f,g\in L^{1}(\mu)$ and $a,b\in\mathbb{R}$.
+\begin{enumerate}
+  \item (Linearity) $af+bg\in L^{1}(\mu)$ and $\int(af+bg)=a\int f+b\int g$.
+  \item (Monotonicity) If $f\leq g$ a.e., then $\int f\leq\int g$. In particular, $f=g$ a.e.\ implies $\int f=\int g$.
+  \item $\big|\int f\,d\mu\big|\leq\int|f|\,d\mu$.
+  \item If $E\in\mathcal{F}$ and $\mu(E)=0$, then $\int_{E}f=0$.
+  \item (Countable additivity over the domain) If $E_{1},E_{2},\ldots\in\mathcal{F}$ are \textbf{pairwise disjoint} and $E=\bigsqcup_{k}E_{k}$, then
+  \[
+  \int_{E}f\,d\mu=\sum_{k=1}^{\infty}\int_{E_{k}}f\,d\mu,
+  \]
+  and the series converges absolutely.
+  \item If $\mu(E)<\infty$ and $|f|\leq M$ a.e.\ on $E$, then $\big|\int_{E}f\big|\leq M\mu(E)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) By $|af+bg|\leq|a||f|+|b||g|$, Proposition~\ref{en:prop:posbasic} and Corollary~\ref{en:cor:add}, $\int|af+bg|\leq|a|\int|f|+|b|\int|g|<\infty$. Scalars: for $a\geq0$, $(af)^{\pm}=af^{\pm}$; for $a<0$, $(af)^{+}=|a|f^{-}$ and $(af)^{-}=|a|f^{+}$; in both cases Proposition~\ref{en:prop:posbasic}(ii) gives $\int af=a\int f$. Sums: let $h=f+g$. From
+\[
+h^{+}-h^{-}=f^{+}-f^{-}+g^{+}-g^{-}
+\]
+we get $h^{+}+f^{-}+g^{-}=h^{-}+f^{+}+g^{+}$, an identity between functions in $L^{+}$. By Corollary~\ref{en:cor:add},
+\[
+\int h^{+}+\int f^{-}+\int g^{-}=\int h^{-}+\int f^{+}+\int g^{+},
+\]
+and since all terms are finite we may rearrange to get $\int h=\int f+\int g$.
+
+(ii) $(g-f)^{-}=0$ a.e., so $\int(g-f)^{-}=0$ by Corollary~\ref{en:cor:ae}(ii); hence $\int(g-f)=\int(g-f)^{+}\geq0$, and we conclude by (i).
+
+(iii) $\big|\int f\big|=\big|\int f^{+}-\int f^{-}\big|\leq\int f^{+}+\int f^{-}=\int|f|$.
+
+(iv) $f^{\pm}\mathbf{1}_{E}=0$ a.e.
+
+(v) Apply Corollary~\ref{en:cor:measure} to $f^{+}$ and to $f^{-}$ to obtain two convergent series of non-negative terms, and subtract. Absolute convergence follows from $\sum_{k}\big|\int_{E_{k}}f\big|\leq\sum_{k}\int_{E_{k}}|f|=\int_{E}|f|<\infty$.
+
+(vi) $-M\mathbf{1}_{E}\leq f\mathbf{1}_{E}\leq M\mathbf{1}_{E}$ a.e.; apply (ii).
+\end{proof}
+
+\begin{remark}
+Linearity has to be proved directly from the definition of the integral (via the Monotone Convergence Theorem); it cannot be deduced from ``$L^{1}$ is a vector space'', since the closure of $L^{1}$ under addition itself depends on (i). Also, ``pairwise disjoint'' in (v) means $E_{i}\cap E_{j}=\varnothing$ for $i\neq j$, not $\bigcap_{k}E_{k}=\varnothing$; the latter is a much weaker condition and does not imply additivity.
+\end{remark}
+
+\section{Convergence Theorems}
+
+We want to know when
+\[
+\lim_{n\to\infty}\int_{X}f_{n}\,d\mu=\int_{X}\lim_{n\to\infty}f_{n}\,d\mu\;?
+\]
+Consider first three typical counterexamples in $(\mathbb{R},\mathcal{L},m)$. Each converges pointwise to $0$, yet every integral equals $1$:
+\begin{enumerate}
+  \item \textbf{escape by translation}: $f_{n}=\mathbf{1}_{[n,n+1]}$;
+  \item \textbf{escape by spreading}: $f_{n}=\frac1n\mathbf{1}_{[0,n]}$ (which even converges to $0$ uniformly);
+  \item \textbf{concentration}: $f_{n}=n\mathbf{1}_{(0,1/n)}$.
+\end{enumerate}
+In all three cases $\int\lim f_{n}=0<1=\lim\int f_{n}$: ``mass'' can be lost in the limit. Fatou's lemma below says that, for non-negative functions, mass can only be lost, never created.
+
+\subsection{The Monotone Convergence Theorem Revisited}
+
+Combining Theorem~\ref{en:thm:mct} with Corollary~\ref{en:cor:ae}(iv):
+
+\begin{theorem}[Monotone Convergence Theorem, a.e.\ version]\envlabel{en:thm:mct2}
+Let $f_{n},f$ be measurable, $0\leq f_{1}\leq f_{2}\leq\cdots$ a.e., and $f_{n}\to f$ a.e. Then $\int f_{n}\,d\mu\uparrow\int f\,d\mu$.
+\end{theorem}
+
+\begin{remark}\envlabel{en:rem:mct}
+Neither non-negativity nor monotonicity can be dropped.
+\begin{enumerate}
+  \item \textbf{Decreasing} sequences fail: $f_{n}=\mathbf{1}_{[n,\infty)}\downarrow0$, but $\int f_{n}=+\infty$ for all $n$.
+  \item \textbf{Increasing} sequences without a lower bound fail: $f_{n}=-\mathbf{1}_{[n,\infty)}\uparrow0$, but $\int f_{n}=-\infty$ for all $n$.
+\end{enumerate}
+\end{remark}
+
+To handle signed functions we first prove a lemma on ``integrable perturbations''.
+
+\begin{lemma}\envlabel{en:lem:perturb}
+Let $h:X\to\overline{\mathbb{R}}$ be measurable with $\int h^{-}<\infty$, and let $k\in L^{1}(\mu)$. Then $\int(h+k)$ is defined and
+\[
+\int(h+k)\,d\mu=\int h\,d\mu+\int k\,d\mu.
+\]
+\end{lemma}
+
+\begin{proof}
+$k$ is finite a.e., so $h+k$ is defined a.e. If $\int h^{+}<\infty$, then $h\in L^{1}$ and the claim is Theorem~\ref{en:thm:basic}(i). Suppose $\int h^{+}=\infty$. Since $(h+k)^{-}\leq h^{-}+k^{-}$, $\int(h+k)^{-}<\infty$. Moreover
+\[
+h^{+}=h+h^{-}\leq(h+k)^{+}+|k|+h^{-},
+\]
+so by Corollary~\ref{en:cor:add}, $\infty=\int h^{+}\leq\int(h+k)^{+}+\int|k|+\int h^{-}$, whence $\int(h+k)^{+}=\infty$. Both sides therefore equal $+\infty$.
+\end{proof}
+
+\begin{corollary}[Monotone convergence with an integrable bound]\envlabel{en:cor:mctgen}
+\leavevmode
+\begin{enumerate}
+  \item If $f_{n}\uparrow f$ a.e.\ and $\int f_{1}^{-}<\infty$, then $\int f_{n}\uparrow\int f$.
+  \item If $f_{n}\downarrow f$ a.e.\ and $\int f_{1}^{+}<\infty$, then $\int f_{n}\downarrow\int f$.
+\end{enumerate}
+\end{corollary}
+
+\begin{proof}
+(i) $f_{1}^{-}$ is integrable, hence finite a.e. Let $h_{n}=f_{n}+f_{1}^{-}$. Then $h_{n}\geq f_{1}+f_{1}^{-}\geq0$ a.e.\ and $h_{n}\uparrow f+f_{1}^{-}$ a.e.; by Theorem~\ref{en:thm:mct2}, $\int h_{n}\to\int(f+f_{1}^{-})$. Since $f_{n}^{-}\leq f_{1}^{-}$ and $f^{-}\leq f_{1}^{-}$, Lemma~\ref{en:lem:perturb} with $h=f_{n}$ (or $f$) and $k=f_{1}^{-}$ gives $\int h_{n}=\int f_{n}+\int f_{1}^{-}$ and $\int(f+f_{1}^{-})=\int f+\int f_{1}^{-}$. Cancel the finite number $\int f_{1}^{-}$. (ii) Apply (i) to $-f_{n}$.
+\end{proof}
+
+\subsection{Fatou's Lemma}
+
+\begin{theorem}[Fatou's lemma]\envlabel{en:thm:fatou}
+Let $f_{n}:X\to[0,+\infty]$ be measurable. Then
+\[
+\int_{X}\liminf_{n\to\infty}f_{n}\,d\mu\leq\liminf_{n\to\infty}\int_{X}f_{n}\,d\mu.
+\]
+\end{theorem}
+
+\begin{proof}
+Let $g_{k}=\inf_{n\geq k}f_{n}$. As the infimum of \textbf{countably} many measurable functions it is measurable by Proposition~\ref{en:prop:limits}; moreover $0\leq g_{1}\leq g_{2}\leq\cdots$ and $g_{k}\uparrow\liminf_{n}f_{n}$. Since $g_{k}\leq f_{n}$ for every $n\geq k$,
+\[
+\int g_{k}\leq\inf_{n\geq k}\int f_{n}.
+\]
+Applying the Monotone Convergence Theorem to $(g_{k})$,
+\[
+\int\liminf_{n\to\infty}f_{n}=\lim_{k\to\infty}\int g_{k}\leq\lim_{k\to\infty}\inf_{n\geq k}\int f_{n}=\liminf_{n\to\infty}\int f_{n}.
+\]
+\end{proof}
+
+The three examples at the beginning of this section show that the inequality may be strict. Since the Monotone Convergence Theorem only holds for non-negative functions (or functions with an integrable lower bound), the non-negativity hypothesis is indispensable.
+
+\begin{corollary}[Fatou's lemma with an integrable lower bound]\envlabel{en:cor:fatougen}
+Let $g\in L^{1}(\mu)$ and let $f_{n}$ be measurable with $f_{n}\geq g$ a.e.\ for all $n$. Then
+\[
+\int\liminf_{n\to\infty}f_{n}\,d\mu\leq\liminf_{n\to\infty}\int f_{n}\,d\mu.
+\]
+Dually, if $f_{n}\leq g$ a.e., then $\limsup_{n}\int f_{n}\leq\int\limsup_{n}f_{n}$.
+\end{corollary}
+
+\begin{proof}
+$g$ is finite a.e. Put $h_{n}=f_{n}-g\geq0$ a.e.; then $\liminf_{n}h_{n}=\liminf_{n}f_{n}-g$ a.e. By Lemma~\ref{en:lem:perturb} (with $h=h_{n}$ or $h=\liminf h_{n}$, and $k=g$), $\int f_{n}=\int h_{n}+\int g$ and $\int\liminf f_{n}=\int\liminf h_{n}+\int g$. Apply Fatou's lemma to $h_{n}$ (after modification on a null set to make them non-negative, which does not affect the integrals) and cancel the finite number $\int g$. For the dual statement apply the first part to $-f_{n}\geq-g$.
+\end{proof}
+
+\begin{remark}
+The lower bound $g$ need only be integrable and may take negative values; if $g\geq0$ is required, the statement is just Fatou's lemma itself. Without an integrable lower bound the conclusion may fail, even under pointwise convergence: on $(0,1)$ let $f_{n}=-n\mathbf{1}_{(0,1/n)}$. Then $f_{n}\to0$ pointwise and $\int f_{n}=-1$, whereas $\int\liminf f_{n}=0>-1$.
+\end{remark}
+
+\subsection{The Dominated Convergence Theorem}
+
+\begin{theorem}[Lebesgue's Dominated Convergence Theorem]\envlabel{en:thm:dct}
+Let $f_{n},f$ be measurable with $f_{n}\to f$ a.e., and suppose there is $g\in L^{1}(\mu)$ such that for all $n$
+\[
+|f_{n}|\leq g\qquad\text{a.e.}
+\]
+Then $f_{n},f\in L^{1}(\mu)$,
+\[
+\lim_{n\to\infty}\int_{X}|f_{n}-f|\,d\mu=0,\qquad\text{and hence}\qquad\lim_{n\to\infty}\int_{X}f_{n}\,d\mu=\int_{X}f\,d\mu.
+\]
+\end{theorem}
+
+\begin{proof}
+Passing to the limit, $|f|\leq g$ a.e., so $f_{n}$ and $f$ are integrable (after modification on a null set we may assume they are finite everywhere). Also $|f_{n}-f|\leq2g$ a.e., so $h_{n}=2g-|f_{n}-f|\geq0$ a.e.\ and $h_{n}\to2g$ a.e. By Fatou's lemma and linearity,
+\[
+\int2g\leq\liminf_{n\to\infty}\int\big(2g-|f_{n}-f|\big)=\int2g-\limsup_{n\to\infty}\int|f_{n}-f|.
+\]
+Since $\int2g<\infty$, $\limsup_{n}\int|f_{n}-f|\leq0$. Finally, by Theorem~\ref{en:thm:basic}(iii), $\big|\int f_{n}-\int f\big|\leq\int|f_{n}-f|\to0$.
+\end{proof}
+
+\begin{remark}\envlabel{en:rem:dct}
+\leavevmode
+\begin{enumerate}
+  \item Both the Monotone and the Dominated Convergence Theorems only require convergence almost everywhere, and neither contains the other: the former needs no dominating function and allows $\int f=+\infty$; the latter needs no monotonicity but requires a common integrable dominating function.
+  \item Domination cannot be dropped. None of the three examples at the beginning of this section admits an integrable dominating function; for $f_{n}=n\mathbf{1}_{(0,1/n)}$, for instance, $\sup_{n}f_{n}(x)\geq\frac1x-1$, which is not integrable on $(0,1)$.
+  \item Domination is sufficient but not necessary. On a finite measure space, a sequence of integrable functions converging in measure converges in $L^{1}$ if and only if it is uniformly integrable; this is the Vitali convergence theorem, treated in the supplementary article on uniform integrability.
+\end{enumerate}
+\end{remark}
+
+\begin{corollary}[Bounded Convergence Theorem]\envlabel{en:cor:bct}
+Let $\mu(X)<\infty$, $|f_{n}|\leq M$ a.e.\ and $f_{n}\to f$ a.e. Then $\int f_{n}\to\int f$.
+\end{corollary}
+
+\begin{proof}
+The constant $M$ is integrable on a finite measure space; apply the Dominated Convergence Theorem.
+\end{proof}
+
+\begin{corollary}[Term-by-term integration of series]\envlabel{en:cor:series2}
+Let the $f_{k}$ be measurable with $\sum_{k=1}^{\infty}\int|f_{k}|\,d\mu<\infty$. Then $\sum_{k}f_{k}(x)$ converges absolutely for almost every $x$, its sum is integrable, and
+\[
+\int_{X}\sum_{k=1}^{\infty}f_{k}\,d\mu=\sum_{k=1}^{\infty}\int_{X}f_{k}\,d\mu.
+\]
+\end{corollary}
+
+\begin{proof}
+Let $G=\sum_{k}|f_{k}|$. By Corollary~\ref{en:cor:series}, $\int G=\sum_{k}\int|f_{k}|<\infty$, so $G<\infty$ a.e., and at such points the series converges absolutely. The partial sums satisfy $\big|\sum_{k\leq n}f_{k}\big|\leq G$; apply the Dominated Convergence Theorem and linearity.
+\end{proof}
+
+\begin{example}
+We compute $\displaystyle\lim_{n\to\infty}\int_{0}^{n}\Big(1+\frac{x}{n}\Big)^{n}e^{-2x}\,dx$. Let $f_{n}(x)=(1+x/n)^{n}e^{-2x}\mathbf{1}_{[0,n]}(x)$. From $\log(1+t)\leq t$ we get $(1+x/n)^{n}\leq e^{x}$, hence
+\[
+0\leq f_{n}(x)\leq e^{-x},
+\]
+and $e^{-x}$ is integrable on $[0,\infty)$ with integral $1$ (Theorem~\ref{en:thm:improper}). For fixed $x\geq0$, $f_{n}(x)\to e^{x}e^{-2x}=e^{-x}$. By the Dominated Convergence Theorem the limit equals $\int_{[0,\infty)}e^{-x}\,dx=1$.
+\end{example}
+
+\subsection{Integrals Depending on a Parameter}
+
+\begin{theorem}\envlabel{en:thm:param}
+Let $I\subseteq\mathbb{R}$ be an open interval and $f:X\times I\to\mathbb{R}$ with $f(\cdot,t)\in L^{1}(\mu)$ for each $t\in I$. Put
+\[
+F(t)=\int_{X}f(x,t)\,d\mu(x).
+\]
+\begin{enumerate}
+  \item If $t\mapsto f(x,t)$ is continuous at $t_{0}$ for every $x$, and there is $g\in L^{1}(\mu)$ with $|f(x,t)|\leq g(x)$ for all $x,t$, then $F$ is continuous at $t_{0}$.
+  \item If $t\mapsto f(x,t)$ is differentiable on $I$ for every $x$, and there is $g\in L^{1}(\mu)$ with $|\partial_{t}f(x,t)|\leq g(x)$ for all $x,t$, then $F$ is differentiable on $I$ and
+  \[
+  F'(t)=\int_{X}\partial_{t}f(x,t)\,d\mu(x).
+  \]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) Let $t_{n}\to t_{0}$. Then $f(\cdot,t_{n})\to f(\cdot,t_{0})$ pointwise with domination by $g$, so $F(t_{n})\to F(t_{0})$ by the Dominated Convergence Theorem. By the sequential characterization of limits, $F$ is continuous at $t_{0}$.
+
+(ii) Fix $t\in I$ and $t_{n}\to t$ with $t_{n}\neq t$, and let
+\[
+h_{n}(x)=\frac{f(x,t_{n})-f(x,t)}{t_{n}-t}.
+\]
+Each $h_{n}$ is measurable and $h_{n}(x)\to\partial_{t}f(x,t)$, so $\partial_{t}f(\cdot,t)$ is measurable. By the mean value theorem $h_{n}(x)=\partial_{t}f(x,\tau_{n})$ for some $\tau_{n}=\tau_{n}(x)$ between $t$ and $t_{n}$, so $|h_{n}|\leq g$. By the Dominated Convergence Theorem,
+\[
+\frac{F(t_{n})-F(t)}{t_{n}-t}=\int_{X}h_{n}\,d\mu\to\int_{X}\partial_{t}f(x,t)\,d\mu(x).
+\]
+Since the sequence $t_{n}\to t$ was arbitrary, the claim follows.
+\end{proof}
+
+\section{Riemann and Lebesgue Integrals}
+
+\subsection{The Proper Riemann Integral}
+
+\begin{theorem}\envlabel{en:thm:RL}
+Let $f:[a,b]\to\mathbb{R}$ with $f\in\mathcal{R}[a,b]$. Then $f$ is Lebesgue measurable, $f\in L^{1}([a,b],m)$, and
+\[
+\int_{[a,b]}f\,dm=\int_{a}^{b}f(x)\,dx.
+\]
+\end{theorem}
+
+\begin{theorem}[Lebesgue's criterion]\envlabel{en:thm:criterion}
+Let $f:[a,b]\to\mathbb{R}$ be bounded and let $D_{f}$ be its set of discontinuities. Then
+\[
+f\in\mathcal{R}[a,b]\iff m(D_{f})=0;
+\]
+that is, a bounded function is Riemann integrable if and only if it is continuous almost everywhere.
+\end{theorem}
+
+Both theorems are proved with the same construction. Let $|f|\leq M$. For $k\geq0$ let $P_{k}$ be the dyadic partition
+\[
+x_{j}^{(k)}=a+j\,\frac{b-a}{2^{k}},\qquad j=0,1,\ldots,2^{k}.
+\]
+Then $P_{k+1}\supseteq P_{k}$ and $\|P_{k}\|=(b-a)2^{-k}\to0$. For $x\in(x_{j-1}^{(k)},x_{j}^{(k)}]$ define
+\[
+l_{k}(x)=\inf_{[x_{j-1}^{(k)},x_{j}^{(k)}]}f,\qquad u_{k}(x)=\sup_{[x_{j-1}^{(k)},x_{j}^{(k)}]}f,
+\]
+and put $l_{k}(a)=u_{k}(a)=f(a)$. The $l_{k},u_{k}$ are Borel measurable simple functions, $l_{k}\leq f\leq u_{k}$, and (points being null sets)
+\[
+\int_{[a,b]}l_{k}\,dm=L(f,P_{k}),\qquad\int_{[a,b]}u_{k}\,dm=U(f,P_{k}).
+\]
+Since $P_{k+1}$ refines $P_{k}$ and an infimum over a smaller interval can only be larger, $l_{k}\leq l_{k+1}$; similarly $u_{k+1}\leq u_{k}$. Let $l=\lim_{k}l_{k}$ and $u=\lim_{k}u_{k}$. These are Borel measurable, $|l|,|u|\leq M$, and $l\leq f\leq u$. By the Bounded Convergence Theorem (Corollary~\ref{en:cor:bct}),
+\[
+\int_{[a,b]}l\,dm=\lim_{k\to\infty}L(f,P_{k}),\qquad\int_{[a,b]}u\,dm=\lim_{k\to\infty}U(f,P_{k}).\tag{$\ast$}
+\]
+
+\begin{proof}[Proof of Theorem~\ref{en:thm:RL}]
+By Theorem~\ref{en:thm:darboux}, $U(f,P_{k})$ and $L(f,P_{k})$ both converge to $\int_{a}^{b}f(x)\,dx$. By $(\ast)$, $\int(u-l)\,dm=0$ with $u-l\geq0$, so $u=l$ a.e.\ (Corollary~\ref{en:cor:ae}(ii)). Since $l\leq f\leq u$, $f=l$ a.e. As $l$ is Borel measurable and $(\mathbb{R},\mathcal{L},m)$ is complete, $f$ is Lebesgue measurable by Proposition~\ref{en:prop:complete}. Being bounded on a set of finite measure, $f$ is integrable, and
+\[
+\int_{[a,b]}f\,dm=\int_{[a,b]}l\,dm=\lim_{k\to\infty}L(f,P_{k})=\int_{a}^{b}f(x)\,dx.
+\]
+\end{proof}
+
+\begin{lemma}\envlabel{en:lem:cont}
+Let $Z=\bigcup_{k}P_{k}$ (a countable set). For $x\in[a,b]\setminus Z$, $f$ is continuous at $x$ if and only if $u(x)=l(x)$.
+\end{lemma}
+
+\begin{proof}
+Since $x\notin Z$, for each $k$ the point $x$ lies in the interior of exactly one subinterval $J_{k}(x)$ of $P_{k}$, and $l_{k}(x)=\inf_{J_{k}(x)}f$, $u_{k}(x)=\sup_{J_{k}(x)}f$.
+
+($\Rightarrow$) Given $\varepsilon>0$, choose $\delta>0$ with $|f(y)-f(x)|<\varepsilon$ whenever $|y-x|<\delta$. If $\|P_{k}\|<\delta$, then $J_{k}(x)\subseteq(x-\delta,x+\delta)$, hence $u_{k}(x)-l_{k}(x)\leq2\varepsilon$. Thus $u(x)-l(x)\leq2\varepsilon$ for every $\varepsilon$.
+
+($\Leftarrow$) Given $\varepsilon>0$, since $u_{k}(x)-l_{k}(x)\downarrow u(x)-l(x)=0$, choose $k$ with $u_{k}(x)-l_{k}(x)<\varepsilon$. As $x$ is an interior point of $J_{k}(x)$, there is $\delta>0$ with $(x-\delta,x+\delta)\subseteq J_{k}(x)$. For such $y$, both $f(y)$ and $f(x)$ lie in $[l_{k}(x),u_{k}(x)]$, so $|f(y)-f(x)|<\varepsilon$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{en:thm:criterion}]
+($\Rightarrow$) By the proof of Theorem~\ref{en:thm:RL}, $u=l$ a.e. By Lemma~\ref{en:lem:cont}, $D_{f}\subseteq Z\cup\{u\neq l\}$, a union of two null sets.
+
+($\Leftarrow$) If $m(D_{f})=0$, then by Lemma~\ref{en:lem:cont} the set $\{u\neq l\}\subseteq D_{f}\cup Z$ is null, so $\int(u-l)\,dm=0$. By $(\ast)$, $U(f,P_{k})-L(f,P_{k})\to0$, and Theorem~\ref{en:thm:darboux} gives $f\in\mathcal{R}[a,b]$.
+\end{proof}
+
+\begin{remark}\envlabel{en:rem:riemann}
+\leavevmode
+\begin{enumerate}
+  \item Theorem~\ref{en:thm:RL} shows that the Lebesgue integral \textbf{is} an extension of the proper Riemann integral: $\mathcal{R}[a,b]\subseteq L^{1}([a,b])$ with the same integral. The boundedness assumption in Lebesgue's criterion is necessary: unbounded functions are never Riemann integrable (Proposition~\ref{en:prop:bdd}).
+  \item The Dirichlet function is discontinuous everywhere, hence not Riemann integrable, but it is Lebesgue integrable with integral $0$. Thomae's function ($1/q$ at a rational $p/q$ in lowest terms, $0$ at irrationals) is discontinuous exactly at the rationals, a countable set, and is therefore Riemann integrable.
+  \item Arzelà's theorem from Remark~\ref{en:rem:unif} is now immediate: if $f_{n},f\in\mathcal{R}[a,b]$, $|f_{n}|\leq M$ and $f_{n}\to f$ pointwise, then by Theorem~\ref{en:thm:RL} and the Bounded Convergence Theorem $\int_{a}^{b}f_{n}=\int_{[a,b]}f_{n}\,dm\to\int_{[a,b]}f\,dm=\int_{a}^{b}f$. In Example~\ref{en:ex:dirichlet}, the Bounded Convergence Theorem likewise gives $\int_{[0,1]}f_{n}\,dm\to\int_{[0,1]}D\,dm=0$, a limit that cannot even be expressed in the Riemann framework.
+  \item The sequence of Example~\ref{en:ex:incomplete} converges in $L^{1}([0,1])$ to $x^{-1/2}$: by the Monotone Convergence Theorem, $\int_{[0,1]}|f_{n}-x^{-1/2}|\,dm=\int(x^{-1/2}-f_{n})\,dm\to0$.
+\end{enumerate}
+\end{remark}
+
+\subsection{Improper Integrals}\label{en:sec:improper}
+
+\begin{definition}[Improper integrals]
+\leavevmode
+\begin{enumerate}
+  \item (Unbounded interval) Let $f:[a,\infty)\to\mathbb{R}$ with $f\in\mathcal{R}[a,b]$ for every $b>a$. If the limit
+  \[
+  \int_{a}^{\infty}f(x)\,dx=\lim_{b\to\infty}\int_{a}^{b}f(x)\,dx
+  \]
+  exists and is finite, the improper integral is said to converge.
+  \item (Unbounded integrand) Let $f:(a,b]\to\mathbb{R}$ be unbounded near $a$ with $f\in\mathcal{R}[c,b]$ for every $c\in(a,b)$. If $\lim_{c\to a^{+}}\int_{c}^{b}f(x)\,dx$ exists and is finite, the improper integral $\int_{a}^{b}f(x)\,dx$ is said to converge.
+\end{enumerate}
+If the corresponding improper integral of $|f|$ converges, the improper integral is \textbf{absolutely convergent}; if it converges but not absolutely, it is \textbf{conditionally convergent}.
+\end{definition}
+
+A singular point of the second kind is a point where the function is \textbf{unbounded}, not merely a point of discontinuity: a bounded function with finitely many jump discontinuities on a bounded interval is Riemann integrable in the proper sense (Theorem~\ref{en:thm:criterion}) and needs no improper integral. Note also that if $f\in\mathcal{R}[a,b]$, then $f^{\pm},|f|\in\mathcal{R}[a,b]$, since their discontinuities are discontinuities of $f$.
+
+\begin{theorem}\envlabel{en:thm:improper}
+Let $f:[a,\infty)\to\mathbb{R}$ be Riemann integrable on every $[a,b]$. Then $f$ is Lebesgue measurable on $[a,\infty)$, and:
+\begin{enumerate}
+  \item if $f\geq0$, then $\displaystyle\int_{[a,\infty)}f\,dm=\lim_{b\to\infty}\int_{a}^{b}f(x)\,dx\in[0,+\infty]$;
+  \item $f\in L^{1}([a,\infty))$ if and only if $\int_{a}^{\infty}|f(x)|\,dx$ converges, and then $\displaystyle\int_{[a,\infty)}f\,dm=\int_{a}^{\infty}f(x)\,dx$;
+  \item if $\int_{a}^{\infty}f(x)\,dx$ converges conditionally, then $\int_{[a,\infty)}f^{+}\,dm=\int_{[a,\infty)}f^{-}\,dm=+\infty$, so $\int_{[a,\infty)}f\,dm$ is undefined; nevertheless
+  \[
+  \int_{a}^{\infty}f(x)\,dx=\lim_{b\to\infty}\int_{[a,b]}f\,dm.
+  \]
+\end{enumerate}
+Entirely analogous statements hold for improper integrals of unbounded integrands.
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{en:thm:RL}, $f$ is Lebesgue measurable on each $[a,a+j]$, and $\{f>c\}=\bigcup_{j}\{x\in[a,a+j]:f(x)>c\}$, so $f$ is measurable on $[a,\infty)$.
+
+(i) Let $b_{n}\uparrow\infty$. Then $f\mathbf{1}_{[a,b_{n}]}\uparrow f\mathbf{1}_{[a,\infty)}$, and by the Monotone Convergence Theorem and Theorem~\ref{en:thm:RL},
+\[
+\int_{[a,\infty)}f\,dm=\lim_{n\to\infty}\int_{a}^{b_{n}}f(x)\,dx.
+\]
+Since $b\mapsto\int_{a}^{b}f$ is non-decreasing, the limit along sequences is the limit as $b\to\infty$.
+
+(ii) Applying (i) to $|f|$ gives $\int_{[a,\infty)}|f|\,dm=\lim_{b\to\infty}\int_{a}^{b}|f|$, which proves the first assertion. If $|f|$ is integrable, then for every $b_{n}\uparrow\infty$ we have $f\mathbf{1}_{[a,b_{n}]}\to f\mathbf{1}_{[a,\infty)}$ with domination by $|f|$, so by the Dominated Convergence Theorem
+\[
+\int_{a}^{b_{n}}f(x)\,dx=\int_{[a,b_{n}]}f\,dm\to\int_{[a,\infty)}f\,dm.
+\]
+
+(iii) By (ii), $\int|f|\,dm=\infty$, so at least one of $\int f^{+}$ and $\int f^{-}$ is $+\infty$. If only one were infinite, say $\int f^{-}\,dm<\infty=\int f^{+}\,dm$, then by (i) applied to $f^{+}$,
+\[
+\int_{a}^{b}f(x)\,dx=\int_{[a,b]}f^{+}\,dm-\int_{[a,b]}f^{-}\,dm\geq\int_{[a,b]}f^{+}\,dm-\int_{[a,\infty)}f^{-}\,dm\to+\infty,
+\]
+contradicting the convergence of the improper integral; the other case is symmetric. The last identity is just Theorem~\ref{en:thm:RL} together with the definition of the improper integral.
+\end{proof}
+
+\begin{example}[$\int_{0}^{\infty}\frac{\sin x}{x}\,dx$]\envlabel{en:ex:sinc}
+Let $f(x)=\frac{\sin x}{x}$ for $x>0$ and $f(0)=1$; $f$ is continuous.
+
+\textbf{(a) $f$ is not Lebesgue integrable.} On $[k\pi,(k+1)\pi]$ we have $|f(x)|\geq\frac{|\sin x|}{(k+1)\pi}$, and $\int_{k\pi}^{(k+1)\pi}|\sin x|\,dx=2$, so
+\[
+\int_{0}^{N\pi}|f(x)|\,dx\geq\frac{2}{\pi}\sum_{k=1}^{N}\frac1k\to\infty.
+\]
+
+\textbf{(b) The improper integral converges to $\pi/2$.} For $t\geq0$ and $0<R<S$ let $g(x)=e^{-tx}/x$, which is positive and decreasing on $(0,\infty)$. Integrating by parts,
+\[
+\int_{R}^{S}g(x)\sin x\,dx=\big[-g(x)\cos x\big]_{R}^{S}+\int_{R}^{S}g'(x)\cos x\,dx,
+\]
+and $\int_{R}^{S}|g'|=g(R)-g(S)$, so
+\[
+\Big|\int_{R}^{S}e^{-tx}\frac{\sin x}{x}\,dx\Big|\leq g(R)+g(S)+g(R)-g(S)=2g(R)\leq\frac{2}{R}.\tag{$\ast\ast$}
+\]
+By the Cauchy criterion the improper integral $I(t)=\int_{0}^{\infty}e^{-tx}f(x)\,dx$ converges for every $t\geq0$, and for all $t\geq0$,
+\[
+\Big|I(t)-\int_{0}^{R}e^{-tx}f(x)\,dx\Big|\leq\frac2R.
+\]
+For $t>0$, $|e^{-tx}f(x)|\leq e^{-tx}$ is integrable, so $I(t)=\int_{[0,\infty)}e^{-tx}f\,dm$ by Theorem~\ref{en:thm:improper}(ii). For $t\geq t_{0}>0$, $|\partial_{t}(e^{-tx}f(x))|=e^{-tx}|\sin x|\leq e^{-t_{0}x}$, and Theorem~\ref{en:thm:param}(ii) gives
+\[
+I'(t)=-\int_{0}^{\infty}e^{-tx}\sin x\,dx=-\frac{1}{1+t^{2}}\qquad(t>0),
+\]
+the last integral being computed from the antiderivative $-e^{-tx}(t\sin x+\cos x)/(1+t^{2})$. Hence $I(t)=C-\arctan t$. Moreover $|I(t)|\leq\int_{0}^{\infty}e^{-tx}\,dx=1/t\to0$ as $t\to\infty$, so $C=\pi/2$.
+
+Finally we show that $I$ is right-continuous at $t=0$. For every $R>0$,
+\[
+|I(t)-I(0)|\leq\Big|\int_{[0,R]}(e^{-tx}-1)f(x)\,dx\Big|+\frac4R.
+\]
+On $[0,R]$, $|(e^{-tx}-1)f(x)|\leq1$ and the integrand tends to $0$ pointwise as $t\to0^{+}$, so the first term tends to $0$ by the Bounded Convergence Theorem. Hence $\limsup_{t\to0^{+}}|I(t)-I(0)|\leq4/R$, and letting $R\to\infty$,
+\[
+\int_{0}^{\infty}\frac{\sin x}{x}\,dx=I(0)=\lim_{t\to0^{+}}\Big(\frac\pi2-\arctan t\Big)=\frac{\pi}{2}.
+\]
+
+\textbf{(c) Conclusion.} This is a conditionally convergent improper integral. By Theorem~\ref{en:thm:improper}(iii), $\int_{[0,\infty)}f^{+}\,dm=\int_{[0,\infty)}f^{-}\,dm=+\infty$ and the Lebesgue integral $\int_{[0,\infty)}f\,dm$ is undefined; all one can say is that
+\[
+\lim_{R\to\infty}\int_{[0,R]}\frac{\sin x}{x}\,dm=\frac\pi2.
+\]
+\end{example}
+
+\begin{example}[Unbounded integrands]\envlabel{en:ex:improper2}
+\leavevmode
+\begin{enumerate}
+  \item $\int_{0}^{1}x^{-1/2}\,dx=\lim_{c\to0^{+}}(2-2\sqrt{c})=2$. By the analogue of Theorem~\ref{en:thm:improper}(i) for unbounded integrands, $\int_{(0,1]}x^{-1/2}\,dm=2$, so $x^{-1/2}\in L^{1}((0,1])$.
+  \item Consider $\int_{0}^{1}\frac1x\sin\frac1x\,dx$. Substituting $x=1/s$,
+  \[
+  \int_{c}^{1}\frac1x\sin\frac1x\,dx=\int_{1}^{1/c}\frac{\sin s}{s}\,ds,\qquad\int_{c}^{1}\Big|\frac1x\sin\frac1x\Big|\,dx=\int_{1}^{1/c}\frac{|\sin s|}{s}\,ds.
+  \]
+  By Example~\ref{en:ex:sinc}, as $c\to0^{+}$ the former converges while the latter diverges. So this improper integral converges conditionally, and the integrand is not in $L^{1}((0,1])$.
+\end{enumerate}
+\end{example}
+
+\begin{remark}
+To summarize the relation between the Riemann and Lebesgue integrals:
+\begin{enumerate}
+  \item proper Riemann integrable $\Rightarrow$ Lebesgue integrable, with the same integral (Theorem~\ref{en:thm:RL});
+  \item absolutely convergent improper integral $\iff$ Lebesgue integrable, with the same integral (Theorem~\ref{en:thm:improper}(ii));
+  \item a conditionally convergent improper integral corresponds to no Lebesgue integral and can only be expressed as a limit of Lebesgue integrals (Theorem~\ref{en:thm:improper}(iii));
+  \item conversely, a Lebesgue integrable function (such as the Dirichlet function) may be neither properly nor improperly Riemann integrable.
+\end{enumerate}
+Hence ``every Riemann integrable function is Lebesgue integrable'' is correct for proper integrals; caution is needed only for conditionally convergent improper integrals.
+\end{remark}
+
+\section*{Summary}
+
+Starting from the Riemann integral, we saw that its main weakness concerns limits: limits of integrable functions need not be integrable, interchanging limits and integrals requires strong hypotheses such as uniform convergence, and the space of integrable functions with the integral distance is not complete.
+
+Lebesgue's remedy is to partition the range rather than the domain. This requires measurable functions, i.e.\ functions with $\{f>a\}\in\mathcal{F}$. Measurable functions are closed under algebraic operations and countable limits, can be approximated monotonically by simple functions, and (Lusin's theorem) are nearly continuous.
+
+The integral is defined in three steps:
+\begin{align*}
+&\text{simple functions:}&&\int\sum_{k}c_{k}\mathbf{1}_{A_{k}}\,d\mu=\sum_{k}c_{k}\mu(A_{k}),\\
+&\text{non-negative functions:}&&\int f\,d\mu=\sup_{0\leq\varphi\leq f}\int\varphi\,d\mu,\\
+&\text{general functions:}&&\int f\,d\mu=\int f^{+}\,d\mu-\int f^{-}\,d\mu.
+\end{align*}
+The Monotone Convergence Theorem is the cornerstone of the theory; from it we obtained additivity, term-by-term integration, Fatou's lemma and finally the Dominated Convergence Theorem:
+\[
+f_{n}\to f\ \text{a.e.},\quad|f_{n}|\leq g\in L^{1}\quad\Longrightarrow\quad\int|f_{n}-f|\,d\mu\to0.
+\]
+
+Finally, the Lebesgue integral does extend the proper Riemann integral and characterizes Riemann integrability as almost-everywhere continuity, while its relation to improper integrals is governed by absolute convergence.
+
+The next article (Article III) builds on this to study normed spaces and $L^{p}$ spaces, proving the inequalities of Hölder and Minkowski and the completeness of $L^{p}$ (the Riesz--Fischer theorem). The latter answers precisely the incompleteness of the space of Riemann integrable functions observed in \S1.3.
+
+\section*{References}
+
+\begin{enumerate}[label={[\arabic*]}]
+  \item G.~B.~Folland, \textit{Real Analysis: Modern Techniques and Their Applications}, 2nd ed., Wiley, 1999.
+  \item H.~L.~Royden, P.~M.~Fitzpatrick, \textit{Real Analysis}, 4th ed., Pearson, 2010.
+  \item E.~M.~Stein, R.~Shakarchi, \textit{Real Analysis: Measure Theory, Integration, and Hilbert Spaces}, Princeton University Press, 2005.
+  \item W.~Rudin, \textit{Principles of Mathematical Analysis}, 3rd ed., McGraw-Hill, 1976.
+  \item W.~Rudin, \textit{Real and Complex Analysis}, 3rd ed., McGraw-Hill, 1987.
+\end{enumerate}
+
+\end{document}

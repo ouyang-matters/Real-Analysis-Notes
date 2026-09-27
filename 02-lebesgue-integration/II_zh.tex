@@ -1,0 +1,1208 @@
+\documentclass[11pt]{article}
+
+\usepackage{CJKutf8}
+\usepackage{math_article}
+\usepackage{series_ra}
+
+% Local fixes for math_article.sty (2026/08/12):
+% (1) `before upper' is set after `attach title to upper' and discards the title;
+% (2) `use counter=mathenv' resets \themathenv to \arabic{mathenv};
+% (3) \label inside a box does not see the box counter, so use \envlabel.
+\tcbset{
+  math-env-base/.append style={before upper={\setlength{\parskip}{0.4em}\tcbtitle\par\smallskip}},
+  math-env-light/.append style={before upper={\setlength{\parskip}{0.4em}\tcbtitle\par\smallskip}},
+}
+\makeatletter
+\AtBeginDocument{\renewcommand{\themathenv}{\thesection.\arabic{mathenv}}}
+\newcommand{\envlabel}[1]{\protected@edef\@currentlabel{\themathenv}\label{#1}}
+\makeatother
+
+\renewcommand{\ArticleNumeral}{II}
+\renewcommand{\ArticleTitle}{可测函数与 Lebesgue 积分}
+\renewcommand{\ArticleAuthor}{Anqiao Ouyang}
+\renewcommand{\ArticleDate}{March 2024 \quad\textperiodcentered\quad Revised September 2026}
+
+\begin{document}
+\begin{CJK*}{UTF8}{gbsn}
+
+\maketitle
+
+\section*{引言}
+
+第 I 篇建立了测度空间 $(X,\mathcal{F},\mu)$ 的语言，并通过外测度与 Carathéodory 构造得到了 Lebesgue 测度空间 $(\mathbb{R}^{n},\mathcal{L},m)$。本篇的任务是在测度的基础上定义积分。
+
+我们熟悉的 Riemann 积分从\textbf{定义域}的分割出发：把 $[a,b]$ 切成小区间，在每个小区间上用一个函数值近似 $f$。Lebesgue 的想法是反过来分割\textbf{值域}：把 $f$ 的取值分成若干层
+\[
+y_{0}<y_{1}<\cdots<y_{N},
+\]
+再用测度去“称量”每一层对应的集合
+\[
+\{x:y_{k-1}\leq f(x)<y_{k}\}
+\]
+有多大。这样做的前提是这些集合必须可测，于是自然引出\textbf{可测函数}的概念。
+
+本篇的路线如下。第 1 节回顾 Riemann 积分，并说明它在极限运算下的局限；第 2 节讨论可测函数、几乎处处的概念、简单函数逼近与 Lusin 定理；第 3 节依次对非负简单函数、非负可测函数与一般可测函数定义 Lebesgue 积分，并建立其基本性质；第 4 节证明单调收敛定理、Fatou 引理与控制收敛定理；第 5 节说明 Lebesgue 积分如何推广了 Riemann 积分，以及它与反常积分之间的关系。
+
+赋范空间、$L^{p}$ 空间以及 Hölder、Minkowski 不等式留到第 III 篇讨论；一致可积性与 Vitali 收敛定理见补充篇《一致可积性与 $L^{1}$ 收敛》。
+
+\textbf{约定.} 全文 $(X,\mathcal{F},\mu)$ 表示一个测度空间。讨论 $\mathbb{R}^{n}$ 时，若无特别说明，测度总是 Lebesgue 测度 $m$，此时也把 $\int_{E}f\,dm$ 写作 $\int_{E}f(x)\,dx$。集合 $\{x\in X:f(x)>a\}$ 简记为 $\{f>a\}$。对 $A\subseteq X$，$\mathbf{1}_{A}$ 表示其示性函数：$x\in A$ 时 $\mathbf{1}_{A}(x)=1$，否则为 $0$。
+
+\section{Riemann 积分及其局限}
+
+\subsection{分割与 Riemann 和}
+
+\begin{definition}[分割与 Riemann 和]
+设 $a<b$。闭区间 $[a,b]$ 的一个\textbf{分割}是有限点集
+\[
+P=\{x_{0},x_{1},\ldots,x_{n}\},\qquad a=x_{0}<x_{1}<\cdots<x_{n}=b.
+\]
+记 $\Delta x_{i}=x_{i}-x_{i-1}$ $(1\leq i\leq n)$，称
+\[
+\|P\|=\max_{1\leq i\leq n}\Delta x_{i}
+\]
+为 $P$ 的\textbf{网格}（mesh）。若对每个 $i$ 取定 $\xi_{i}\in[x_{i-1},x_{i}]$，称 $\xi=(\xi_{1},\ldots,\xi_{n})$ 为 $P$ 的一组\textbf{标记}。对函数 $f:[a,b]\to\mathbb{R}$，称
+\[
+S(f,P,\xi)=\sum_{i=1}^{n}f(\xi_{i})\,\Delta x_{i}
+\]
+为相应的 \textbf{Riemann 和}。
+\end{definition}
+
+\begin{definition}[Riemann 可积]
+称 $f:[a,b]\to\mathbb{R}$ 在 $[a,b]$ 上 \textbf{Riemann 可积}，如果存在实数 $I$，使得对任意 $\varepsilon>0$，存在 $\delta>0$，对\textbf{任意}满足 $\|P\|<\delta$ 的分割 $P$ 以及 $P$ 的\textbf{任意}一组标记 $\xi$，都有
+\[
+|S(f,P,\xi)-I|<\varepsilon.
+\]
+这样的 $I$ 是唯一的，记为 $\displaystyle\int_{a}^{b}f(x)\,dx$，也写作 $\displaystyle I=\lim_{\|P\|\to0}S(f,P,\xi)$。$[a,b]$ 上全体 Riemann 可积函数记为 $\mathcal{R}[a,b]$。
+\end{definition}
+
+\begin{remark}
+这里的极限是关于网格 $\|P\|\to0$ 取的，并且对标记的选取是一致的。只让分点个数 $n\to\infty$ 是不够的。例如在 $[0,1]$ 上取 $f(x)=x$ 与分割
+\[
+P_{n}=\Big\{0,\tfrac{1}{2n},\tfrac{2}{2n},\ldots,\tfrac{n}{2n},1\Big\},
+\]
+分点个数趋于无穷，但子区间 $[\tfrac12,1]$ 从未被细分。在这个子区间上取 $\xi=\tfrac12$ 或 $\xi=1$，相应的 Riemann 和分别趋于 $\tfrac18+\tfrac14=\tfrac38$ 与 $\tfrac18+\tfrac12=\tfrac58$，而真正的积分值是 $\tfrac12$。
+\end{remark}
+
+\begin{proposition}\envlabel{zh:prop:bdd}
+若 $f\in\mathcal{R}[a,b]$，则 $f$ 在 $[a,b]$ 上有界。
+\end{proposition}
+
+\begin{proof}[证明]
+取 $\varepsilon=1$ 及相应的 $\delta$，并固定一个 $\|P\|<\delta$ 的分割 $P$。若 $f$ 无界，则 $f$ 在某个子区间 $[x_{j-1},x_{j}]$ 上无界。固定其余子区间上的标记而只改变 $\xi_{j}$，Riemann 和改变 $f(\xi_{j})\Delta x_{j}$，这可以任意大，与 $|S(f,P,\xi)-I|<1$ 对所有标记成立矛盾。
+\end{proof}
+
+\subsection{Darboux 和}
+
+\begin{definition}[Darboux 和]
+设 $f$ 在 $[a,b]$ 上有界，$P$ 为分割。记
+\[
+M_{i}=\sup_{[x_{i-1},x_{i}]}f,\qquad m_{i}=\inf_{[x_{i-1},x_{i}]}f,
+\]
+称
+\[
+U(f,P)=\sum_{i=1}^{n}M_{i}\Delta x_{i},\qquad L(f,P)=\sum_{i=1}^{n}m_{i}\Delta x_{i}
+\]
+为 $f$ 关于 $P$ 的 \textbf{Darboux 上和}与\textbf{下和}。
+\end{definition}
+
+显然对任意标记 $\xi$ 有 $L(f,P)\leq S(f,P,\xi)\leq U(f,P)$，并且
+\[
+U(f,P)=\sup_{\xi}S(f,P,\xi),\qquad L(f,P)=\inf_{\xi}S(f,P,\xi).
+\]
+
+\begin{lemma}\envlabel{zh:lem:refine}
+设 $f$ 有界。
+\begin{enumerate}
+  \item 若分割 $Q\supseteq P$（称 $Q$ 是 $P$ 的\textbf{加细}），则 $L(f,P)\leq L(f,Q)\leq U(f,Q)\leq U(f,P)$。
+  \item 对任意两个分割 $P,P'$，有 $L(f,P)\leq U(f,P')$。
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}[证明]
+(i) 只需考虑在某个子区间 $[x_{j-1},x_{j}]$ 内部添加一个点 $y$ 的情形。$f$ 在 $[x_{j-1},y]$ 与 $[y,x_{j}]$ 上的上确界都不超过 $M_{j}$，因此上和不增；同理下和不减。(ii) 由 (i)，$L(f,P)\leq L(f,P\cup P')\leq U(f,P\cup P')\leq U(f,P')$。
+\end{proof}
+
+\begin{lemma}\envlabel{zh:lem:mesh}
+设 $|f|\leq M$，$Q$ 是一个分割，其内部分点（即 $a,b$ 以外的分点）有 $N$ 个。则对任意分割 $P$，
+\[
+U(f,P)-L(f,P)\leq U(f,Q)-L(f,Q)+4MN\|P\|.
+\]
+\end{lemma}
+
+\begin{proof}[证明]
+把 $Q$ 的内部分点逐个加入 $P$，得到 $P\cup Q$。每加入一个点 $y$，它落在当前分割的某个子区间 $J$ 中，且 $|J|\leq\|P\|$。上和的变化量为
+\[
+0\leq \sup_{J}f\cdot|J|-\big(\sup_{J'}f\cdot|J'|+\sup_{J''}f\cdot|J''|\big)\leq 2M|J|\leq 2M\|P\|,
+\]
+其中 $J',J''$ 是 $J$ 被 $y$ 分成的两段。因此 $U(f,P)\leq U(f,P\cup Q)+2MN\|P\|$，同理 $L(f,P)\geq L(f,P\cup Q)-2MN\|P\|$。再由引理~\ref{zh:lem:refine}(i)，$U(f,P\cup Q)-L(f,P\cup Q)\leq U(f,Q)-L(f,Q)$。三式合并即得。
+\end{proof}
+
+\begin{theorem}[Darboux 判据]\envlabel{zh:thm:darboux}
+设 $f$ 在 $[a,b]$ 上有界。则以下两条等价：
+\begin{enumerate}
+  \item $f\in\mathcal{R}[a,b]$；
+  \item 对任意 $\varepsilon>0$，存在分割 $Q$ 使 $U(f,Q)-L(f,Q)<\varepsilon$。
+\end{enumerate}
+此时
+\[
+\int_{a}^{b}f(x)\,dx=\inf_{P}U(f,P)=\sup_{P}L(f,P),
+\]
+并且对任意满足 $\|P_{k}\|\to0$ 的分割序列，$U(f,P_{k})$ 与 $L(f,P_{k})$ 都收敛到 $\int_{a}^{b}f(x)\,dx$。
+\end{theorem}
+
+\begin{proof}[证明]
+(i)$\Rightarrow$(ii)：记 $I=\int_{a}^{b}f$。给定 $\varepsilon>0$ 取定义中的 $\delta$。当 $\|P\|<\delta$ 时，所有 Riemann 和都落在 $(I-\varepsilon,I+\varepsilon)$ 中，对标记取上、下确界得
+\[
+I-\varepsilon\leq L(f,P)\leq U(f,P)\leq I+\varepsilon.
+\]
+这给出 (ii)，也给出 $\|P_{k}\|\to0$ 时 $U(f,P_{k}),L(f,P_{k})\to I$。再结合引理~\ref{zh:lem:refine}(ii) 可得 $\sup_{P}L=\inf_{P}U=I$。
+
+(ii)$\Rightarrow$(i)：记 $I_{*}=\sup_{P}L(f,P)$，$I^{*}=\inf_{P}U(f,P)$。由引理~\ref{zh:lem:refine}(ii)，$I_{*}\leq I^{*}$；由 (ii)，$I^{*}-I_{*}<\varepsilon$ 对一切 $\varepsilon$ 成立，故二者相等，记为 $I$。设 $|f|\leq M$。给定 $\varepsilon>0$，取分割 $Q$ 使 $U(f,Q)-L(f,Q)<\varepsilon$，设其有 $N$ 个内部分点，令 $\delta=\varepsilon/(4MN+1)$。由引理~\ref{zh:lem:mesh}，当 $\|P\|<\delta$ 时 $U(f,P)-L(f,P)<2\varepsilon$。由于 $I$ 与 $S(f,P,\xi)$ 都落在 $[L(f,P),U(f,P)]$ 中，
+\[
+|S(f,P,\xi)-I|\leq U(f,P)-L(f,P)<2\varepsilon.
+\]
+故 $f\in\mathcal{R}[a,b]$ 且积分为 $I$。
+\end{proof}
+
+\begin{example}
+连续函数 $f\in C[a,b]$ Riemann 可积：$f$ 在紧区间上一致连续，给定 $\varepsilon>0$，存在 $\delta>0$ 使 $|x-y|<\delta$ 时 $|f(x)-f(y)|<\varepsilon$；当 $\|P\|<\delta$ 时每个 $M_{i}-m_{i}\leq\varepsilon$，从而 $U(f,P)-L(f,P)\leq\varepsilon(b-a)$。
+\end{example}
+
+\subsection{Riemann 积分的局限}
+
+Riemann 积分对连续函数工作得很好，但一旦涉及极限运算，它的缺陷就会显露出来。
+
+\textbf{(1) 极限运算不封闭.}
+
+\begin{example}\envlabel{zh:ex:dirichlet}
+把 $[0,1]\cap\mathbb{Q}$ 排成一列 $r_{1},r_{2},\ldots$，令
+\[
+f_{n}=\mathbf{1}_{\{r_{1},\ldots,r_{n}\}}.
+\]
+对任意分割 $P$，每个点 $r_{k}$ 至多属于两个子区间，故 $L(f_{n},P)=0$，$U(f_{n},P)\leq2n\|P\|$。由定理~\ref{zh:thm:darboux}，$f_{n}\in\mathcal{R}[0,1]$ 且 $\int_{0}^{1}f_{n}=0$。但 $f_{n}$ 单调递增地逐点收敛到 Dirichlet 函数
+\[
+D=\mathbf{1}_{\mathbb{Q}\cap[0,1]},
+\]
+而任何子区间都同时含有有理数与无理数，所以对一切分割 $U(D,P)=1$，$L(D,P)=0$，$D\notin\mathcal{R}[0,1]$。
+
+因此，即使是一列一致有界、单调递增的 Riemann 可积函数，其逐点极限也可能不再 Riemann 可积。
+\end{example}
+
+\textbf{(2) 积分与极限交换.} 在 Riemann 理论中，最常用的交换条件是一致收敛。
+
+\begin{proposition}\envlabel{zh:prop:unif}
+设 $f_{n}\in\mathcal{R}[a,b]$，且 $f_{n}\to f$ 在 $[a,b]$ 上一致收敛。则 $f\in\mathcal{R}[a,b]$，且
+\[
+\lim_{n\to\infty}\int_{a}^{b}f_{n}(x)\,dx=\int_{a}^{b}f(x)\,dx.
+\]
+\end{proposition}
+
+\begin{proof}[证明]
+给定 $\varepsilon>0$，取 $n$ 使 $\sup_{[a,b]}|f_{n}-f|<\varepsilon$。则 $f$ 有界，且对任意分割 $P$，
+\[
+U(f,P)-L(f,P)\leq U(f_{n},P)-L(f_{n},P)+2\varepsilon(b-a).
+\]
+对 $f_{n}$ 选取分割使右端第一项小于 $\varepsilon$，由定理~\ref{zh:thm:darboux} 得 $f\in\mathcal{R}[a,b]$。又对任意 $P,\xi$，$|S(f_{n},P,\xi)-S(f,P,\xi)|\leq\varepsilon(b-a)$，令 $\|P\|\to0$ 得 $\big|\int_{a}^{b}f_{n}-\int_{a}^{b}f\big|\leq\varepsilon(b-a)$。
+\end{proof}
+
+\begin{remark}\envlabel{zh:rem:unif}
+一致收敛只是\textbf{充分}条件，并非必要条件。例如在 $[0,1]$ 上 $f_{n}(x)=x^{n}$ 逐点收敛到 $f=\mathbf{1}_{\{1\}}$，收敛不一致，但
+\[
+\int_{0}^{1}x^{n}\,dx=\frac{1}{n+1}\to0=\int_{0}^{1}f(x)\,dx.
+\]
+经典的 Arzelà 定理断言：若 $f_{n},f\in\mathcal{R}[a,b]$ 一致有界且 $f_{n}\to f$ 逐点收敛，则积分收敛。这个结论在 Riemann 框架内证明相当费力，而在 Lebesgue 理论中它是控制收敛定理的直接推论（见注~\ref{zh:rem:riemann}）。Riemann 理论真正的困难在于，必须\textbf{预先知道}极限函数 $f$ Riemann 可积，而例~\ref{zh:ex:dirichlet} 说明这一点无法从 $f_{n}$ 的可积性得到。
+\end{remark}
+
+\textbf{(3) 不完备性.} 对 $f,g\in\mathcal{R}[a,b]$，令
+\[
+d_{1}(f,g)=\int_{a}^{b}|f(x)-g(x)|\,dx.
+\]
+（由定理~\ref{zh:thm:darboux} 易知 $|f-g|\in\mathcal{R}[a,b]$。）$d_{1}$ 对称且满足三角不等式，但 $d_{1}(f,g)=0$ 并不能推出 $f=g$：只改变一个点的函数值不影响积分。因此 $d_{1}$ 只是一个\textbf{伪度量}，要得到度量空间，需要把 $d_{1}(f,g)=0$ 的函数视为同一个元素。然而即使这样，得到的空间仍然不完备。
+
+\begin{example}\envlabel{zh:ex:incomplete}
+在 $[0,1]$ 上令 $f_{n}(x)=\min\{n,x^{-1/2}\}$（约定 $f_{n}(0)=n$）。每个 $f_{n}$ 连续，且
+\[
+\int_{0}^{1}f_{n}(x)\,dx=n\cdot\frac{1}{n^{2}}+\int_{1/n^{2}}^{1}x^{-1/2}\,dx=2-\frac1n.
+\]
+当 $m>n$ 时 $f_{m}\geq f_{n}$，于是
+\[
+d_{1}(f_{m},f_{n})=\int_{0}^{1}(f_{m}-f_{n})\,dx=\frac1n-\frac1m<\frac1n,
+\]
+所以 $(f_{n})$ 是 Cauchy 序列。
+
+假设存在 $g\in\mathcal{R}[0,1]$ 使 $d_{1}(f_{n},g)\to0$。由命题~\ref{zh:prop:bdd}，存在 $M$ 使 $|g|\leq M$。令 $c=(M+1)^{-2}$。当 $n\geq M+1$ 时，对 $x\in[0,c]$ 有 $f_{n}(x)\geq M+1$，从而 $|f_{n}-g|\geq1$，于是
+\[
+d_{1}(f_{n},g)\geq c>0\qquad(n\geq M+1),
+\]
+矛盾。故这个 Cauchy 序列在 $\mathcal{R}[0,1]$ 中没有极限。
+\end{example}
+
+它的“极限”应当是无界函数 $x^{-1/2}$，而这个函数不在 $\mathcal{R}[0,1]$ 中。把 $(\mathcal{R}[a,b],d_{1})$ 完备化，得到的正是第 III 篇将讨论的 $L^{1}$ 空间。
+
+\textbf{(4) 无界函数与无穷区间.} Riemann 积分只对有界区间上的有界函数定义；对 $\int_{0}^{1}x^{-1/2}\,dx$ 或 $\int_{0}^{\infty}e^{-x}\,dx$ 这样的积分，只能借助额外的极限过程定义为反常积分，而这类积分的性质并不稳定（见 \S\ref{zh:sec:improper}）。
+
+\subsection{Lebesgue 的思路}
+
+设 $f\geq0$ 有界。与其分割定义域，不如分割值域：取 $0=y_{0}<y_{1}<\cdots<y_{N}$ 覆盖 $f$ 的值域，令
+\[
+E_{k}=\{y_{k-1}\leq f<y_{k}\},
+\]
+并用
+\[
+\sum_{k=1}^{N}y_{k-1}\,\mu(E_{k})
+\]
+从下方逼近“$f$ 的积分”。这种和的意义只依赖于每一层集合的测度，而不依赖于这些集合在定义域中是否由区间组成。它要求每个 $E_{k}$ 都可测。下一节就从这一要求出发。
+
+还需要纠正一种常见的误解：Lebesgue 积分确实是（常义）Riemann 积分的推广。每个 Riemann 可积函数都 Lebesgue 可积，并且两个积分相等（定理~\ref{zh:thm:RL}）。二者之间真正不相容的只是某些条件收敛的\textbf{反常}积分（\S\ref{zh:sec:improper}）。
+
+\section{可测函数}
+
+\subsection{定义}
+
+我们使用\textbf{广义实数轴} $\overline{\mathbb{R}}=[-\infty,+\infty]$，其上的序与运算约定为：对 $a>-\infty$，$a+(+\infty)=+\infty$；对 $a\in(0,+\infty]$，$a\cdot(+\infty)=+\infty$；以及
+\[
+0\cdot(\pm\infty)=0.
+\]
+表达式 $(+\infty)-(+\infty)$ 没有定义。
+
+\begin{definition}[可测函数]
+设 $(X,\mathcal{F})$ 为可测空间，$E\in\mathcal{F}$。函数 $f:E\to\overline{\mathbb{R}}$ 称为 \textbf{$\mathcal{F}$-可测}的（简称\textbf{可测}），如果
+\[
+\{x\in E:f(x)>a\}\in\mathcal{F}\qquad\text{对一切 }a\in\mathbb{R}.
+\]
+当 $(X,\mathcal{F})=(\mathbb{R}^{n},\mathcal{L})$ 时称 $f$ 为 \textbf{Lebesgue 可测函数}；当 $\mathcal{F}=\mathcal{B}(\mathbb{R}^{n})$ 时称 $f$ 为 \textbf{Borel 可测函数}。
+\end{definition}
+
+由于 $\mathcal{B}(\mathbb{R}^{n})\subseteq\mathcal{L}(\mathbb{R}^{n})$（第 I 篇 \S4.5），Borel 可测函数都是 Lebesgue 可测的。
+
+\begin{proposition}\envlabel{zh:prop:equiv}
+对 $f:E\to\overline{\mathbb{R}}$，以下条件等价：
+\begin{enumerate}
+  \item $\{f>a\}\in\mathcal{F}$ 对一切 $a\in\mathbb{R}$；
+  \item $\{f\geq a\}\in\mathcal{F}$ 对一切 $a\in\mathbb{R}$；
+  \item $\{f<a\}\in\mathcal{F}$ 对一切 $a\in\mathbb{R}$；
+  \item $\{f\leq a\}\in\mathcal{F}$ 对一切 $a\in\mathbb{R}$。
+\end{enumerate}
+此时 $\{f=+\infty\}$、$\{f=-\infty\}$ 以及 $\{f=a\}$ $(a\in\mathbb{R})$ 都属于 $\mathcal{F}$。
+\end{proposition}
+
+\begin{proof}[证明]
+利用 $\sigma$-代数对可数交与补集封闭：
+\[
+\{f\geq a\}=\bigcap_{k=1}^{\infty}\Big\{f>a-\frac1k\Big\},\quad
+\{f<a\}=E\setminus\{f\geq a\},\quad
+\{f\leq a\}=\bigcap_{k=1}^{\infty}\Big\{f<a+\frac1k\Big\},
+\]
+以及 $\{f>a\}=E\setminus\{f\leq a\}$，得到 (i)$\Rightarrow$(ii)$\Rightarrow$(iii)$\Rightarrow$(iv)$\Rightarrow$(i)。最后，
+\[
+\{f=+\infty\}=\bigcap_{k}\{f>k\},\quad \{f=-\infty\}=\bigcap_{k}\{f<-k\},\quad \{f=a\}=\{f\geq a\}\cap\{f\leq a\}.
+\]
+\end{proof}
+
+\begin{proposition}\envlabel{zh:prop:borel}
+实值函数 $f:E\to\mathbb{R}$ 可测，当且仅当对每个 Borel 集 $B\subseteq\mathbb{R}$ 都有 $f^{-1}(B)\in\mathcal{F}$。
+\end{proposition}
+
+\begin{proof}[证明]
+充分性显然（取 $B=(a,\infty)$）。必要性：令
+\[
+\mathcal{A}=\{B\subseteq\mathbb{R}:f^{-1}(B)\in\mathcal{F}\}.
+\]
+由于 $f^{-1}(\mathbb{R}\setminus B)=E\setminus f^{-1}(B)$，$f^{-1}\big(\bigcup_{k}B_{k}\big)=\bigcup_{k}f^{-1}(B_{k})$，$\mathcal{A}$ 是 $\sigma$-代数。它包含所有 $(a,\infty)$，因此包含
+\[
+(a,b)=(a,\infty)\setminus\bigcap_{k}\Big(b-\frac1k,\infty\Big),
+\]
+即包含所有开区间。由第 I 篇 \S2.5，开区间生成 $\mathcal{B}(\mathbb{R})$，故 $\mathcal{B}(\mathbb{R})\subseteq\mathcal{A}$。
+\end{proof}
+
+\begin{example}
+\leavevmode
+\begin{enumerate}
+  \item 示性函数 $\mathbf{1}_{A}$ 可测当且仅当 $A\in\mathcal{F}$：集合 $\{\mathbf{1}_{A}>a\}$ 只可能是 $X$、$A$ 或 $\varnothing$。
+  \item 连续函数 $f:\mathbb{R}^{n}\to\mathbb{R}$ 是 Borel 可测的：$\{f>a\}=f^{-1}((a,\infty))$ 是开集。
+  \item 单调函数 $f:\mathbb{R}\to\mathbb{R}$ 是 Borel 可测的：$\{f>a\}$ 是一个区间（可能为空或无界）。
+\end{enumerate}
+\end{example}
+
+\subsection{可测函数的运算}
+
+\begin{proposition}\envlabel{zh:prop:alg}
+设 $f,g:E\to\mathbb{R}$ 可测，$c\in\mathbb{R}$，$\varphi:\mathbb{R}\to\mathbb{R}$ 是 Borel 可测函数（例如连续函数）。则
+\[
+f+g,\quad cf,\quad fg,\quad \max\{f,g\},\quad \min\{f,g\},\quad |f|,\quad \varphi\circ f
+\]
+都可测。
+\end{proposition}
+
+\begin{proof}[证明]
+若 $f(x)+g(x)>a$，则 $f(x)>a-g(x)$，可取有理数 $q$ 使 $a-g(x)<q<f(x)$。因此
+\[
+\{f+g>a\}=\bigcup_{q\in\mathbb{Q}}\big(\{f>q\}\cap\{g>a-q\}\big)\in\mathcal{F}.
+\]
+当 $c>0$ 时 $\{cf>a\}=\{f>a/c\}$，$c<0$ 时 $\{cf>a\}=\{f<a/c\}$，$c=0$ 时 $cf$ 为常数。对 $\varphi\circ f$，由命题~\ref{zh:prop:borel}，
+\[
+\{\varphi\circ f>a\}=f^{-1}\big(\varphi^{-1}((a,\infty))\big)\in\mathcal{F}.
+\]
+特别地 $f^{2}$ 可测，从而
+\[
+fg=\tfrac14\big((f+g)^{2}-(f-g)^{2}\big)
+\]
+可测。最后 $\{\max\{f,g\}>a\}=\{f>a\}\cup\{g>a\}$，$\{\min\{f,g\}>a\}=\{f>a\}\cap\{g>a\}$，$|f|=\max\{f,-f\}$。
+\end{proof}
+
+\begin{remark}
+次序不能颠倒：若 $\varphi$ 只是 Lebesgue 可测而 $f$ 连续，$\varphi\circ f$ 不一定 Lebesgue 可测。原因是 Lebesgue 可测集在连续映射下的原像未必 Lebesgue 可测。命题中要求 $\varphi$ 是 Borel 可测的，正是为了避开这个问题。
+\end{remark}
+
+\begin{proposition}\envlabel{zh:prop:limits}
+设 $f_{n}:E\to\overline{\mathbb{R}}$ $(n\geq1)$ 可测。则
+\[
+\sup_{n}f_{n},\qquad\inf_{n}f_{n},\qquad\limsup_{n\to\infty}f_{n},\qquad\liminf_{n\to\infty}f_{n}
+\]
+都可测；极限存在的点集
+\[
+C=\Big\{x\in E:\lim_{n\to\infty}f_{n}(x)\text{ 在 }\overline{\mathbb{R}}\text{ 中存在}\Big\}
+\]
+属于 $\mathcal{F}$；若 $f_{n}$ 在 $E$ 上逐点收敛到 $f$，则 $f$ 可测。
+\end{proposition}
+
+\begin{proof}[证明]
+$\{\sup_{n}f_{n}>a\}=\bigcup_{n}\{f_{n}>a\}$，且 $\inf_{n}f_{n}=-\sup_{n}(-f_{n})$。于是
+\[
+\limsup_{n\to\infty}f_{n}=\inf_{k\geq1}\sup_{n\geq k}f_{n},\qquad \liminf_{n\to\infty}f_{n}=\sup_{k\geq1}\inf_{n\geq k}f_{n}
+\]
+可测。$\liminf f_{n}(x)<\limsup f_{n}(x)$ 当且仅当存在有理数 $q$ 严格位于二者之间，故
+\[
+E\setminus C=\bigcup_{q\in\mathbb{Q}}\Big(\big\{\liminf_{n}f_{n}<q\big\}\cap\big\{\limsup_{n}f_{n}>q\big\}\Big)\in\mathcal{F}.
+\]
+若 $f_{n}\to f$ 逐点成立，则 $f=\limsup_{n}f_{n}$。
+\end{proof}
+
+对可测函数 $f:E\to\overline{\mathbb{R}}$，定义其\textbf{正部}与\textbf{负部}
+\[
+f^{+}=\max\{f,0\},\qquad f^{-}=\max\{-f,0\}.
+\]
+它们都是非负可测函数，在每一点至多一个非零，并且
+\[
+f=f^{+}-f^{-},\qquad |f|=f^{+}+f^{-}.
+\]
+
+\subsection{几乎处处}
+
+\begin{definition}[几乎处处]
+设 $P(x)$ 是关于 $x\in E$ 的一个命题。若存在 $N\in\mathcal{F}$，$\mu(N)=0$，使得 $P(x)$ 对一切 $x\in E\setminus N$ 成立，则称 $P$ 在 $E$ 上 \textbf{$\mu$-几乎处处}（almost everywhere，简记 a.e.）成立。
+\end{definition}
+
+注意，定义只要求使 $P$ 不成立的点包含在某个零测集中，并不要求这个点集本身可测。常见的用法包括 $f=g$ a.e.、$f_{n}\to f$ a.e.、$f<\infty$ a.e.。
+
+\begin{example}\envlabel{zh:ex:ae}
+\leavevmode
+\begin{enumerate}
+  \item 考虑
+  \[
+  f(x)=\begin{cases}2x,&x<2,\\1,&x=2,\\x^{3},&x>2.\end{cases}
+  \]
+  $f$ 只在 $x=2$ 处间断，而 $m(\{2\})=0$，所以 $f$ 在 $\mathbb{R}$ 上几乎处处连续。但 $f$ \textbf{不}几乎处处等于任何连续函数：若 $g$ 连续且 $g=f$ a.e.，则 $g(x)=2x$ 在 $(-\infty,2)$ 的一个稠密子集上成立（零测集的补集是稠密的），由连续性 $g(x)=2x$ 对一切 $x<2$ 成立；同理 $g(x)=x^{3}$ 对一切 $x>2$ 成立。于是 $g(2)=4=8$，矛盾。
+  \item Dirichlet 函数 $D=\mathbf{1}_{\mathbb{Q}}$ 满足 $D=0$ a.e.（因为 $m(\mathbb{Q})=0$），即它几乎处处等于连续函数 $0$，但 $D$ 处处不连续。
+\end{enumerate}
+所以“几乎处处连续”与“几乎处处等于一个连续函数”是两个不同的概念，互不蕴含。
+\end{example}
+
+\begin{proposition}\envlabel{zh:prop:complete}
+设测度空间 $(X,\mathcal{F},\mu)$ 完备（例如 $(\mathbb{R}^{n},\mathcal{L},m)$）。
+\begin{enumerate}
+  \item 若 $f$ 可测且 $g=f$ a.e.，则 $g$ 可测。
+  \item 若 $f_{n}$ 可测且 $f_{n}\to f$ a.e.，则 $f$ 可测。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[证明]
+(i) 取零测集 $N$ 使 $f=g$ 在 $N^{c}$ 上成立。则
+\[
+\{g>a\}=\big(\{f>a\}\setminus N\big)\cup\big(\{g>a\}\cap N\big).
+\]
+第一项属于 $\mathcal{F}$；第二项是零测集 $N$ 的子集，由完备性属于 $\mathcal{F}$。(ii) 由命题~\ref{zh:prop:limits}，$h=\limsup_{n}f_{n}$ 可测，而 $f=h$ a.e.，再用 (i)。
+\end{proof}
+
+\begin{remark}
+完备性不可省略。由第 I 篇 \S4.5，Cantor 集 $C$ 存在不是 Borel 集的子集 $A$。于是 $\mathbf{1}_{A}=0$ $m$-a.e.，但 $\mathbf{1}_{A}$ 不是 Borel 可测的。这是我们偏好使用完备的 $(\mathbb{R}^{n},\mathcal{L},m)$ 的原因之一。在一般测度空间中，只需记住：积分（\S3）不区分几乎处处相等的函数，因此只在零测集上有定义或取值 $\pm\infty$ 的函数，都可以在零测集上修改后当作处处有定义的实值函数处理。
+\end{remark}
+
+\subsection{简单函数}
+
+\begin{definition}[简单函数]
+只取有限个实数值的可测函数 $\varphi:X\to\mathbb{R}$ 称为\textbf{简单函数}。若 $c_{1},\ldots,c_{N}$ 是 $\varphi$ 的互不相同的取值，$A_{k}=\{\varphi=c_{k}\}$，则 $A_{k}\in\mathcal{F}$ 两两不交且并为 $X$，并且
+\[
+\varphi=\sum_{k=1}^{N}c_{k}\mathbf{1}_{A_{k}}.
+\]
+这称为 $\varphi$ 的\textbf{标准表示}。
+\end{definition}
+
+任何形如 $\sum_{i=1}^{n}a_{i}\mathbf{1}_{E_{i}}$（$a_{i}\in\mathbb{R}$，$E_{i}\in\mathcal{F}$）的有限线性组合都是简单函数，反之亦然。注意简单函数取\textbf{有限}实数值，因而是有界的，这一点在注~\ref{zh:rem:upper} 中是关键。
+
+\begin{theorem}[简单函数逼近]\envlabel{zh:thm:simple}
+设 $f:X\to[0,+\infty]$ 可测。则存在简单函数列 $(\varphi_{n})$ 满足
+\[
+0\leq\varphi_{1}\leq\varphi_{2}\leq\cdots\leq f,\qquad \varphi_{n}(x)\to f(x)\quad(\forall x\in X),
+\]
+并且在 $f$ 有界的任一集合上，$\varphi_{n}\to f$ 一致成立。
+\end{theorem}
+
+\begin{proof}[证明]
+对 $n\geq1$ 令
+\[
+\varphi_{n}=\sum_{k=1}^{n2^{n}}\frac{k-1}{2^{n}}\mathbf{1}_{E_{n,k}}+n\mathbf{1}_{F_{n}},\qquad
+E_{n,k}=\Big\{\frac{k-1}{2^{n}}\leq f<\frac{k}{2^{n}}\Big\},\quad F_{n}=\{f\geq n\}.
+\]
+由命题~\ref{zh:prop:equiv}，这些集合可测，所以 $\varphi_{n}$ 是简单函数。等价地，
+\[
+\varphi_{n}(x)=\min\big\{n,\;2^{-n}\lfloor2^{n}f(x)\rfloor\big\}\qquad(f(x)=+\infty\text{ 时 }\varphi_{n}(x)=n).
+\]
+由于 $\lfloor2s\rfloor\geq2\lfloor s\rfloor$，有 $2^{-(n+1)}\lfloor2^{n+1}t\rfloor\geq2^{-n}\lfloor2^{n}t\rfloor$，从而 $\varphi_{n}\leq\varphi_{n+1}$；显然 $\varphi_{n}\leq f$。若 $f(x)=+\infty$，则 $\varphi_{n}(x)=n\to+\infty$；若 $f(x)<\infty$，则当 $n\geq f(x)$ 时
+\[
+0\leq f(x)-\varphi_{n}(x)<2^{-n}.
+\]
+在 $\{f\leq M\}$ 上，这个估计对一切 $n\geq M$ 一致成立。
+\end{proof}
+
+\begin{corollary}\envlabel{zh:cor:simple}
+若 $f:X\to\overline{\mathbb{R}}$ 可测，则存在简单函数列 $\varphi_{n}\to f$ 逐点收敛，且 $|\varphi_{1}|\leq|\varphi_{2}|\leq\cdots\leq|f|$。
+\end{corollary}
+
+\begin{proof}[证明]
+对 $f^{+}$ 与 $f^{-}$ 分别应用定理~\ref{zh:thm:simple}，得到 $\psi_{n}\uparrow f^{+}$，$\chi_{n}\uparrow f^{-}$，令 $\varphi_{n}=\psi_{n}-\chi_{n}$。由于 $f^{+}$ 与 $f^{-}$ 不同时非零，$\psi_{n}$ 与 $\chi_{n}$ 也不同时非零，故 $|\varphi_{n}|=\psi_{n}+\chi_{n}$ 递增且不超过 $f^{+}+f^{-}=|f|$。
+\end{proof}
+
+\subsection{Lusin 定理}
+
+Littlewood 曾把实变函数论概括为三条原则：可测集“几乎”是有限个区间的并；可测函数“几乎”是连续的；逐点收敛的函数列“几乎”是一致收敛的。第二条原则的精确形式就是 Lusin 定理。（第三条是 Egorov 定理，本篇不展开。）
+
+\begin{theorem}[Lusin]\envlabel{zh:thm:lusin}
+设 $E\subseteq\mathbb{R}^{n}$ Lebesgue 可测，$m(E)<\infty$，$f:E\to\overline{\mathbb{R}}$ Lebesgue 可测且几乎处处有限。则对任意 $\varepsilon>0$，存在紧集 $F\subseteq E$，使得
+\[
+m(E\setminus F)<\varepsilon,
+\]
+并且限制 $f|_{F}:F\to\mathbb{R}$ 是连续函数。
+\end{theorem}
+
+\begin{proof}[证明]
+我们使用第 I 篇 \S4.6 的内正则性：若 $A\in\mathcal{L}$，$m(A)<\infty$，则对任意 $\eta>0$ 存在紧集 $K\subseteq A$ 使 $m(A\setminus K)<\eta$。
+
+令 $Z=\{|f|=\infty\}$，则 $m(Z)=0$。记 $E_{0}=E\setminus Z$，$f$ 在 $E_{0}$ 上取实数值。把所有端点为有理数的开区间排成一列 $I_{1},I_{2},\ldots$，令
+\[
+A_{k}=E_{0}\cap f^{-1}(I_{k}),\qquad B_{k}=E_{0}\setminus A_{k}.
+\]
+它们可测且测度有限。取紧集 $K_{k}\subseteq A_{k}$，$K_{k}'\subseteq B_{k}$，使
+\[
+m(A_{k}\setminus K_{k})<\frac{\varepsilon}{2^{k+2}},\qquad m(B_{k}\setminus K_{k}')<\frac{\varepsilon}{2^{k+2}},
+\]
+从而 $m\big(E_{0}\setminus(K_{k}\cup K_{k}')\big)<\varepsilon/2^{k+1}$。令
+\[
+F=\bigcap_{k=1}^{\infty}(K_{k}\cup K_{k}').
+\]
+$F$ 是紧集 $K_{1}\cup K_{1}'$ 的闭子集，因而紧，且 $F\subseteq E_{0}\subseteq E$。并且
+\[
+m(E\setminus F)\leq m(Z)+\sum_{k=1}^{\infty}m\big(E_{0}\setminus(K_{k}\cup K_{k}')\big)<\frac{\varepsilon}{2}.
+\]
+
+下证 $g=f|_{F}$ 连续。固定 $k$。因为 $K_{k}\subseteq A_{k}$，$K_{k}'\subseteq B_{k}$ 且 $A_{k}\cap B_{k}=\varnothing$，而 $F\subseteq K_{k}\cup K_{k}'$，所以
+\[
+g^{-1}(I_{k})=F\cap A_{k}=F\cap K_{k}=F\setminus K_{k}'=F\cap(\mathbb{R}^{n}\setminus K_{k}'),
+\]
+它是 $F$ 的相对开集。$\mathbb{R}$ 中任意开集都是若干个 $I_{k}$ 的并，因此任意开集在 $g$ 下的原像是 $F$ 的相对开集，即 $g$ 连续。
+\end{proof}
+
+\begin{remark}\envlabel{zh:rem:lusin}
+\leavevmode
+\begin{enumerate}
+  \item 结论是\textbf{限制} $f|_{F}$ 连续，而不是 $f$ 在 $F$ 的每一点连续。例如对 Dirichlet 函数 $D$ 与 $E=[0,1]$，取覆盖 $\mathbb{Q}\cap[0,1]$ 的、总测度小于 $\varepsilon$ 的开集 $U$，则 $F=[0,1]\setminus U$ 是紧集，$D|_{F}\equiv0$ 连续，但 $D$ 在任何一点都不连续。
+  \item 条件 $m(E)<\infty$ 可以去掉，此时 $F$ 取为闭集：把 $E$ 分成 $E\cap\{k-1\leq|x|<k\}$ $(k\geq1)$，在每一块上用 $\varepsilon/2^{k}$ 应用定理，所得紧集之并是闭集（每个有界集只与其中有限个相交）。
+  \item 结合 Tietze 扩张定理，存在连续函数 $g:\mathbb{R}^{n}\to\mathbb{R}$ 使 $g=f$ 在 $F$ 上成立，从而 $m(\{x\in E:f(x)\neq g(x)\})<\varepsilon$；若 $|f|\leq M$，还可要求 $|g|\leq M$。这才是“可测函数可以被连续函数任意逼近”的准确含义。
+  \item 更一般地，Lusin 定理对局部紧 Hausdorff 空间上的 Radon 测度成立，可见 Rudin《Real and Complex Analysis》定理 2.24。
+\end{enumerate}
+\end{remark}
+
+\section{Lebesgue 积分}
+
+本节固定测度空间 $(X,\mathcal{F},\mu)$。积分分三步定义：非负简单函数、非负可测函数、一般可测函数。
+
+\subsection{非负简单函数的积分}
+
+\begin{definition}
+设 $\varphi=\sum_{k=1}^{N}c_{k}\mathbf{1}_{A_{k}}$ 是非负简单函数的标准表示（$c_{k}\geq0$）。定义
+\[
+\int_{X}\varphi\,d\mu=\sum_{k=1}^{N}c_{k}\,\mu(A_{k})\in[0,+\infty],
+\]
+其中约定 $0\cdot\infty=0$。对 $E\in\mathcal{F}$，定义 $\int_{E}\varphi\,d\mu=\int_{X}\varphi\mathbf{1}_{E}\,d\mu$。
+\end{definition}
+
+\begin{remark}
+约定 $0\cdot\infty=0$ 的作用是：一个在无穷测度集合上取值为 $0$ 的函数不贡献积分。例如 $\mathbb{R}$ 上的零函数 $0=0\cdot\mathbf{1}_{\mathbb{R}}$，其积分为 $0\cdot m(\mathbb{R})=0$。它\textbf{并不}意味着无穷测度集合上的积分总为零：若某个 $c_{k}>0$ 且 $\mu(A_{k})=\infty$，则积分为 $+\infty$。
+\end{remark}
+
+\begin{lemma}\envlabel{zh:lem:repr}
+若非负简单函数 $\varphi$ 可以写成 $\varphi=\sum_{i=1}^{n}a_{i}\mathbf{1}_{E_{i}}$，其中 $a_{i}\geq0$，$E_{i}\in\mathcal{F}$（不要求两两不交），则
+\[
+\int_{X}\varphi\,d\mu=\sum_{i=1}^{n}a_{i}\,\mu(E_{i}).
+\]
+特别地，积分不依赖于表示方式。
+\end{lemma}
+
+\begin{proof}[证明]
+对 $\epsilon=(\epsilon_{1},\ldots,\epsilon_{n})\in\{0,1\}^{n}$，令 $G_{\epsilon}=\bigcap_{i=1}^{n}E_{i}^{\epsilon_{i}}$，其中 $E^{1}=E$，$E^{0}=E^{c}$。这些“原子”两两不交，并为 $X$，且
+\[
+E_{i}=\bigsqcup_{\epsilon:\,\epsilon_{i}=1}G_{\epsilon}.
+\]
+在 $G_{\epsilon}$ 上 $\varphi$ 取常值 $b_{\epsilon}=\sum_{i}\epsilon_{i}a_{i}$。由有限可加性，
+\[
+\sum_{i=1}^{n}a_{i}\mu(E_{i})=\sum_{i=1}^{n}a_{i}\sum_{\epsilon:\,\epsilon_{i}=1}\mu(G_{\epsilon})=\sum_{\epsilon}b_{\epsilon}\,\mu(G_{\epsilon}),
+\]
+这里交换的是 $[0,\infty]$ 中非负项的有限和。另一方面，标准表示中 $A_{k}=\bigsqcup_{\epsilon:\,b_{\epsilon}=c_{k}}G_{\epsilon}$，所以 $\sum_{k}c_{k}\mu(A_{k})$ 同样等于 $\sum_{\epsilon}b_{\epsilon}\mu(G_{\epsilon})$。
+\end{proof}
+
+\begin{proposition}\envlabel{zh:prop:simpleint}
+设 $\varphi,\psi$ 为非负简单函数，$a,b\geq0$。
+\begin{enumerate}
+  \item $\int(a\varphi+b\psi)\,d\mu=a\int\varphi\,d\mu+b\int\psi\,d\mu$；
+  \item 若 $\varphi\leq\psi$，则 $\int\varphi\,d\mu\leq\int\psi\,d\mu$；
+  \item $\nu(E)=\int_{E}\varphi\,d\mu$ 是 $\mathcal{F}$ 上的测度。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[证明]
+(i) 若 $\varphi=\sum c_{k}\mathbf{1}_{A_{k}}$，$\psi=\sum d_{j}\mathbf{1}_{B_{j}}$，则 $a\varphi+b\psi=\sum ac_{k}\mathbf{1}_{A_{k}}+\sum bd_{j}\mathbf{1}_{B_{j}}$，由引理~\ref{zh:lem:repr} 即得。(ii) $\psi-\varphi$ 是非负简单函数（这里用到简单函数取有限值），由 (i)，$\int\psi=\int\varphi+\int(\psi-\varphi)\geq\int\varphi$。(iii) $\varphi\mathbf{1}_{E}=\sum_{k}c_{k}\mathbf{1}_{A_{k}\cap E}$，故 $\nu(E)=\sum_{k}c_{k}\mu(A_{k}\cap E)$。每个 $E\mapsto\mu(A_{k}\cap E)$ 都是测度，而测度的非负线性组合仍是测度（非负项级数可以任意重排）。
+\end{proof}
+
+\subsection{非负可测函数的积分}
+
+记 $L^{+}=L^{+}(X,\mathcal{F})$ 为全体可测函数 $f:X\to[0,+\infty]$。
+
+\begin{definition}
+对 $f\in L^{+}$，定义
+\[
+\int_{X}f\,d\mu=\sup\Big\{\int_{X}\varphi\,d\mu:\ \varphi\text{ 为简单函数},\ 0\leq\varphi\leq f\Big\}\in[0,+\infty],
+\]
+并对 $E\in\mathcal{F}$ 定义 $\int_{E}f\,d\mu=\int_{X}f\mathbf{1}_{E}\,d\mu$。
+\end{definition}
+
+由命题~\ref{zh:prop:simpleint}(ii)，当 $f$ 本身是简单函数时，上确界在 $\varphi=f$ 处取到，所以这个定义与前一小节一致。
+
+\begin{proposition}\envlabel{zh:prop:posbasic}
+设 $f,g\in L^{+}$，$E,E'\in\mathcal{F}$。
+\begin{enumerate}
+  \item 若 $f\leq g$，则 $\int f\leq\int g$；
+  \item 对 $c\in[0,\infty)$，$\int cf=c\int f$；
+  \item 若 $E\subseteq E'$，则 $\int_{E}f\leq\int_{E'}f$；
+  \item 若 $\mu(E)=0$，则 $\int_{E}f=0$。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[证明]
+(i) 左边的上确界取自一个更小的集合。(ii) $c=0$ 时两边都是 $0$；$c>0$ 时 $\varphi\mapsto c\varphi$ 是 $\{0\leq\varphi\leq f\}$ 与 $\{0\leq\varphi\leq cf\}$ 之间的双射。(iii) 由 $f\mathbf{1}_{E}\leq f\mathbf{1}_{E'}$ 与 (i)。(iv) 若简单函数 $0\leq\varphi\leq f\mathbf{1}_{E}$，则 $\varphi$ 在 $E$ 外为零，在其标准表示中每个 $c_{k}>0$ 对应的 $A_{k}\subseteq E$ 都是零测集，于是 $\int\varphi=0$。
+\end{proof}
+
+\begin{remark}[关于“上积分”]\envlabel{zh:rem:upper}
+也许有人想用
+\[
+\inf\Big\{\int\varphi\,d\mu:\ \varphi\text{ 为简单函数},\ \varphi\geq f\Big\}
+\]
+作为等价的定义。这在一般情况下是\textbf{错误}的，因为简单函数有界且只取有限个值：
+\begin{enumerate}
+  \item 在 $[0,1]$ 上取 $f(x)=x^{-1/2}$（$x>0$），$f(0)=0$。$f$ 无界，不存在简单函数 $\varphi\geq f$，上式为 $\inf\varnothing=+\infty$；而 $\int_{[0,1]}f\,dm=2$（例~\ref{zh:ex:improper2}）。
+  \item 在 $\mathbb{R}$ 上取 $f(x)=e^{-|x|}$。若简单函数 $\varphi\geq f>0$，则 $\varphi$ 处处为正，从而不小于其最小取值 $c>0$，$\int\varphi\geq c\cdot m(\mathbb{R})=+\infty$；而 $\int_{\mathbb{R}}f\,dm=2$。
+\end{enumerate}
+当 $f$ 有界且 $\mu(X)<\infty$ 时两者确实相等：由定理~\ref{zh:thm:simple}，$\varphi_{n}\leq f\leq\varphi_{n}+2^{-n}$（$n$ 充分大），故上式不超过 $\int\varphi_{n}+2^{-n}\mu(X)$，令 $n\to\infty$ 即可。
+\end{remark}
+
+\subsection{单调收敛定理}
+
+下面的定理是整个理论的基石，积分的可加性也要借助它才能证明。
+
+\begin{theorem}[单调收敛定理]\envlabel{zh:thm:mct}
+设 $f_{n}\in L^{+}$，$f_{1}\leq f_{2}\leq\cdots$ 逐点成立，$f=\lim_{n}f_{n}$。则
+\[
+\int_{X}f\,d\mu=\lim_{n\to\infty}\int_{X}f_{n}\,d\mu.
+\]
+\end{theorem}
+
+\begin{proof}[证明]
+由命题~\ref{zh:prop:limits}，$f=\sup_{n}f_{n}\in L^{+}$。由单调性，$\int f_{n}$ 递增且不超过 $\int f$，所以极限 $\alpha=\lim_{n}\int f_{n}$ 存在且 $\alpha\leq\int f$。
+
+反向不等式：固定简单函数 $0\leq\varphi\leq f$ 以及 $t\in(0,1)$，令
+\[
+E_{n}=\{f_{n}\geq t\varphi\}.
+\]
+若 $\varphi=\sum_{k}c_{k}\mathbf{1}_{A_{k}}$，则 $E_{n}=\bigcup_{k}\big(A_{k}\cap\{f_{n}\geq tc_{k}\}\big)$ 可测。$E_{n}$ 递增，并且 $\bigcup_{n}E_{n}=X$：若 $\varphi(x)=0$，则 $x\in E_{1}$；若 $\varphi(x)>0$，则 $t\varphi(x)<\varphi(x)\leq f(x)$，故对充分大的 $n$ 有 $f_{n}(x)\geq t\varphi(x)$。于是
+\[
+\int_{X}f_{n}\,d\mu\geq\int_{E_{n}}f_{n}\,d\mu\geq t\int_{E_{n}}\varphi\,d\mu=t\,\nu(E_{n}),
+\]
+其中 $\nu(E)=\int_{E}\varphi\,d\mu$ 是测度（命题~\ref{zh:prop:simpleint}(iii)）。由测度的从下连续性（第 I 篇 \S2.3），$\nu(E_{n})\to\nu(X)=\int\varphi$，所以 $\alpha\geq t\int\varphi$。令 $t\to1$，再对 $\varphi$ 取上确界，得 $\alpha\geq\int f$。
+\end{proof}
+
+\begin{corollary}[可加性]\envlabel{zh:cor:add}
+对 $f,g\in L^{+}$，$\int(f+g)\,d\mu=\int f\,d\mu+\int g\,d\mu$。
+\end{corollary}
+
+\begin{proof}[证明]
+由定理~\ref{zh:thm:simple} 取简单函数 $\varphi_{n}\uparrow f$，$\psi_{n}\uparrow g$，则 $\varphi_{n}+\psi_{n}\uparrow f+g$。由命题~\ref{zh:prop:simpleint}(i)，$\int(\varphi_{n}+\psi_{n})=\int\varphi_{n}+\int\psi_{n}$，对三个序列分别用单调收敛定理即可。
+\end{proof}
+
+\begin{corollary}[逐项积分]\envlabel{zh:cor:series}
+设 $f_{k}\in L^{+}$ $(k\geq1)$。则
+\[
+\int_{X}\sum_{k=1}^{\infty}f_{k}\,d\mu=\sum_{k=1}^{\infty}\int_{X}f_{k}\,d\mu.
+\]
+\end{corollary}
+
+\begin{proof}[证明]
+令 $S_{n}=\sum_{k=1}^{n}f_{k}$。由推论~\ref{zh:cor:add} 与归纳法，$\int S_{n}=\sum_{k=1}^{n}\int f_{k}$。$S_{n}$ 逐点递增到 $\sum_{k=1}^{\infty}f_{k}$，由单调收敛定理，令 $n\to\infty$ 即得。
+\end{proof}
+
+\begin{corollary}\envlabel{zh:cor:measure}
+对 $f\in L^{+}$，$\nu(E)=\int_{E}f\,d\mu$ 是 $\mathcal{F}$ 上的测度，并且 $\mu(E)=0$ 蕴含 $\nu(E)=0$。
+\end{corollary}
+
+\begin{proof}[证明]
+若 $E=\bigsqcup_{k}E_{k}$，则 $f\mathbf{1}_{E}=\sum_{k}f\mathbf{1}_{E_{k}}$，由推论~\ref{zh:cor:series} 得可数可加性；后半部分即命题~\ref{zh:prop:posbasic}(iv)。
+\end{proof}
+
+\begin{example}
+在 $\mathbb{N}$ 上取计数测度 $\#$（$\#(A)$ 为 $A$ 的元素个数，$\mathcal{F}=\mathcal{P}(\mathbb{N})$）。任意 $f:\mathbb{N}\to[0,\infty]$ 可写成 $f=\sum_{j}f(j)\mathbf{1}_{\{j\}}$，由推论~\ref{zh:cor:series}，
+\[
+\int_{\mathbb{N}}f\,d\#=\sum_{j=1}^{\infty}f(j).
+\]
+因此非负级数是积分的特例。再对 $f_{k}(j)=a_{jk}\geq0$ 应用推论~\ref{zh:cor:series}，就得到非负二重级数可交换求和次序：
+\[
+\sum_{j=1}^{\infty}\sum_{k=1}^{\infty}a_{jk}=\sum_{k=1}^{\infty}\sum_{j=1}^{\infty}a_{jk}.
+\]
+\end{example}
+
+\subsection{Markov 不等式与 Chebyshev 不等式}
+
+\begin{proposition}[Markov 不等式]\envlabel{zh:prop:markov}
+设 $f\in L^{+}$，$\lambda\in(0,\infty)$。则
+\[
+\mu(\{f\geq\lambda\})\leq\frac{1}{\lambda}\int_{X}f\,d\mu.
+\]
+自然地，对 $\{f>\lambda\}$ 也成立。
+\end{proposition}
+
+\begin{proof}[证明]
+$\lambda\mathbf{1}_{\{f\geq\lambda\}}\leq f$，两边积分。
+\end{proof}
+
+\begin{corollary}[Chebyshev 不等式]
+设 $f:X\to\mathbb{R}$ 可测，$c\in\mathbb{R}$，$\lambda>0$。则
+\[
+\mu(\{|f-c|\geq\lambda\})\leq\frac{1}{\lambda^{2}}\int_{X}|f-c|^{2}\,d\mu.
+\]
+\end{corollary}
+
+\begin{proof}[证明]
+$\{|f-c|\geq\lambda\}=\{|f-c|^{2}\geq\lambda^{2}\}$，对 $|f-c|^{2}$ 应用 Markov 不等式。
+\end{proof}
+
+在概率空间（$\mu(X)=1$）中取 $c=\int f\,d\mu$，就得到概率论中熟悉的形式 $\mathbb{P}(|\xi-\mathbb{E}\xi|\geq\lambda)\leq\operatorname{Var}(\xi)/\lambda^{2}$：随机变量偏离期望的程度由方差控制。命题~\ref{zh:prop:markov} 的形式通常称为 Markov 不等式，但文献中也常把它称为 Chebyshev 不等式。
+
+\begin{corollary}\envlabel{zh:cor:ae}
+设 $f,g\in L^{+}$。
+\begin{enumerate}
+  \item 若 $\int f<\infty$，则 $f<\infty$ a.e.；
+  \item $\int f=0$ 当且仅当 $f=0$ a.e.；
+  \item 若 $f=g$ a.e.，则 $\int f=\int g$；
+  \item 若 $f_{n}\in L^{+}$，$f_{n}\uparrow f$ a.e.，则 $\int f_{n}\to\int f$。
+\end{enumerate}
+\end{corollary}
+
+\begin{proof}[证明]
+(i) $\{f=\infty\}\subseteq\{f\geq k\}$，由 Markov 不等式 $\mu(\{f=\infty\})\leq\frac1k\int f\to0$。(ii) 若 $\int f=0$，则 $\mu(\{f\geq1/k\})\leq k\int f=0$，而 $\{f>0\}=\bigcup_{k}\{f\geq1/k\}$。反之若 $N=\{f>0\}$ 为零测集，则 $\int f=\int_{N}f=0$（命题~\ref{zh:prop:posbasic}(iv)）。(iii) 取零测集 $N$ 使 $f=g$ 在 $N^{c}$ 上成立，由推论~\ref{zh:cor:measure}，
+\[
+\int f=\int_{N^{c}}f+\int_{N}f=\int_{N^{c}}g+0=\int g.
+\]
+(iv) 取零测集 $N$，使在 $N^{c}$ 上 $f_{n}\uparrow f$。对 $f_{n}\mathbf{1}_{N^{c}}\uparrow f\mathbf{1}_{N^{c}}$ 用单调收敛定理，再用 (iii)。
+\end{proof}
+
+\subsection{一般可测函数的积分}
+
+\begin{definition}[Lebesgue 积分]\envlabel{zh:def:integral}
+设 $f:X\to\overline{\mathbb{R}}$ 可测。若 $\int f^{+}\,d\mu$ 与 $\int f^{-}\,d\mu$ 中至少有一个有限，定义
+\[
+\int_{X}f\,d\mu=\int_{X}f^{+}\,d\mu-\int_{X}f^{-}\,d\mu\in\overline{\mathbb{R}}.
+\]
+若两者都有限，称 $f$ \textbf{可积}（Lebesgue 可积）。全体可积的实值可测函数记为 $L^{1}(\mu)=L^{1}(X,\mathcal{F},\mu)$。对 $E\in\mathcal{F}$，$\int_{E}f\,d\mu=\int_{X}f\mathbf{1}_{E}\,d\mu$。
+\end{definition}
+
+由于 $|f|=f^{+}+f^{-}$，推论~\ref{zh:cor:add} 给出 $\int|f|=\int f^{+}+\int f^{-}$，所以
+\[
+f\text{ 可积}\iff\int_{X}|f|\,d\mu<\infty.
+\]
+
+\begin{remark}\envlabel{zh:rem:abs}
+\leavevmode
+\begin{enumerate}
+  \item Lebesgue 积分是一种\textbf{绝对}积分：$f$ 可积与 $|f|$ 可积是同一件事。因此不应在 Lebesgue 理论中区分“可积”与“绝对可积”；“收敛”与“绝对收敛”的差别只出现在反常 Riemann 积分中（\S\ref{zh:sec:improper}）。
+  \item 若 $f$ 可积，由推论~\ref{zh:cor:ae}(i)，$f$ 几乎处处有限。在零测集上修改 $f$ 不改变积分（推论~\ref{zh:cor:ae}(iii)），所以总可以把可积函数视为实值函数。在第 III 篇中，$L^{1}$ 将被理解为几乎处处相等意义下的等价类，并配以范数 $\|f\|_{1}=\int|f|\,d\mu$。
+  \item 复值函数 $f=u+iv$ 在 $u,v$ 都可积时称为可积，并定义 $\int f=\int u+i\int v$。
+\end{enumerate}
+\end{remark}
+
+\begin{example}\envlabel{zh:ex:int}
+\leavevmode
+\begin{enumerate}
+  \item Dirichlet 函数在 $[0,1]$ 上 $D=0$ a.e.，因此 $\int_{[0,1]}D\,dm=0$，尽管 $D\notin\mathcal{R}[0,1]$。
+  \item 在 $(0,1]$ 上，$1/x\geq2^{k-1}$ 在 $(2^{-k},2^{-k+1}]$ 上成立，而这个区间的测度是 $2^{-k}$。由推论~\ref{zh:cor:measure}，
+  \[
+  \int_{(0,1]}\frac{dx}{x}=\sum_{k=1}^{\infty}\int_{(2^{-k},2^{-k+1}]}\frac{dx}{x}\geq\sum_{k=1}^{\infty}\frac12=+\infty.
+  \]
+  积分有定义（等于 $+\infty$），但 $1/x$ 不可积。
+  \item 在 $[-1,1]\setminus\{0\}$ 上取 $f(x)=1/x$。由 (ii) 与对称性 $\int f^{+}=\int f^{-}=+\infty$，所以 $\int f\,dm$ \textbf{没有定义}，尽管 $f$ 是奇函数且对称截断的积分都为零。
+\end{enumerate}
+\end{example}
+
+\subsection{基本性质}
+
+\begin{theorem}\envlabel{zh:thm:basic}
+设 $f,g\in L^{1}(\mu)$，$a,b\in\mathbb{R}$。
+\begin{enumerate}
+  \item（线性）$af+bg\in L^{1}(\mu)$，且 $\int(af+bg)=a\int f+b\int g$。
+  \item（单调性）若 $f\leq g$ a.e.，则 $\int f\leq\int g$。特别地，若 $f=g$ a.e.，则 $\int f=\int g$。
+  \item $\big|\int f\,d\mu\big|\leq\int|f|\,d\mu$。
+  \item 若 $E\in\mathcal{F}$，$\mu(E)=0$，则 $\int_{E}f=0$。
+  \item（对积分区域的可数可加性）若 $E_{1},E_{2},\ldots\in\mathcal{F}$ \textbf{两两不交}，$E=\bigsqcup_{k}E_{k}$，则
+  \[
+  \int_{E}f\,d\mu=\sum_{k=1}^{\infty}\int_{E_{k}}f\,d\mu,
+  \]
+  右端级数绝对收敛。
+  \item 若 $\mu(E)<\infty$ 且在 $E$ 上 $|f|\leq M$ a.e.，则 $\big|\int_{E}f\big|\leq M\mu(E)$。
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[证明]
+(i) 由 $|af+bg|\leq|a||f|+|b||g|$、命题~\ref{zh:prop:posbasic} 与推论~\ref{zh:cor:add}，$\int|af+bg|\leq|a|\int|f|+|b|\int|g|<\infty$。数乘：$a\geq0$ 时 $(af)^{\pm}=af^{\pm}$；$a<0$ 时 $(af)^{+}=|a|f^{-}$，$(af)^{-}=|a|f^{+}$；两种情形都由命题~\ref{zh:prop:posbasic}(ii) 得 $\int af=a\int f$。加法：令 $h=f+g$，由
+\[
+h^{+}-h^{-}=f^{+}-f^{-}+g^{+}-g^{-}
+\]
+得 $h^{+}+f^{-}+g^{-}=h^{-}+f^{+}+g^{+}$，两边都是 $L^{+}$ 中的函数。由推论~\ref{zh:cor:add}，
+\[
+\int h^{+}+\int f^{-}+\int g^{-}=\int h^{-}+\int f^{+}+\int g^{+},
+\]
+各项有限，移项即得 $\int h=\int f+\int g$。
+
+(ii) $(g-f)^{-}=0$ a.e.，由推论~\ref{zh:cor:ae}(ii)，$\int(g-f)^{-}=0$，所以 $\int(g-f)=\int(g-f)^{+}\geq0$，再用 (i)。
+
+(iii) $\big|\int f\big|=\big|\int f^{+}-\int f^{-}\big|\leq\int f^{+}+\int f^{-}=\int|f|$。
+
+(iv) $f^{\pm}\mathbf{1}_{E}=0$ a.e.
+
+(v) 对 $f^{+}$ 与 $f^{-}$ 分别应用推论~\ref{zh:cor:measure}，得到两个收敛的非负级数，相减即可；绝对收敛性来自 $\sum_{k}\big|\int_{E_{k}}f\big|\leq\sum_{k}\int_{E_{k}}|f|=\int_{E}|f|<\infty$。
+
+(vi) $-M\mathbf{1}_{E}\leq f\mathbf{1}_{E}\leq M\mathbf{1}_{E}$ a.e.，由 (ii)。
+\end{proof}
+
+\begin{remark}
+线性性质必须由积分的定义（经由单调收敛定理）直接证明，而不能从“$L^{1}$ 是线性空间”推出：$L^{1}$ 对加法封闭本身就依赖于 (i)。另外，(v) 中“两两不交”指 $E_{i}\cap E_{j}=\varnothing$ $(i\neq j)$，而不是 $\bigcap_{k}E_{k}=\varnothing$；后者是弱得多的条件，不足以保证可加性。
+\end{remark}
+
+\section{收敛定理}
+
+我们关心的问题是：在什么条件下
+\[
+\lim_{n\to\infty}\int_{X}f_{n}\,d\mu=\int_{X}\lim_{n\to\infty}f_{n}\,d\mu\;?
+\]
+先看在 $(\mathbb{R},\mathcal{L},m)$ 中三个典型的反例。它们都逐点收敛到 $0$，而积分恒为 $1$：
+\begin{enumerate}
+  \item \textbf{平移逃逸}：$f_{n}=\mathbf{1}_{[n,n+1]}$；
+  \item \textbf{摊平逃逸}：$f_{n}=\frac1n\mathbf{1}_{[0,n]}$（甚至一致收敛到 $0$）；
+  \item \textbf{集中}：$f_{n}=n\mathbf{1}_{(0,1/n)}$。
+\end{enumerate}
+在三个例子中都有 $\int\lim f_{n}=0<1=\lim\int f_{n}$：在极限过程中积分“质量”可能丢失。下面的 Fatou 引理说明，对非负函数，质量只会丢失，不会凭空产生。
+
+\subsection{单调收敛定理（续）}
+
+把定理~\ref{zh:thm:mct} 与推论~\ref{zh:cor:ae}(iv) 合起来：
+
+\begin{theorem}[单调收敛定理，a.e. 形式]\envlabel{zh:thm:mct2}
+设 $f_{n},f$ 可测，$0\leq f_{1}\leq f_{2}\leq\cdots$ a.e.，且 $f_{n}\to f$ a.e.。则 $\int f_{n}\,d\mu\uparrow\int f\,d\mu$。
+\end{theorem}
+
+\begin{remark}\envlabel{zh:rem:mct}
+非负性与递增性都不可省略。
+\begin{enumerate}
+  \item \textbf{递减}序列不行：$f_{n}=\mathbf{1}_{[n,\infty)}\downarrow0$，但 $\int f_{n}=+\infty$ 对一切 $n$ 成立。
+  \item 没有下界的\textbf{递增}序列也不行：$f_{n}=-\mathbf{1}_{[n,\infty)}\uparrow0$，但 $\int f_{n}=-\infty$ 对一切 $n$ 成立。
+\end{enumerate}
+\end{remark}
+
+为了处理带符号的情形，先证明一个关于“可积扰动”的引理。
+
+\begin{lemma}\envlabel{zh:lem:perturb}
+设 $h:X\to\overline{\mathbb{R}}$ 可测，$\int h^{-}<\infty$，$k\in L^{1}(\mu)$。则 $\int(h+k)$ 有定义，且
+\[
+\int(h+k)\,d\mu=\int h\,d\mu+\int k\,d\mu.
+\]
+\end{lemma}
+
+\begin{proof}[证明]
+$k$ 几乎处处有限，故 $h+k$ 几乎处处有定义。若 $\int h^{+}<\infty$，则 $h\in L^{1}$，结论即定理~\ref{zh:thm:basic}(i)。设 $\int h^{+}=\infty$。由 $(h+k)^{-}\leq h^{-}+k^{-}$，$\int(h+k)^{-}<\infty$。又
+\[
+h^{+}=h+h^{-}\leq(h+k)^{+}+|k|+h^{-},
+\]
+由推论~\ref{zh:cor:add}，$\infty=\int h^{+}\leq\int(h+k)^{+}+\int|k|+\int h^{-}$，故 $\int(h+k)^{+}=\infty$。于是两边都等于 $+\infty$。
+\end{proof}
+
+\begin{corollary}[带可积下界的单调收敛定理]\envlabel{zh:cor:mctgen}
+\leavevmode
+\begin{enumerate}
+  \item 若 $f_{n}\uparrow f$ a.e. 且 $\int f_{1}^{-}<\infty$，则 $\int f_{n}\uparrow\int f$。
+  \item 若 $f_{n}\downarrow f$ a.e. 且 $\int f_{1}^{+}<\infty$，则 $\int f_{n}\downarrow\int f$。
+\end{enumerate}
+\end{corollary}
+
+\begin{proof}[证明]
+(i) $f_{1}^{-}$ 可积，从而几乎处处有限。令 $h_{n}=f_{n}+f_{1}^{-}$，则 $h_{n}\geq f_{1}+f_{1}^{-}\geq0$ a.e.，且 $h_{n}\uparrow f+f_{1}^{-}$ a.e.。由定理~\ref{zh:thm:mct2}，$\int h_{n}\to\int(f+f_{1}^{-})$。由于 $f_{n}^{-}\leq f_{1}^{-}$，$f^{-}\leq f_{1}^{-}$，对 $h=f_{n}$（或 $f$）与 $k=f_{1}^{-}$ 应用引理~\ref{zh:lem:perturb}，得 $\int h_{n}=\int f_{n}+\int f_{1}^{-}$，$\int(f+f_{1}^{-})=\int f+\int f_{1}^{-}$。消去有限数 $\int f_{1}^{-}$ 即得。(ii) 对 $-f_{n}$ 应用 (i)。
+\end{proof}
+
+\subsection{Fatou 引理}
+
+\begin{theorem}[Fatou 引理]\envlabel{zh:thm:fatou}
+设 $f_{n}:X\to[0,+\infty]$ 可测。则
+\[
+\int_{X}\liminf_{n\to\infty}f_{n}\,d\mu\leq\liminf_{n\to\infty}\int_{X}f_{n}\,d\mu.
+\]
+\end{theorem}
+
+\begin{proof}[证明]
+令 $g_{k}=\inf_{n\geq k}f_{n}$。它是\textbf{可数}个可测函数的下确界，由命题~\ref{zh:prop:limits} 可测；并且 $0\leq g_{1}\leq g_{2}\leq\cdots$，$g_{k}\uparrow\liminf_{n}f_{n}$。对每个 $n\geq k$ 有 $g_{k}\leq f_{n}$，所以
+\[
+\int g_{k}\leq\inf_{n\geq k}\int f_{n}.
+\]
+对 $(g_{k})$ 应用单调收敛定理：
+\[
+\int\liminf_{n\to\infty}f_{n}=\lim_{k\to\infty}\int g_{k}\leq\lim_{k\to\infty}\inf_{n\geq k}\int f_{n}=\liminf_{n\to\infty}\int f_{n}.
+\]
+\end{proof}
+
+本节开头的三个例子说明不等号可以是严格的。由于单调收敛定理只对非负可测函数（或带可积下界的函数）成立，这里的非负性假设不可缺少。
+
+\begin{corollary}[带可积下界的 Fatou 引理]\envlabel{zh:cor:fatougen}
+设 $g\in L^{1}(\mu)$，$f_{n}$ 可测，且对一切 $n$ 有 $f_{n}\geq g$ a.e.。则
+\[
+\int\liminf_{n\to\infty}f_{n}\,d\mu\leq\liminf_{n\to\infty}\int f_{n}\,d\mu.
+\]
+对偶地，若 $f_{n}\leq g$ a.e.，则 $\limsup_{n}\int f_{n}\leq\int\limsup_{n}f_{n}$。
+\end{corollary}
+
+\begin{proof}[证明]
+$g$ 几乎处处有限。$h_{n}=f_{n}-g\geq0$ a.e.，且 $\liminf_{n}h_{n}=\liminf_{n}f_{n}-g$ a.e.。由引理~\ref{zh:lem:perturb}（取 $h=h_{n}$ 或 $h=\liminf h_{n}$，$k=g$），$\int f_{n}=\int h_{n}+\int g$，$\int\liminf f_{n}=\int\liminf h_{n}+\int g$。对 $h_{n}$ 应用 Fatou 引理（在零测集上修改为非负函数不影响积分），再消去有限数 $\int g$ 即得。对偶情形对 $-f_{n}\geq-g$ 应用前半部分。
+\end{proof}
+
+\begin{remark}
+这里的下界 $g$ 只需可积，可以取负值；若要求 $g\geq0$，结论就只是 Fatou 引理本身。没有可积下界时结论可能不成立，即使 $f_{n}$ 逐点收敛：在 $(0,1)$ 上取 $f_{n}=-n\mathbf{1}_{(0,1/n)}$，则 $f_{n}\to0$ 逐点成立，$\int f_{n}=-1$，而 $\int\liminf f_{n}=0>-1$。
+\end{remark}
+
+\subsection{控制收敛定理}
+
+\begin{theorem}[Lebesgue 控制收敛定理]\envlabel{zh:thm:dct}
+设 $f_{n},f$ 可测，$f_{n}\to f$ a.e.，并且存在 $g\in L^{1}(\mu)$，使得对一切 $n$，
+\[
+|f_{n}|\leq g\qquad\text{a.e.}
+\]
+则 $f_{n},f\in L^{1}(\mu)$，
+\[
+\lim_{n\to\infty}\int_{X}|f_{n}-f|\,d\mu=0,\qquad\text{从而}\qquad\lim_{n\to\infty}\int_{X}f_{n}\,d\mu=\int_{X}f\,d\mu.
+\]
+\end{theorem}
+
+\begin{proof}[证明]
+取极限得 $|f|\leq g$ a.e.，故 $f_{n}$ 与 $f$ 都可积（在零测集上修改后可设它们处处有限）。又 $|f_{n}-f|\leq2g$ a.e.，于是 $h_{n}=2g-|f_{n}-f|\geq0$ a.e.，且 $h_{n}\to2g$ a.e.。由 Fatou 引理与线性性，
+\[
+\int2g\leq\liminf_{n\to\infty}\int\big(2g-|f_{n}-f|\big)=\int2g-\limsup_{n\to\infty}\int|f_{n}-f|.
+\]
+因为 $\int2g<\infty$，所以 $\limsup_{n}\int|f_{n}-f|\leq0$。最后由定理~\ref{zh:thm:basic}(iii)，$\big|\int f_{n}-\int f\big|\leq\int|f_{n}-f|\to0$。
+\end{proof}
+
+\begin{remark}\envlabel{zh:rem:dct}
+\leavevmode
+\begin{enumerate}
+  \item 单调收敛定理与控制收敛定理都只要求几乎处处收敛，二者互不包含：前者不需要控制函数，并允许 $\int f=+\infty$；后者不需要单调性，但需要一个共同的可积控制函数。
+  \item 控制条件不可省略。在本节开头的三个例子中都不存在可积的控制函数；例如对 $f_{n}=n\mathbf{1}_{(0,1/n)}$，$\sup_{n}f_{n}(x)\geq\frac1x-1$，它在 $(0,1)$ 上不可积。
+  \item 控制条件是充分而非必要的。在有限测度空间中，对依测度收敛的可积函数列，$L^{1}$ 收敛等价于一致可积，这就是 Vitali 收敛定理，见补充篇《一致可积性与 $L^{1}$ 收敛》。
+\end{enumerate}
+\end{remark}
+
+\begin{corollary}[有界收敛定理]\envlabel{zh:cor:bct}
+设 $\mu(X)<\infty$，$|f_{n}|\leq M$ a.e.，$f_{n}\to f$ a.e.。则 $\int f_{n}\to\int f$。
+\end{corollary}
+
+\begin{proof}[证明]
+常函数 $M$ 在有限测度空间上可积，应用控制收敛定理。
+\end{proof}
+
+\begin{corollary}[级数的逐项积分]\envlabel{zh:cor:series2}
+设 $f_{k}$ 可测，且 $\sum_{k=1}^{\infty}\int|f_{k}|\,d\mu<\infty$。则 $\sum_{k}f_{k}(x)$ 对几乎所有 $x$ 绝对收敛，其和可积，并且
+\[
+\int_{X}\sum_{k=1}^{\infty}f_{k}\,d\mu=\sum_{k=1}^{\infty}\int_{X}f_{k}\,d\mu.
+\]
+\end{corollary}
+
+\begin{proof}[证明]
+令 $G=\sum_{k}|f_{k}|$。由推论~\ref{zh:cor:series}，$\int G=\sum_{k}\int|f_{k}|<\infty$，故 $G<\infty$ a.e.，在这些点上级数绝对收敛。部分和满足 $\big|\sum_{k\leq n}f_{k}\big|\leq G$，由控制收敛定理与线性性即得。
+\end{proof}
+
+\begin{example}
+计算 $\displaystyle\lim_{n\to\infty}\int_{0}^{n}\Big(1+\frac{x}{n}\Big)^{n}e^{-2x}\,dx$。令 $f_{n}(x)=(1+x/n)^{n}e^{-2x}\mathbf{1}_{[0,n]}(x)$。由 $\log(1+t)\leq t$ 得 $(1+x/n)^{n}\leq e^{x}$，所以
+\[
+0\leq f_{n}(x)\leq e^{-x},
+\]
+而 $e^{-x}$ 在 $[0,\infty)$ 上可积，积分为 $1$（定理~\ref{zh:thm:improper}）。对固定的 $x\geq0$，$f_{n}(x)\to e^{x}e^{-2x}=e^{-x}$。由控制收敛定理，所求极限为 $\int_{[0,\infty)}e^{-x}\,dx=1$。
+\end{example}
+
+\subsection{含参变量积分}
+
+\begin{theorem}\envlabel{zh:thm:param}
+设 $I\subseteq\mathbb{R}$ 为开区间，$f:X\times I\to\mathbb{R}$，且对每个 $t\in I$，$f(\cdot,t)\in L^{1}(\mu)$。令
+\[
+F(t)=\int_{X}f(x,t)\,d\mu(x).
+\]
+\begin{enumerate}
+  \item 若对每个 $x$，$t\mapsto f(x,t)$ 在 $t_{0}$ 处连续，且存在 $g\in L^{1}(\mu)$ 使 $|f(x,t)|\leq g(x)$ 对一切 $x,t$ 成立，则 $F$ 在 $t_{0}$ 处连续。
+  \item 若对每个 $x$，$t\mapsto f(x,t)$ 在 $I$ 上可微，且存在 $g\in L^{1}(\mu)$ 使 $|\partial_{t}f(x,t)|\leq g(x)$ 对一切 $x,t$ 成立，则 $F$ 在 $I$ 上可微，并且
+  \[
+  F'(t)=\int_{X}\partial_{t}f(x,t)\,d\mu(x).
+  \]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[证明]
+(i) 设 $t_{n}\to t_{0}$。$f(\cdot,t_{n})\to f(\cdot,t_{0})$ 逐点成立且被 $g$ 控制，由控制收敛定理 $F(t_{n})\to F(t_{0})$。由极限的序列刻画，$F$ 在 $t_{0}$ 连续。
+
+(ii) 固定 $t\in I$ 与 $t_{n}\to t$，$t_{n}\neq t$。令
+\[
+h_{n}(x)=\frac{f(x,t_{n})-f(x,t)}{t_{n}-t}.
+\]
+$h_{n}$ 可测且 $h_{n}(x)\to\partial_{t}f(x,t)$，故 $\partial_{t}f(\cdot,t)$ 可测。由中值定理，$h_{n}(x)=\partial_{t}f(x,\tau_{n})$，其中 $\tau_{n}=\tau_{n}(x)$ 位于 $t$ 与 $t_{n}$ 之间，所以 $|h_{n}|\leq g$。由控制收敛定理，
+\[
+\frac{F(t_{n})-F(t)}{t_{n}-t}=\int_{X}h_{n}\,d\mu\to\int_{X}\partial_{t}f(x,t)\,d\mu(x).
+\]
+由于序列 $t_{n}\to t$ 任意，结论成立。
+\end{proof}
+
+\section{Riemann 积分与 Lebesgue 积分}
+
+\subsection{常义 Riemann 积分}
+
+\begin{theorem}\envlabel{zh:thm:RL}
+设 $f:[a,b]\to\mathbb{R}$ 且 $f\in\mathcal{R}[a,b]$。则 $f$ Lebesgue 可测，$f\in L^{1}([a,b],m)$，并且
+\[
+\int_{[a,b]}f\,dm=\int_{a}^{b}f(x)\,dx.
+\]
+\end{theorem}
+
+\begin{theorem}[Lebesgue 判据]\envlabel{zh:thm:criterion}
+设 $f:[a,b]\to\mathbb{R}$ 有界，$D_{f}$ 为 $f$ 的间断点集。则
+\[
+f\in\mathcal{R}[a,b]\iff m(D_{f})=0,
+\]
+即有界函数 Riemann 可积当且仅当它几乎处处连续。
+\end{theorem}
+
+两个定理用同一个构造证明。设 $|f|\leq M$。对 $k\geq0$，令 $P_{k}$ 为二进分割
+\[
+x_{j}^{(k)}=a+j\,\frac{b-a}{2^{k}},\qquad j=0,1,\ldots,2^{k}.
+\]
+则 $P_{k+1}\supseteq P_{k}$，$\|P_{k}\|=(b-a)2^{-k}\to0$。对 $x\in(x_{j-1}^{(k)},x_{j}^{(k)}]$ 定义
+\[
+l_{k}(x)=\inf_{[x_{j-1}^{(k)},x_{j}^{(k)}]}f,\qquad u_{k}(x)=\sup_{[x_{j-1}^{(k)},x_{j}^{(k)}]}f,
+\]
+并令 $l_{k}(a)=u_{k}(a)=f(a)$。$l_{k},u_{k}$ 是 Borel 可测的简单函数，$l_{k}\leq f\leq u_{k}$，并且（单点是零测集）
+\[
+\int_{[a,b]}l_{k}\,dm=L(f,P_{k}),\qquad\int_{[a,b]}u_{k}\,dm=U(f,P_{k}).
+\]
+由于 $P_{k+1}$ 加细 $P_{k}$，在更小的区间上取下确界只会更大，所以 $l_{k}\leq l_{k+1}$，同理 $u_{k+1}\leq u_{k}$。令 $l=\lim_{k}l_{k}$，$u=\lim_{k}u_{k}$。它们是 Borel 可测函数，$|l|,|u|\leq M$，且 $l\leq f\leq u$。由有界收敛定理（推论~\ref{zh:cor:bct}），
+\[
+\int_{[a,b]}l\,dm=\lim_{k\to\infty}L(f,P_{k}),\qquad\int_{[a,b]}u\,dm=\lim_{k\to\infty}U(f,P_{k}).\tag{$\ast$}
+\]
+
+\begin{proof}[定理~\ref{zh:thm:RL} 的证明]
+由定理~\ref{zh:thm:darboux}，$U(f,P_{k})$ 与 $L(f,P_{k})$ 都收敛到 $\int_{a}^{b}f(x)\,dx$。由 $(\ast)$，$\int(u-l)\,dm=0$，而 $u-l\geq0$，故 $u=l$ a.e.（推论~\ref{zh:cor:ae}(ii)）。由 $l\leq f\leq u$，$f=l$ a.e.。$l$ 是 Borel 可测的，而 $(\mathbb{R},\mathcal{L},m)$ 完备，由命题~\ref{zh:prop:complete}，$f$ Lebesgue 可测。$f$ 有界且 $m([a,b])<\infty$，所以可积，并且
+\[
+\int_{[a,b]}f\,dm=\int_{[a,b]}l\,dm=\lim_{k\to\infty}L(f,P_{k})=\int_{a}^{b}f(x)\,dx.
+\]
+\end{proof}
+
+\begin{lemma}\envlabel{zh:lem:cont}
+令 $Z=\bigcup_{k}P_{k}$（可数集）。对 $x\in[a,b]\setminus Z$，$f$ 在 $x$ 处连续当且仅当 $u(x)=l(x)$。
+\end{lemma}
+
+\begin{proof}[证明]
+由于 $x\notin Z$，对每个 $k$，$x$ 落在 $P_{k}$ 的唯一一个子区间 $J_{k}(x)$ 的内部，且 $l_{k}(x)=\inf_{J_{k}(x)}f$，$u_{k}(x)=\sup_{J_{k}(x)}f$。
+
+($\Rightarrow$) 给定 $\varepsilon>0$，取 $\delta>0$ 使 $|y-x|<\delta$ 时 $|f(y)-f(x)|<\varepsilon$。当 $\|P_{k}\|<\delta$ 时 $J_{k}(x)\subseteq(x-\delta,x+\delta)$，从而 $u_{k}(x)-l_{k}(x)\leq2\varepsilon$。所以 $u(x)-l(x)\leq2\varepsilon$，而 $\varepsilon$ 任意。
+
+($\Leftarrow$) 给定 $\varepsilon>0$，由 $u_{k}(x)-l_{k}(x)\downarrow u(x)-l(x)=0$，取 $k$ 使 $u_{k}(x)-l_{k}(x)<\varepsilon$。$x$ 是 $J_{k}(x)$ 的内点，存在 $\delta>0$ 使 $(x-\delta,x+\delta)\subseteq J_{k}(x)$。对这些 $y$，$f(y)$ 与 $f(x)$ 都落在 $[l_{k}(x),u_{k}(x)]$ 中，所以 $|f(y)-f(x)|<\varepsilon$。
+\end{proof}
+
+\begin{proof}[定理~\ref{zh:thm:criterion} 的证明]
+($\Rightarrow$) 由定理~\ref{zh:thm:RL} 的证明，$u=l$ a.e.。由引理~\ref{zh:lem:cont}，$D_{f}\subseteq Z\cup\{u\neq l\}$，这是两个零测集的并。
+
+($\Leftarrow$) 若 $m(D_{f})=0$，由引理~\ref{zh:lem:cont}，$\{u\neq l\}\subseteq D_{f}\cup Z$ 是零测集，所以 $\int(u-l)\,dm=0$。由 $(\ast)$，$U(f,P_{k})-L(f,P_{k})\to0$，再由定理~\ref{zh:thm:darboux}，$f\in\mathcal{R}[a,b]$。
+\end{proof}
+
+\begin{remark}\envlabel{zh:rem:riemann}
+\leavevmode
+\begin{enumerate}
+  \item 定理~\ref{zh:thm:RL} 说明 Lebesgue 积分\textbf{是}常义 Riemann 积分的推广：$\mathcal{R}[a,b]\subseteq L^{1}([a,b])$，并且积分值相同。Lebesgue 判据中的有界性假设是必需的：无界函数根本不 Riemann 可积（命题~\ref{zh:prop:bdd}）。
+  \item Dirichlet 函数处处间断，所以不 Riemann 可积，但它 Lebesgue 可积，积分为 $0$。Thomae 函数（在既约分数 $p/q$ 处取 $1/q$，在无理数处取 $0$）只在有理点间断，间断点集可数，所以 Riemann 可积。
+  \item 注~\ref{zh:rem:unif} 中的 Arzelà 定理现在是显然的：若 $f_{n},f\in\mathcal{R}[a,b]$，$|f_{n}|\leq M$，$f_{n}\to f$ 逐点收敛，则由定理~\ref{zh:thm:RL} 与有界收敛定理，$\int_{a}^{b}f_{n}=\int_{[a,b]}f_{n}\,dm\to\int_{[a,b]}f\,dm=\int_{a}^{b}f$。在例~\ref{zh:ex:dirichlet} 中，有界收敛定理同样给出 $\int_{[0,1]}f_{n}\,dm\to\int_{[0,1]}D\,dm=0$，而这个极限在 Riemann 框架中根本无法表达。
+  \item 例~\ref{zh:ex:incomplete} 中的函数列在 $L^{1}([0,1])$ 中收敛到 $x^{-1/2}$：由单调收敛定理，$\int_{[0,1]}|f_{n}-x^{-1/2}|\,dm=\int(x^{-1/2}-f_{n})\,dm\to0$。
+\end{enumerate}
+\end{remark}
+
+\subsection{反常积分}\label{zh:sec:improper}
+
+\begin{definition}[反常积分]
+\leavevmode
+\begin{enumerate}
+  \item（无穷区间上的反常积分）设 $f:[a,\infty)\to\mathbb{R}$，且对每个 $b>a$，$f\in\mathcal{R}[a,b]$。若极限
+  \[
+  \int_{a}^{\infty}f(x)\,dx=\lim_{b\to\infty}\int_{a}^{b}f(x)\,dx
+  \]
+  存在且有限，称该反常积分收敛。
+  \item（瑕积分）设 $f:(a,b]\to\mathbb{R}$ 在 $a$ 附近无界，且对每个 $c\in(a,b)$，$f\in\mathcal{R}[c,b]$。若 $\lim_{c\to a^{+}}\int_{c}^{b}f(x)\,dx$ 存在且有限，称瑕积分 $\int_{a}^{b}f(x)\,dx$ 收敛。
+\end{enumerate}
+若 $|f|$ 的相应反常积分收敛，称原反常积分\textbf{绝对收敛}；收敛但不绝对收敛时称\textbf{条件收敛}。
+\end{definition}
+
+“瑕点”指函数\textbf{无界}的点，而不仅仅是间断点：在有界区间上只有有限个跳跃间断点的有界函数仍然常义 Riemann 可积（定理~\ref{zh:thm:criterion}），不需要反常积分。另外，若 $f\in\mathcal{R}[a,b]$，则 $f^{\pm}$、$|f|\in\mathcal{R}[a,b]$，因为它们的间断点都是 $f$ 的间断点。
+
+\begin{theorem}\envlabel{zh:thm:improper}
+设 $f:[a,\infty)\to\mathbb{R}$ 在每个 $[a,b]$ 上 Riemann 可积。则 $f$ 在 $[a,\infty)$ 上 Lebesgue 可测，并且：
+\begin{enumerate}
+  \item 若 $f\geq0$，则 $\displaystyle\int_{[a,\infty)}f\,dm=\lim_{b\to\infty}\int_{a}^{b}f(x)\,dx\in[0,+\infty]$；
+  \item $f\in L^{1}([a,\infty))$ 当且仅当 $\int_{a}^{\infty}|f(x)|\,dx$ 收敛，此时 $\displaystyle\int_{[a,\infty)}f\,dm=\int_{a}^{\infty}f(x)\,dx$；
+  \item 若 $\int_{a}^{\infty}f(x)\,dx$ 条件收敛，则 $\int_{[a,\infty)}f^{+}\,dm=\int_{[a,\infty)}f^{-}\,dm=+\infty$，因而 $\int_{[a,\infty)}f\,dm$ 没有定义；但仍有
+  \[
+  \int_{a}^{\infty}f(x)\,dx=\lim_{b\to\infty}\int_{[a,b]}f\,dm.
+  \]
+\end{enumerate}
+对瑕积分有完全类似的结论。
+\end{theorem}
+
+\begin{proof}[证明]
+由定理~\ref{zh:thm:RL}，$f$ 在每个 $[a,a+j]$ 上 Lebesgue 可测，而 $\{f>c\}=\bigcup_{j}\{x\in[a,a+j]:f(x)>c\}$，所以 $f$ 在 $[a,\infty)$ 上可测。
+
+(i) 设 $b_{n}\uparrow\infty$。则 $f\mathbf{1}_{[a,b_{n}]}\uparrow f\mathbf{1}_{[a,\infty)}$，由单调收敛定理与定理~\ref{zh:thm:RL}，
+\[
+\int_{[a,\infty)}f\,dm=\lim_{n\to\infty}\int_{a}^{b_{n}}f(x)\,dx.
+\]
+由于 $b\mapsto\int_{a}^{b}f$ 单调不减，沿序列的极限就是 $b\to\infty$ 的极限。
+
+(ii) 对 $|f|$ 应用 (i)，得 $\int_{[a,\infty)}|f|\,dm=\lim_{b\to\infty}\int_{a}^{b}|f|$，故第一个断言成立。若 $|f|$ 可积，对任意 $b_{n}\uparrow\infty$，$f\mathbf{1}_{[a,b_{n}]}\to f\mathbf{1}_{[a,\infty)}$ 且被 $|f|$ 控制，由控制收敛定理
+\[
+\int_{a}^{b_{n}}f(x)\,dx=\int_{[a,b_{n}]}f\,dm\to\int_{[a,\infty)}f\,dm.
+\]
+
+(iii) 由 (ii)，$\int|f|\,dm=\infty$，所以 $\int f^{+}$ 与 $\int f^{-}$ 中至少有一个为 $+\infty$。若只有一个为无穷，例如 $\int f^{-}\,dm<\infty=\int f^{+}\,dm$，则由 (i)（应用于 $f^{+}$）
+\[
+\int_{a}^{b}f(x)\,dx=\int_{[a,b]}f^{+}\,dm-\int_{[a,b]}f^{-}\,dm\geq\int_{[a,b]}f^{+}\,dm-\int_{[a,\infty)}f^{-}\,dm\to+\infty,
+\]
+与反常积分收敛矛盾；另一种情形同理。最后一个等式只是定理~\ref{zh:thm:RL} 与反常积分的定义。
+\end{proof}
+
+\begin{example}[$\int_{0}^{\infty}\frac{\sin x}{x}\,dx$]\envlabel{zh:ex:sinc}
+令 $f(x)=\frac{\sin x}{x}$（$x>0$），$f(0)=1$，则 $f$ 连续。
+
+\textbf{(a) $f$ 不 Lebesgue 可积.} 在 $[k\pi,(k+1)\pi]$ 上 $|f(x)|\geq\frac{|\sin x|}{(k+1)\pi}$，而 $\int_{k\pi}^{(k+1)\pi}|\sin x|\,dx=2$，所以
+\[
+\int_{0}^{N\pi}|f(x)|\,dx\geq\frac{2}{\pi}\sum_{k=1}^{N}\frac1k\to\infty.
+\]
+
+\textbf{(b) 反常积分收敛且等于 $\pi/2$.} 对 $t\geq0$ 与 $0<R<S$，令 $g(x)=e^{-tx}/x$，它在 $(0,\infty)$ 上正且递减。分部积分：
+\[
+\int_{R}^{S}g(x)\sin x\,dx=\big[-g(x)\cos x\big]_{R}^{S}+\int_{R}^{S}g'(x)\cos x\,dx,
+\]
+而 $\int_{R}^{S}|g'|=g(R)-g(S)$，所以
+\[
+\Big|\int_{R}^{S}e^{-tx}\frac{\sin x}{x}\,dx\Big|\leq g(R)+g(S)+g(R)-g(S)=2g(R)\leq\frac{2}{R}.\tag{$\ast\ast$}
+\]
+由 Cauchy 准则，对每个 $t\geq0$，反常积分 $I(t)=\int_{0}^{\infty}e^{-tx}f(x)\,dx$ 收敛，并且对一切 $t\geq0$，
+\[
+\Big|I(t)-\int_{0}^{R}e^{-tx}f(x)\,dx\Big|\leq\frac2R.
+\]
+当 $t>0$ 时，$|e^{-tx}f(x)|\leq e^{-tx}$ 可积，由定理~\ref{zh:thm:improper}(ii)，$I(t)=\int_{[0,\infty)}e^{-tx}f\,dm$。对 $t\geq t_{0}>0$，$|\partial_{t}(e^{-tx}f(x))|=e^{-tx}|\sin x|\leq e^{-t_{0}x}$，由定理~\ref{zh:thm:param}(ii)，
+\[
+I'(t)=-\int_{0}^{\infty}e^{-tx}\sin x\,dx=-\frac{1}{1+t^{2}}\qquad(t>0),
+\]
+最后一个积分由原函数 $-e^{-tx}(t\sin x+\cos x)/(1+t^{2})$ 直接算出。因此 $I(t)=C-\arctan t$。又 $|I(t)|\leq\int_{0}^{\infty}e^{-tx}\,dx=1/t\to0$ $(t\to\infty)$，所以 $C=\pi/2$。
+
+最后证明 $I$ 在 $t=0$ 处右连续。对任意 $R>0$，
+\[
+|I(t)-I(0)|\leq\Big|\int_{[0,R]}(e^{-tx}-1)f(x)\,dx\Big|+\frac4R.
+\]
+在 $[0,R]$ 上 $|(e^{-tx}-1)f(x)|\leq1$ 且当 $t\to0^{+}$ 时逐点趋于 $0$，由有界收敛定理，第一项趋于 $0$。于是 $\limsup_{t\to0^{+}}|I(t)-I(0)|\leq4/R$，令 $R\to\infty$ 得
+\[
+\int_{0}^{\infty}\frac{\sin x}{x}\,dx=I(0)=\lim_{t\to0^{+}}\Big(\frac\pi2-\arctan t\Big)=\frac{\pi}{2}.
+\]
+
+\textbf{(c) 结论.} 这是一个条件收敛的反常积分。由定理~\ref{zh:thm:improper}(iii)，$\int_{[0,\infty)}f^{+}\,dm=\int_{[0,\infty)}f^{-}\,dm=+\infty$，Lebesgue 积分 $\int_{[0,\infty)}f\,dm$ 没有定义；能够说的只是
+\[
+\lim_{R\to\infty}\int_{[0,R]}\frac{\sin x}{x}\,dm=\frac\pi2.
+\]
+\end{example}
+
+\begin{example}[瑕积分]\envlabel{zh:ex:improper2}
+\leavevmode
+\begin{enumerate}
+  \item $\int_{0}^{1}x^{-1/2}\,dx=\lim_{c\to0^{+}}(2-2\sqrt{c})=2$。由定理~\ref{zh:thm:improper}(i) 的瑕积分版本，$\int_{(0,1]}x^{-1/2}\,dm=2$，所以 $x^{-1/2}\in L^{1}((0,1])$。
+  \item 考虑 $\int_{0}^{1}\frac1x\sin\frac1x\,dx$。作代换 $x=1/s$，
+  \[
+  \int_{c}^{1}\frac1x\sin\frac1x\,dx=\int_{1}^{1/c}\frac{\sin s}{s}\,ds,\qquad\int_{c}^{1}\Big|\frac1x\sin\frac1x\Big|\,dx=\int_{1}^{1/c}\frac{|\sin s|}{s}\,ds.
+  \]
+  由例~\ref{zh:ex:sinc}，当 $c\to0^{+}$ 时前者收敛而后者发散。所以这是一个条件收敛的瑕积分，被积函数不属于 $L^{1}((0,1])$。
+\end{enumerate}
+\end{example}
+
+\begin{remark}
+总结 Riemann 积分与 Lebesgue 积分的关系：
+\begin{enumerate}
+  \item 常义 Riemann 可积 $\Rightarrow$ Lebesgue 可积，积分相同（定理~\ref{zh:thm:RL}）；
+  \item 反常积分绝对收敛 $\iff$ Lebesgue 可积，积分相同（定理~\ref{zh:thm:improper}(ii)）；
+  \item 条件收敛的反常积分不对应任何 Lebesgue 积分，只能表示为 Lebesgue 积分的极限（定理~\ref{zh:thm:improper}(iii)）；
+  \item 反过来，Lebesgue 可积函数（例如 Dirichlet 函数）可以既不常义 Riemann 可积，也不反常 Riemann 可积。
+\end{enumerate}
+因此，“每个 Riemann 可积函数都 Lebesgue 可积”对常义积分是正确的；需要谨慎的只是条件收敛的反常积分。
+\end{remark}
+
+\section*{小结}
+
+从 Riemann 积分出发，我们看到它的主要缺陷在于极限运算：可积函数的极限不一定可积，积分与极限的交换依赖一致收敛这样的强条件，积分距离下的函数空间也不完备。
+
+Lebesgue 的办法是分割值域而不是定义域。为此需要可测函数：满足 $\{f>a\}\in\mathcal{F}$ 的函数。可测函数对代数运算和可数极限运算封闭，可以由简单函数单调逼近，并且（Lusin 定理）几乎是连续的。
+
+积分按三步定义：
+\begin{align*}
+&\text{简单函数：}&&\int\sum_{k}c_{k}\mathbf{1}_{A_{k}}\,d\mu=\sum_{k}c_{k}\mu(A_{k}),\\
+&\text{非负可测函数：}&&\int f\,d\mu=\sup_{0\leq\varphi\leq f}\int\varphi\,d\mu,\\
+&\text{一般可测函数：}&&\int f\,d\mu=\int f^{+}\,d\mu-\int f^{-}\,d\mu.
+\end{align*}
+单调收敛定理是整个理论的基石，由它得到积分的可加性、逐项积分、Fatou 引理，最后得到控制收敛定理：
+\[
+f_{n}\to f\ \text{a.e.},\quad|f_{n}|\leq g\in L^{1}\quad\Longrightarrow\quad\int|f_{n}-f|\,d\mu\to0.
+\]
+
+最后，Lebesgue 积分确实推广了常义 Riemann 积分，并通过几乎处处连续刻画了 Riemann 可积性；与反常积分的关系则由绝对收敛决定。
+
+下一篇（第 III 篇）将在此基础上研究赋范空间与 $L^{p}$ 空间，证明 Hölder 与 Minkowski 不等式，以及 $L^{p}$ 的完备性（Riesz--Fischer 定理）。后者正好回答了 \S1.3 中 Riemann 可积函数空间不完备的问题。
+
+\section*{参考文献}
+
+\begin{enumerate}[label={[\arabic*]}]
+  \item G.~B.~Folland, \textit{Real Analysis: Modern Techniques and Their Applications}, 2nd ed., Wiley, 1999.
+  \item H.~L.~Royden, P.~M.~Fitzpatrick, \textit{Real Analysis}, 4th ed., Pearson, 2010.
+  \item E.~M.~Stein, R.~Shakarchi, \textit{Real Analysis: Measure Theory, Integration, and Hilbert Spaces}, Princeton University Press, 2005.
+  \item W.~Rudin, \textit{Principles of Mathematical Analysis}, 3rd ed., McGraw-Hill, 1976.
+  \item W.~Rudin, \textit{Real and Complex Analysis}, 3rd ed., McGraw-Hill, 1987.
+\end{enumerate}
+
+\end{CJK*}
+\end{document}

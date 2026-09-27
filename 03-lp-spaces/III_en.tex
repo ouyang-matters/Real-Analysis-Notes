@@ -1,0 +1,1036 @@
+\documentclass[11pt]{article}
+
+\usepackage{math_article}
+\usepackage{series_ra}
+
+\renewcommand{\ArticleNumeral}{III}
+\renewcommand{\ArticleTitle}{Normed Spaces and $L^{p}$ Spaces}
+\renewcommand{\ArticleAuthor}{Anqiao Ouyang}
+\renewcommand{\ArticleDate}{September 2024 \quad\textperiodcentered\quad Revised September 2026}
+
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\dmu}{\,\mathrm{d}\mu}
+\newcommand{\dx}{\,\mathrm{d}x}
+\newcommand{\ind}{\mathbf{1}}
+\DeclareMathOperator*{\esssup}{ess\,sup}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\supp}{supp}
+
+% ------------------------------------------------------------
+% Local fixes for the theorem-like boxes of math_article.sty:
+% (1) `before upper' was set after `attach title to upper' and
+%     overwrote it, so the box titles were not printed;
+% (2) `use counter' resets \themathenv to \arabic{mathenv};
+%     restore section-based numbering;
+% (3) make \label inside a box refer to the box number.
+% ------------------------------------------------------------
+\makeatletter
+\tcbset{
+  math-env-base/.style={
+    enhanced, breakable, left=12pt, right=12pt, top=10pt, bottom=10pt,
+    boxrule=0pt, frame hidden, borderline west={2.5pt}{0pt}{#1},
+    colback=#1!6!article-bg, colframe=#1,
+    fonttitle=\sffamily\bfseries\small, coltitle=#1,
+    attach title to upper={\par\smallskip\setlength{\parskip}{0.4em}%
+      \phantomsection\edef\@currentlabel{\themathenv}},
+  },
+  math-env-light/.style={
+    enhanced, breakable, left=12pt, right=12pt, top=8pt, bottom=8pt,
+    boxrule=0pt, frame hidden, borderline west={2.0pt}{0pt}{article-border},
+    colback=article-bg, fonttitle=\sffamily\bfseries\small, coltitle=article-muted,
+    attach title to upper={\par\smallskip\setlength{\parskip}{0.4em}%
+      \phantomsection\edef\@currentlabel{\themathenv}},
+  },
+}
+\makeatother
+\AtBeginDocument{\renewcommand{\themathenv}{\thesection.\arabic{mathenv}}}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduction}
+
+Article~I constructed measure spaces and Lebesgue measure on $\R^{n}$; Article~II defined measurable functions and the Lebesgue integral on a general measure space and proved the monotone convergence theorem, Fatou's lemma and the dominated convergence theorem. The present article changes the point of view: instead of studying functions one at a time, we regard a whole class of functions as the points of a vector space and use the integral to measure the ``size'' of these points and the ``distance'' between them. The basic objects of this point of view are the $L^{p}$ spaces.
+
+$L^{p}$ spaces combine three kinds of structure: a linear structure (functions can be added and multiplied by scalars), a metric structure (the norm induces a distance, so that convergence, Cauchy sequences and completeness make sense), and a measure-theoretic structure (the norm is defined by an integral). The plan is as follows. Section~1 introduces the language of normed and Banach spaces. Section~2 defines the $L^{p}$ spaces and explains why functions that agree almost everywhere must be identified. Section~3 proves the inequalities of Young, Hölder and Minkowski, together with their cases of equality. Section~4 proves the completeness of $L^{p}$ for $1\le p<\infty$ (the Riesz--Fischer theorem). Section~5 treats $L^{\infty}$ separately. Section~6 compares $L^{p}$ spaces with different exponents. Section~7 discusses dense subspaces and separability. Section~8 gives a brief introduction to the dual of $L^{p}$.
+
+\subsection*{Conventions}
+
+\begin{itemize}
+\item $\K$ denotes $\R$ or $\C$. Unless stated otherwise, $(X,\M,\mu)$ is a measure space, and ``a.e.'' (almost everywhere) refers to $\mu$. $m$ denotes Lebesgue measure on $\R^{n}$.
+\item Measurable functions, the integral of nonnegative measurable functions, and the integral of integrable functions are as in Article~II. A complex-valued function $f=u+iv$ is measurable if $u$ and $v$ are; if $|f|$ is integrable we set $\int f\dmu=\int u\dmu+i\int v\dmu$. Then $\bigl|\int f\dmu\bigr|\le\int|f|\dmu$: choose $|\alpha|=1$ with $\alpha\int f\dmu=\bigl|\int f\dmu\bigr|$; then
+\[
+\Bigl|\int f\dmu\Bigr|=\int \operatorname{Re}(\alpha f)\dmu\le\int|f|\dmu .
+\]
+\item In $[0,\infty]$ we use the conventions $0\cdot\infty=0$, $1/\infty=0$, $\infty^{1/p}=\infty$.
+\item For $1\le p\le\infty$, the number $q\in[1,\infty]$ with $\frac1p+\frac1q=1$ is called the \textbf{conjugate exponent} of $p$; $q=\infty$ if $p=1$ and $q=1$ if $p=\infty$. For $1<p<\infty$ we have $q=\frac{p}{p-1}$ and $(p-1)q=p$.
+\end{itemize}
+
+\section{Normed Spaces and Banach Spaces}
+
+\subsection{Norms}
+
+Article~I introduced metrics on arbitrary sets. When the set is a vector space it is more natural to measure first the ``length'' of each vector and then to obtain distances from lengths.
+
+\begin{definition}[Norm]
+Let $V$ be a vector space over $\K$. A map $\norm{\cdot}:V\to[0,\infty)$ is a \textbf{norm} on $V$ if for all $x,y\in V$ and $\alpha\in\K$:
+\begin{enumerate}
+\item (definiteness) $\norm{x}=0$ implies $x=0$;
+\item (homogeneity) $\norm{\alpha x}=|\alpha|\,\norm{x}$;
+\item (triangle inequality) $\norm{x+y}\le\norm{x}+\norm{y}$.
+\end{enumerate}
+A map satisfying only (ii) and (iii) is a \textbf{seminorm}. A vector space equipped with a norm, $(V,\norm{\cdot})$, is a \textbf{normed space}.
+\end{definition}
+
+\begin{remark}
+\begin{enumerate}
+\item Homogeneity may be weakened to $\norm{\alpha x}\le|\alpha|\,\norm{x}$ for all $\alpha$: for $\alpha\ne0$, $\norm{x}=\norm{\alpha^{-1}(\alpha x)}\le|\alpha|^{-1}\norm{\alpha x}$ gives the reverse inequality, and for $\alpha=0$, $\norm{0}=\norm{0\cdot 0}\le 0$.
+\item The triangle inequality says that the norm of a sum does not exceed the sum of the norms, not the other way round.
+\item A norm is a function of a single vector; the formula $d(x,y)=\norm{x-y}$ defines a metric on $V$: definiteness gives $d(x,y)=0\Leftrightarrow x=y$, homogeneity with $\alpha=-1$ gives symmetry, and the triangle inequality for the norm gives the triangle inequality for $d$. This metric is moreover translation invariant, $d(x+z,y+z)=d(x,y)$, and scales as $d(\alpha x,\alpha y)=|\alpha|d(x,y)$. Hence not every metric comes from a norm: the discrete metric on $\R$ ($d(x,y)=1$ for $x\ne y$) satisfies $d(2,0)=d(1,0)=1$ and does not scale.
+\end{enumerate}
+\end{remark}
+
+Convergence, Cauchy sequences, open and closed sets in a normed space always refer to the metric $d(x,y)=\norm{x-y}$.
+
+\begin{proposition}\label{prop:norm-cont}
+Let $(V,\norm{\cdot})$ be a normed space.
+\begin{enumerate}
+\item For all $x,y\in V$, $\bigl|\norm{x}-\norm{y}\bigr|\le\norm{x-y}$; in particular the norm is continuous on $V$.
+\item If $x_{n}\to x$, $y_{n}\to y$ and $\alpha_{n}\to\alpha$ ($\alpha_n\in\K$), then $x_{n}+y_{n}\to x+y$ and $\alpha_{n}x_{n}\to\alpha x$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(i) By the triangle inequality $\norm{x}\le\norm{x-y}+\norm{y}$; likewise $\norm{y}\le\norm{y-x}+\norm{x}$, and $\norm{y-x}=\norm{x-y}$.
+
+(ii) $\norm{(x_{n}+y_{n})-(x+y)}\le\norm{x_{n}-x}+\norm{y_{n}-y}\to0$. Moreover
+\[
+\norm{\alpha_{n}x_{n}-\alpha x}\le|\alpha_{n}|\,\norm{x_{n}-x}+|\alpha_{n}-\alpha|\,\norm{x},
+\]
+and $(|\alpha_{n}|)$ is bounded, so the right-hand side tends to $0$.
+\end{proof}
+
+\subsection{Banach spaces and the series criterion}
+
+\begin{definition}[Banach space]
+A sequence $(x_{n})$ in a normed space $V$ is a \textbf{Cauchy sequence} if for every $\varepsilon>0$ there is $N$ such that $\norm{x_{m}-x_{n}}<\varepsilon$ for all $m,n\ge N$. $V$ is \textbf{complete} if every Cauchy sequence in $V$ converges to an element of $V$. A complete normed space is called a \textbf{Banach space}.
+\end{definition}
+
+Series make sense in a normed space. The series $\sum_{k=1}^{\infty}x_{k}$ \textbf{converges} if the partial sums $S_{n}=\sum_{k=1}^{n}x_{k}$ converge in $V$, and it \textbf{converges absolutely} if $\sum_{k=1}^{\infty}\norm{x_{k}}<\infty$. In $\R$ absolute convergence implies convergence, which is one form of the completeness of $\R$. The next theorem shows that, in a general normed space, this property characterises completeness exactly; it will be our tool for proving that $L^{p}$ is complete.
+
+\begin{theorem}[Series criterion for completeness]\label{thm:series}
+A normed space $V$ is complete if and only if every absolutely convergent series in $V$ converges in $V$.
+\end{theorem}
+
+\begin{proof}
+Necessity: let $V$ be complete and $\sum\norm{x_{k}}<\infty$. For $m>n$,
+\[
+\norm{S_{m}-S_{n}}=\Bigl\|\sum_{k=n+1}^{m}x_{k}\Bigr\|\le\sum_{k=n+1}^{\infty}\norm{x_{k}}\xrightarrow[n\to\infty]{}0,
+\]
+so $(S_{n})$ is a Cauchy sequence and therefore converges.
+
+Sufficiency: let $(x_{n})$ be a Cauchy sequence. Choose $n_{1}<n_{2}<\cdots$ such that $\norm{x_{m}-x_{n}}<2^{-k}$ whenever $m,n\ge n_{k}$. Put $y_{1}=x_{n_{1}}$ and $y_{k+1}=x_{n_{k+1}}-x_{n_{k}}$; then $\sum_{k}\norm{y_{k}}\le\norm{y_{1}}+\sum_{k}2^{-k}<\infty$. By hypothesis $\sum y_{k}$ converges to some $x\in V$, and its $k$-th partial sum is exactly $x_{n_{k}}$, so $x_{n_{k}}\to x$. Finally, given $\varepsilon>0$ choose $N$ with $\norm{x_{m}-x_{n}}<\varepsilon$ for $m,n\ge N$, and then $k$ with $n_{k}\ge N$ and $\norm{x_{n_{k}}-x}<\varepsilon$. For $n\ge N$,
+\[
+\norm{x_{n}-x}\le\norm{x_{n}-x_{n_{k}}}+\norm{x_{n_{k}}-x}<2\varepsilon .
+\]
+Hence $x_{n}\to x$.
+\end{proof}
+
+\subsection{Finite-dimensional examples: $p$-norms on $\K^{n}$}
+
+\begin{example}[$p$-norms on $\K^{n}$]\label{ex:Kn}
+For $x=(x_{1},\dots,x_{n})\in\K^{n}$ and $1\le p<\infty$ put
+\[
+\norm{x}_{p}=\Bigl(\sum_{i=1}^{n}|x_{i}|^{p}\Bigr)^{1/p},\qquad \norm{x}_{\infty}=\max_{1\le i\le n}|x_{i}|.
+\]
+Definiteness and homogeneity are obvious; for $p=1$ and $p=\infty$ the triangle inequality follows directly from the triangle inequality in $\K$; for $1<p<\infty$ it is the discrete Minkowski inequality, proved in Section~3 (Corollary~\ref{cor:mink-discrete}). The induced distance $d_{p}(x,y)=\norm{x-y}_{p}$ is often called the \textbf{Minkowski distance}; $p=1,2,\infty$ give the ``Manhattan'', Euclidean and Chebyshev distances. From
+\[
+\norm{x}_{\infty}\le\norm{x}_{p}\le n^{1/p}\norm{x}_{\infty}
+\]
+we get $\lim_{p\to\infty}\norm{x}_{p}=\norm{x}_{\infty}$, which explains the notation $\norm{\cdot}_{\infty}$. Figure~\ref{fig:balls} shows the unit balls $B_{p}=\{x:\norm{x}_{p}\le1\}$ in $\R^{2}$.
+\end{example}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1.9]
+  \draw[->,article-muted] (-1.35,0) -- (1.4,0) node[right] {\small $x_1$};
+  \draw[->,article-muted] (0,-1.35) -- (0,1.4) node[above] {\small $x_2$};
+  \draw[ra-orange, line width=0.9pt] (-1,-1) rectangle (1,1);
+  \draw[ra-amber, line width=0.9pt] (0,0) circle (1);
+  \draw[article-text, line width=0.9pt] (1,0) -- (0,1) -- (-1,0) -- (0,-1) -- cycle;
+  \draw[article-muted, line width=0.8pt, dashed, domain=0:360, samples=200, smooth]
+     plot ({sign(cos(\x))*(cos(\x))^4},{sign(sin(\x))*(sin(\x))^4});
+  \begin{scope}[shift={(1.75,0.55)}, font=\small]
+    \draw[ra-orange, line width=0.9pt] (0,0.3) -- (0.3,0.3) node[right, article-text] {$p=\infty$};
+    \draw[ra-amber, line width=0.9pt] (0,0) -- (0.3,0) node[right, article-text] {$p=2$};
+    \draw[article-text, line width=0.9pt] (0,-0.3) -- (0.3,-0.3) node[right] {$p=1$};
+    \draw[article-muted, line width=0.8pt, dashed] (0,-0.6) -- (0.3,-0.6) node[right, article-text] {$p=\tfrac12$};
+  \end{scope}
+\end{tikzpicture}
+\caption{Boundaries of $\{\norm{x}_{p}\le1\}$ in $\R^{2}$. For $p\ge1$ the unit ball is convex; for $p=\tfrac12$ it is not.}
+\label{fig:balls}
+\end{figure}
+
+\begin{example}[Not a norm for $0<p<1$]\label{ex:p-less-1}
+For $0<p<1$ the same formula still defines $\norm{x}_{p}$, and definiteness and homogeneity still hold, but for $n\ge2$ the triangle inequality fails: with $e_{1}=(1,0,\dots,0)$ and $e_{2}=(0,1,0,\dots,0)$,
+\[
+\norm{e_{1}+e_{2}}_{p}=2^{1/p}>2=\norm{e_{1}}_{p}+\norm{e_{2}}_{p}.
+\]
+Geometrically, the unit ball of any norm is convex, since $\norm{x},\norm{y}\le1$ and $t\in[0,1]$ imply $\norm{tx+(1-t)y}\le t\norm{x}+(1-t)\norm{y}\le1$; the unit ball for $p=\tfrac12$ in Figure~\ref{fig:balls} is not convex.
+
+In signal processing one also writes $\norm{x}_{0}=\#\{i:x_{i}\ne0\}$ (the number of nonzero entries). It satisfies the triangle inequality but not homogeneity ($\norm{2x}_{0}=\norm{x}_{0}$), so it is not a norm either. Note that $\norm{x}_{0}=\lim_{p\to0^{+}}\norm{x}_{p}^{p}$: it is the limit of $\norm{x}_{p}^{p}$, not of $\norm{x}_{p}$.
+\end{example}
+
+In finite dimensions all norms are topologically the same.
+
+\begin{definition}[Equivalent norms]
+Two norms $\norm{\cdot}$ and $\norm{\cdot}'$ on a vector space $V$ are \textbf{equivalent} if there are constants $0<c\le C$ such that $c\norm{x}\le\norm{x}'\le C\norm{x}$ for all $x\in V$.
+\end{definition}
+
+Equivalent norms have the same convergent sequences, the same Cauchy sequences and the same open sets.
+
+\begin{theorem}\label{thm:finite-dim}
+Any two norms on a finite-dimensional vector space are equivalent.
+\end{theorem}
+
+\begin{proof}
+Choose a basis $e_{1},\dots,e_{n}$ and identify $V$ with $\K^{n}$. It suffices to show that an arbitrary norm $\norm{\cdot}$ is equivalent to $\norm{\cdot}_{1}$. On the one hand,
+\[
+\norm{x}=\Bigl\|\sum_{i}x_{i}e_{i}\Bigr\|\le\sum_{i}|x_{i}|\,\norm{e_{i}}\le M\norm{x}_{1},\qquad M=\max_{i}\norm{e_{i}} .
+\]
+Hence $\bigl|\norm{x}-\norm{y}\bigr|\le M\norm{x-y}_{1}$, i.e.\ $\norm{\cdot}$ is continuous with respect to $\norm{\cdot}_{1}$. On the other hand, regarding $\K^{n}$ as $\R^{n}$ or $\R^{2n}$, the Cauchy--Schwarz inequality gives $\norm{x}_{1}\le\sqrt{n}\,\norm{x}_{2}$, and clearly $\norm{x}_{2}\le\norm{x}_{1}$; so $\norm{\cdot}_{1}$ and the Euclidean norm have the same bounded sets and the same closed sets. Therefore the unit sphere $S=\{x:\norm{x}_{1}=1\}$ is closed and bounded in the Euclidean sense, hence compact by the Heine--Borel theorem (Article~I). The continuous function $\norm{\cdot}$ attains a minimum $c$ on $S$, and $c>0$ because $0\notin S$. For $x\ne0$,
+\[
+\norm{x}=\norm{x}_{1}\,\Bigl\|\frac{x}{\norm{x}_{1}}\Bigr\|\ge c\norm{x}_{1}. \qedhere
+\]
+\end{proof}
+
+\begin{corollary}\label{cor:finite-complete}
+Every finite-dimensional normed space is complete; every finite-dimensional subspace of a normed space is closed.
+\end{corollary}
+
+\begin{proof}
+Let $(x^{(k)})$ be a Cauchy sequence in a finite-dimensional normed space. By Theorem~\ref{thm:finite-dim} it is also Cauchy for $\norm{\cdot}_{1}$, so each coordinate sequence $(x^{(k)}_{i})_{k}$ is Cauchy in $\K$ and converges, by completeness of $\K$, to some $x_{i}$. Thus $\norm{x^{(k)}-x}_{1}\to0$, and by equivalence $\norm{x^{(k)}-x}\to0$. The second statement follows because a complete subset of a metric space is closed.
+\end{proof}
+
+\begin{remark}
+The common phrase ``an $n$-dimensional normed space is isomorphic to $\K^{n}$'' should be read precisely: an $n$-dimensional normed space over $\K$ is linearly homeomorphic to $(\K^{n},\norm{\cdot}_{2})$, but in general \emph{not} isometrically isomorphic. For example, there is no linear isometry between $(\R^{2},\norm{\cdot}_{\infty})$ and $(\R^{2},\norm{\cdot}_{2})$: a linear map sends a disc onto an elliptical disc, never onto a square.
+\end{remark}
+
+\subsection{Infinite-dimensional examples}
+
+\begin{example}[{$C[a,b]$ with the supremum norm}]\label{ex:Cab}
+Let $C[a,b]$ be the space of continuous $\K$-valued functions on $[a,b]$ and $\norm{f}_{u}=\max_{x\in[a,b]}|f(x)|$ (the \textbf{uniform} or supremum norm). Then $(C[a,b],\norm{\cdot}_{u})$ is a Banach space.
+
+Indeed, let $(f_{n})$ be a Cauchy sequence. For each $x$, $|f_{n}(x)-f_{m}(x)|\le\norm{f_{n}-f_{m}}_{u}$, so $(f_{n}(x))$ is a Cauchy sequence in $\K$; call its limit $f(x)$. Given $\varepsilon>0$, choose $N$ with $\norm{f_{n}-f_{m}}_{u}<\varepsilon$ for $m,n\ge N$; letting $m\to\infty$ in $|f_{n}(x)-f_{m}(x)|<\varepsilon$ gives $\sup_{x}|f_{n}(x)-f(x)|\le\varepsilon$ for $n\ge N$, i.e.\ $f_{n}\to f$ uniformly. A uniform limit of continuous functions is continuous: for $x_{0}\in[a,b]$ choose $\delta>0$ with $|f_{N}(x)-f_{N}(x_{0})|<\varepsilon$ whenever $|x-x_{0}|<\delta$; then
+\[
+|f(x)-f(x_{0})|\le|f(x)-f_{N}(x)|+|f_{N}(x)-f_{N}(x_{0})|+|f_{N}(x_{0})-f(x_{0})|<3\varepsilon .
+\]
+Hence $f\in C[a,b]$ and $\norm{f_{n}-f}_{u}\to0$.
+\end{example}
+
+\begin{example}[An incomplete norm on the same space]\label{ex:C-L1}
+On $C[0,2]$ put $\norm{f}_{1}=\int_{0}^{2}|f(x)|\dx$. This is a norm: if $f$ is continuous and $|f(x_{0})|>0$, then $|f|>|f(x_{0})|/2$ on a neighbourhood of $x_{0}$, so $\norm{f}_{1}>0$. But $(C[0,2],\norm{\cdot}_{1})$ is not complete. Let
+\[
+f_{n}(x)=\begin{cases}0,&0\le x\le1,\\ n(x-1),&1<x<1+\tfrac1n,\\ 1,&1+\tfrac1n\le x\le2.\end{cases}
+\]
+For $m>n$, $f_{m}$ and $f_{n}$ differ only on $[1,1+\frac1n]$, and there by at most $1$; so $\norm{f_{m}-f_{n}}_{1}\le\frac1n$ and $(f_{n})$ is Cauchy. If some continuous $f$ satisfied $\norm{f_{n}-f}_{1}\to0$, then $\int_{0}^{1}|f|\le\norm{f-f_{n}}_{1}\to0$, so $f=0$ on $[0,1]$; and for every $\delta\in(0,1)$ and $n>1/\delta$, $\int_{1+\delta}^{2}|f-1|\le\norm{f-f_{n}}_{1}\to0$, so $f=1$ on $[1+\delta,2]$ and hence on $(1,2]$. This contradicts continuity of $f$ at $1$.
+
+Thus the same vector space can be complete for one norm and incomplete for another; in particular $\norm{\cdot}_{u}$ and $\norm{\cdot}_{1}$ are not equivalent on $C[0,2]$, in contrast with Theorem~\ref{thm:finite-dim}. We shall see in Section~7 that the completion of this space is precisely $L^{1}[0,2]$.
+\end{example}
+
+\begin{example}[Sequence spaces]\label{ex:lp}
+For $1\le p<\infty$ let $\ell^{p}$ be the space of $\K$-valued sequences $x=(x_{n})_{n\ge1}$ with $\sum_{n}|x_{n}|^{p}<\infty$, with $\norm{x}_{p}=(\sum_{n}|x_{n}|^{p})^{1/p}$; let $\ell^{\infty}$ be the space of bounded sequences with $\norm{x}_{\infty}=\sup_{n}|x_{n}|$. Example~\ref{ex:counting} will show that these are the $L^{p}$ spaces of counting measure, so that everything proved below for $L^{p}$ (Minkowski's inequality, completeness, \dots) applies to $\ell^{p}$.
+\end{example}
+
+\subsection{Bounded linear maps}
+
+\begin{definition}
+Let $V,W$ be normed spaces over $\K$. A linear map $T:V\to W$ is \textbf{bounded} if there is a constant $C\ge0$ with $\norm{Tx}_{W}\le C\norm{x}_{V}$ for all $x\in V$. The smallest such constant,
+\[
+\norm{T}=\sup_{\norm{x}_{V}\le1}\norm{Tx}_{W},
+\]
+is the \textbf{operator norm} of $T$. For $W=\K$ a bounded linear map is called a bounded linear functional; the space of all bounded linear functionals on $V$ is denoted $V^{*}$ and called the \textbf{dual space} of $V$. With the operator norm it is a Banach space (the proof is similar to Example~\ref{ex:Cab} and uses only the completeness of $\K$).
+\end{definition}
+
+\begin{proposition}\label{prop:bounded-cont}
+For a linear map $T:V\to W$ the following are equivalent: (a) $T$ is bounded; (b) $T$ is continuous; (c) $T$ is continuous at $0$.
+\end{proposition}
+
+\begin{proof}
+(a)$\Rightarrow$(b): $\norm{Tx-Ty}_{W}=\norm{T(x-y)}_{W}\le C\norm{x-y}_{V}$, so $T$ is Lipschitz. (b)$\Rightarrow$(c) is trivial. (c)$\Rightarrow$(a): there is $\delta>0$ with $\norm{Tx}_{W}\le1$ whenever $\norm{x}_{V}\le\delta$. For $x\ne0$,
+\[
+\norm{Tx}_{W}=\frac{\norm{x}_{V}}{\delta}\Bigl\|T\Bigl(\frac{\delta x}{\norm{x}_{V}}\Bigr)\Bigr\|_{W}\le\frac{1}{\delta}\norm{x}_{V}. \qedhere
+\]
+\end{proof}
+
+\section{$L^{p}$ Spaces}
+
+\subsection{The $p$-norm and the essential supremum}
+
+\begin{definition}\label{def:pnorm}
+Let $f$ be a measurable function on $X$ with values in $\K$ or $[-\infty,\infty]$. For $0<p<\infty$ put
+\[
+\norm{f}_{p}=\Bigl(\int_{X}|f|^{p}\dmu\Bigr)^{1/p}\in[0,\infty].
+\]
+For $p=\infty$ put
+\[
+\norm{f}_{\infty}=\esssup_{X}|f|=\inf\bigl\{M\ge0:\ \mu(\{x:|f(x)|>M\})=0\bigr\}\in[0,\infty],
+\]
+with $\inf\varnothing=\infty$. $\norm{f}_{\infty}$ is called the \textbf{essential supremum} of $|f|$; it is the smallest a.e.\ upper bound of $|f|$.
+\end{definition}
+
+\begin{remark}
+The condition ``$\mu(\{|f|>M\})=0$'' (i.e.\ $|f|\le M$ a.e.) cannot be dropped: requiring $|f|\le M$ everywhere yields the ordinary supremum $\sup|f|$, which is changed by altering $f$ on a null set. For example $f=\ind_{\Q}$ on $\R$ has $\sup|f|=1$ but $\norm{f}_{\infty}=0$.
+\end{remark}
+
+\begin{lemma}\label{lem:esssup}
+For every measurable $f$, $|f|\le\norm{f}_{\infty}$ a.e.; that is, the infimum in the definition is attained.
+\end{lemma}
+
+\begin{proof}
+If $\norm{f}_{\infty}=\infty$ there is nothing to prove. Otherwise
+\[
+\{|f|>\norm{f}_{\infty}\}=\bigcup_{k=1}^{\infty}\Bigl\{|f|>\norm{f}_{\infty}+\tfrac1k\Bigr\},
+\]
+each set on the right is null by the definition of the infimum, and a countable union of null sets is null.
+\end{proof}
+
+\begin{lemma}\label{lem:null}
+Let $0<p\le\infty$ and let $f,g$ be measurable.
+\begin{enumerate}
+\item $\norm{f}_{p}=0$ if and only if $f=0$ a.e.;
+\item if $f=g$ a.e., then $\norm{f}_{p}=\norm{g}_{p}$;
+\item if $f$ is $\K$-valued and $\alpha\in\K$, then $\norm{\alpha f}_{p}=|\alpha|\,\norm{f}_{p}$.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+(i) For $p<\infty$: by Article~II, the integral of the nonnegative measurable function $|f|^{p}$ vanishes if and only if $|f|^{p}=0$ a.e. For $p=\infty$: if $\norm{f}_{\infty}=0$, Lemma~\ref{lem:esssup} gives $|f|\le0$ a.e.; the converse is clear. (ii) For $p<\infty$, $|f|^{p}=|g|^{p}$ a.e., so the integrals coincide; for $p=\infty$, $\{|f|>M\}$ and $\{|g|>M\}$ differ by a null set. (iii) Follows from homogeneity of the integral ($p<\infty$) or from $\{|\alpha f|>|\alpha|M\}=\{|f|>M\}$ ($p=\infty$, $\alpha\ne0$).
+\end{proof}
+
+\subsection{Definition of $L^{p}$}
+
+\begin{definition}\label{def:calLp}
+For $0<p\le\infty$ let
+\[
+\mathcal{L}^{p}(X,\mu)=\bigl\{f:X\to\K\ \big|\ f\text{ measurable},\ \norm{f}_{p}<\infty\bigr\}.
+\]
+\end{definition}
+
+\begin{proposition}\label{prop:vector}
+$\mathcal{L}^{p}(X,\mu)$ is a vector space over $\K$ under pointwise addition and scalar multiplication. More precisely, for $a,b\in\K$:
+\[
+|a+b|^{p}\le 2^{p-1}\bigl(|a|^{p}+|b|^{p}\bigr)\quad(1\le p<\infty),\qquad
+|a+b|^{p}\le |a|^{p}+|b|^{p}\quad(0<p\le1).
+\]
+\end{proposition}
+
+\begin{proof}
+Closure under scalar multiplication is Lemma~\ref{lem:null}(iii). For $1\le p<\infty$ the function $t\mapsto t^{p}$ is convex on $[0,\infty)$, so
+\[
+\Bigl(\frac{|a|+|b|}{2}\Bigr)^{p}\le\frac{|a|^{p}+|b|^{p}}{2},
+\]
+which together with $|a+b|\le|a|+|b|$ gives the first inequality. For $0<p\le1$ and $s,t\ge0$ with $s+t>0$, since $\frac{s}{s+t},\frac{t}{s+t}\in[0,1]$ and $p\le1$,
+\[
+1=\frac{s}{s+t}+\frac{t}{s+t}\le\Bigl(\frac{s}{s+t}\Bigr)^{p}+\Bigl(\frac{t}{s+t}\Bigr)^{p},
+\]
+i.e.\ $(s+t)^{p}\le s^{p}+t^{p}$; taking $s=|a|$, $t=|b|$ gives the second inequality. Applying these inequalities with $a=f(x)$, $b=g(x)$ and integrating shows that $f+g\in\mathcal{L}^{p}$ whenever $f,g\in\mathcal{L}^{p}$ ($p<\infty$). For $p=\infty$, Lemma~\ref{lem:esssup} gives $|f+g|\le\norm{f}_{\infty}+\norm{g}_{\infty}$ a.e.
+\end{proof}
+
+However, $\norm{\cdot}_{p}$ is in general not definite on $\mathcal{L}^{p}$: for instance $f=\ind_{\{0\}}$ on $(\R,m)$ has $\norm{f}_{p}=0$ although $f\ne0$. The remedy is not to distinguish between functions that agree almost everywhere. The relation ``$f\sim g\iff f=g$ a.e.'' is an equivalence relation on $\mathcal{L}^{p}$ (transitivity holds because the union of two null sets is null), and $\mathcal{N}=\{f:f=0\ \text{a.e.}\}$ is a linear subspace of $\mathcal{L}^{p}$.
+
+\begin{definition}[$L^{p}$ spaces]\label{def:Lp}
+For $0<p\le\infty$ define the quotient space
+\[
+L^{p}(X,\mu)=\mathcal{L}^{p}(X,\mu)/\mathcal{N},
+\]
+whose elements are the equivalence classes $[f]=\{g\in\mathcal{L}^{p}:g=f\ \text{a.e.}\}$, with operations $[f]+[g]=[f+g]$, $\alpha[f]=[\alpha f]$, and put $\norm{[f]}_{p}=\norm{f}_{p}$.
+\end{definition}
+
+By Lemma~\ref{lem:null}(ii), $\norm{[f]}_{p}$ does not depend on the choice of representative, and by Lemma~\ref{lem:null}(i), $\norm{[f]}_{p}=0$ if and only if $[f]=[0]$. Consequently, as soon as the triangle inequality is proved for $1\le p\le\infty$ (Section~3), $L^{p}(X,\mu)$ is a normed space.
+
+\begin{remark}[Conventions]\label{rem:convention}
+\begin{enumerate}
+\item As usual we identify the class $[f]$ with a representative $f$ and write $f\in L^{p}$; relations such as $f\ge0$, $f\le g$, $f=g$ are understood to hold almost everywhere. One must remember, however, that elements of $L^{p}$ are not functions: when points are null sets (as in $(\R^{n},m)$), ``the value at $0$ of $f\in L^{p}(\R)$'' is meaningless.
+\item If $f$ takes values in $[-\infty,\infty]$ and $\norm{f}_{p}<\infty$ ($p<\infty$), then $f$ is finite a.e. (otherwise $|f|^{p}=\infty$ on a set of positive measure), so it agrees a.e.\ with a finite-valued function; allowing extended real-valued representatives therefore changes nothing.
+\item $L^{p}$ is defined for every measure space, not only for Lebesgue measure. When $X=\R^{n}$, or a measurable subset $E$, carries Lebesgue measure we write $L^{p}(\R^{n})$, $L^{p}(E)$, $L^{p}[a,b]$, etc.; when no confusion can arise we simply write $L^{p}(X)$ or $L^{p}$.
+\end{enumerate}
+\end{remark}
+
+\subsection{Two basic examples}
+
+\begin{example}[Counting measure and $\ell^{p}$]\label{ex:counting}
+Let $X=\N$, $\M=\mathcal{P}(\N)$ and $\mu$ counting measure ($\mu(A)=\#A$). Every function $f:\N\to\K$ is measurable. For nonnegative $f$, the simple functions $f\ind_{\{1,\dots,N\}}$ increase to $f$, so by the monotone convergence theorem
+\[
+\int_{\N}f\dmu=\lim_{N\to\infty}\sum_{n=1}^{N}f(n)=\sum_{n=1}^{\infty}f(n).
+\]
+Since the only null set is $\varnothing$, each equivalence class contains a single function, and $\norm{f}_{\infty}=\sup_{n}|f(n)|$. Hence $L^{p}(\N,\mu)=\ell^{p}$ ($0<p\le\infty$) with the norms of Example~\ref{ex:lp}. Likewise, counting measure on $X=\{1,\dots,n\}$ gives $(\K^{n},\norm{\cdot}_{p})$ of Example~\ref{ex:Kn}.
+\end{example}
+
+\begin{example}[Power functions]\label{ex:power}
+Let $\alpha>0$ and $0<p<\infty$. Then
+\[
+x^{-\alpha}\in L^{p}(0,1)\iff \alpha p<1,\qquad x^{-\alpha}\in L^{p}(1,\infty)\iff \alpha p>1 .
+\]
+Indeed, $x^{-\alpha p}\ind_{[\varepsilon,1)}$ increases to $x^{-\alpha p}\ind_{(0,1)}$ as $\varepsilon\downarrow0$; by the monotone convergence theorem and the equality of the Lebesgue and Riemann integrals of a continuous function on a closed interval (Article~II),
+\[
+\int_{(0,1)}x^{-\alpha p}\dx=\lim_{\varepsilon\to0^{+}}\int_{\varepsilon}^{1}x^{-\alpha p}\dx=\begin{cases}\dfrac{1}{1-\alpha p},&\alpha p<1,\\[2mm] \infty,&\alpha p\ge1.\end{cases}
+\]
+The case of $(1,\infty)$ is analogous. Thus $x^{-\alpha}\ind_{(0,1)}$ belongs only to $L^{p}$ with small exponents (a local singularity penalises large $p$), whereas $x^{-\alpha}\ind_{(1,\infty)}$ belongs only to $L^{p}$ with large exponents (slow decay at infinity penalises small $p$). This contrast will recur in Section~6.
+\end{example}
+
+\section{The Inequalities of Young, Hölder and Minkowski}
+
+\subsection{Young's inequality}
+
+\begin{lemma}[Young's inequality]\label{lem:young}
+Let $1<p<\infty$, let $q$ be the conjugate exponent and $a,b\ge0$. Then
+\[
+ab\le\frac{a^{p}}{p}+\frac{b^{q}}{q},
+\]
+with equality if and only if $a^{p}=b^{q}$.
+\end{lemma}
+
+\begin{proof}
+If $a=0$ or $b=0$, the left side is $0$ and the right side is nonnegative, and the right side vanishes if and only if $a=b=0$, i.e.\ if and only if $a^{p}=b^{q}$. Let $a,b>0$. Since $(e^{t})''=e^{t}>0$, the exponential function is strictly convex: for $\lambda\in(0,1)$,
+\[
+e^{\lambda s+(1-\lambda)t}\le\lambda e^{s}+(1-\lambda)e^{t},
+\]
+with equality if and only if $s=t$. Take $\lambda=\frac1p$ (so $1-\lambda=\frac1q$), $s=\log a^{p}$, $t=\log b^{q}$. The left side is $e^{\log a+\log b}=ab$ and the right side is $\frac{a^{p}}{p}+\frac{b^{q}}{q}$; equality holds if and only if $a^{p}=b^{q}$.
+\end{proof}
+
+\begin{remark}
+Young's inequality has an intuitive geometric interpretation (Figure~\ref{fig:young}): the curve $y=x^{p-1}$ and its inverse $x=y^{q-1}$ (note $(p-1)(q-1)=1$) bound two regions which together cover the rectangle $[0,a]\times[0,b]$; their areas are $\int_{0}^{a}x^{p-1}\dx=\frac{a^{p}}{p}$ and $\int_{0}^{b}y^{q-1}\,\mathrm{d}y=\frac{b^{q}}{q}$. The two regions fit together exactly into the rectangle if and only if $b=a^{p-1}$, i.e.\ $a^{p}=b^{q}$.
+\end{remark}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=2.4]
+  \fill[ra-orange!18] (0,0) -- plot[domain=0:1.2, samples=60] (\x,{\x*\x}) -- (1.2,0) -- cycle;
+  \fill[ra-amber!30] (0,0) -- plot[domain=0:1, samples=60] ({sqrt(\x)},\x) -- (0,1) -- cycle;
+  \draw[->,article-muted] (0,0) -- (1.45,0) node[right] {\small $x$};
+  \draw[->,article-muted] (0,0) -- (0,1.6) node[above] {\small $y$};
+  \draw[article-text, line width=0.9pt, domain=0:1.25, samples=60] plot (\x,{\x*\x}) node[right] {\small $y=x^{p-1}$};
+  \draw[article-text, dashed] (1.2,0) -- (1.2,1.44);
+  \draw[article-text, dashed] (0,1) -- (1.2,1);
+  \node[below] at (1.2,0) {\small $a$};
+  \node[left] at (0,1) {\small $b$};
+  \node at (0.95,0.35) {\small $\frac{a^{p}}{p}$};
+  \node at (0.35,0.62) {\small $\frac{b^{q}}{q}$};
+\end{tikzpicture}
+\caption{Geometric meaning of Young's inequality ($p=3$, $q=\tfrac32$). The two shaded regions cover the rectangle $[0,a]\times[0,b]$.}
+\label{fig:young}
+\end{figure}
+
+\subsection{Hölder's inequality}
+
+Recall the Cauchy--Schwarz inequality $|\langle u,v\rangle|\le\norm{u}\,\norm{v}$ in an inner product space $V$. Hölder's inequality is its generalisation to the $L^{p}$ setting.
+
+\begin{theorem}[Hölder's inequality]\label{thm:holder}
+Let $1\le p\le\infty$, let $q$ be the conjugate exponent and let $f,g$ be measurable $\K$-valued functions on $X$. Then
+\[
+\norm{fg}_{1}=\int_{X}|fg|\dmu\le\norm{f}_{p}\,\norm{g}_{q}
+\]
+(both sides in $[0,\infty]$). In particular, if $f\in L^{p}$ and $g\in L^{q}$, then $fg\in L^{1}$ and $\bigl|\int_{X}fg\dmu\bigr|\le\norm{f}_{p}\norm{g}_{q}$.
+\end{theorem}
+
+\begin{proof}
+Case $p=1$, $q=\infty$: by Lemma~\ref{lem:esssup}, $|fg|\le\norm{g}_{\infty}|f|$ a.e. (with $0\cdot\infty=0$); integrate. The case $p=\infty$ is symmetric.
+
+Case $1<p<\infty$. If $\norm{f}_{p}=0$ or $\norm{g}_{q}=0$, then by Lemma~\ref{lem:null} $f=0$ a.e.\ or $g=0$ a.e., so $fg=0$ a.e.\ and both sides vanish. If neither is $0$ and one of them is $\infty$, the right side is $\infty$ and there is nothing to prove. So assume $A=\norm{f}_{p}$ and $B=\norm{g}_{q}$ lie in $(0,\infty)$. For each $x$ apply Young's inequality with $a=|f(x)|/A$, $b=|g(x)|/B$:
+\[
+\frac{|f(x)g(x)|}{AB}\le\frac{1}{p}\frac{|f(x)|^{p}}{A^{p}}+\frac{1}{q}\frac{|g(x)|^{q}}{B^{q}}.
+\]
+Integrating, the right side becomes $\frac1p\cdot1+\frac1q\cdot1=1$, so $\norm{fg}_{1}\le AB$. The last assertion follows from $\bigl|\int h\bigr|\le\int|h|$ (see the Conventions).
+\end{proof}
+
+\begin{remark}
+The logical order of the proof is: normalise $f$ and $g$ by their norms, apply Young's inequality pointwise to the normalised functions, then integrate. Normalisation requires $0<\norm{f}_{p},\norm{g}_{q}<\infty$, so the cases of norm $0$ or $\infty$ must be treated separately. Note also that the two functions are measured with the exponents $p$ and $q$ respectively: the right-hand side is $(\int|f|^{p})^{1/p}(\int|g|^{q})^{1/q}$, with $1\le p,q\le\infty$.
+\end{remark}
+
+\begin{corollary}[Cauchy--Schwarz inequality]\label{cor:cs}
+If $f,g\in L^{2}(X,\mu)$, then $\bigl|\int_{X}f\bar{g}\dmu\bigr|\le\norm{f}_{2}\norm{g}_{2}$. Hence $\langle f,g\rangle=\int_{X}f\bar{g}\dmu$ is an inner product on $L^{2}$ with $\langle f,f\rangle=\norm{f}_{2}^{2}$.
+\end{corollary}
+
+This holds for every measure space, not only for $L^{2}(S^{1})$. Together with completeness (Section~4), $L^{2}(X,\mu)$ is a Hilbert space. For counting measure we obtain the discrete form
+\[
+\sum_{n}|x_{n}y_{n}|\le\Bigl(\sum_{n}|x_{n}|^{p}\Bigr)^{1/p}\Bigl(\sum_{n}|y_{n}|^{q}\Bigr)^{1/q}.
+\]
+
+\begin{corollary}[Generalised Hölder inequality]\label{cor:gen-holder}
+Let $0<p,q,r\le\infty$ with $\frac1r=\frac1p+\frac1q$, and let $f,g$ be measurable. Then $\norm{fg}_{r}\le\norm{f}_{p}\norm{g}_{q}$.
+\end{corollary}
+
+\begin{proof}
+If $r=\infty$ then $p=q=\infty$, and $|fg|\le\norm{f}_{\infty}\norm{g}_{\infty}$ a.e.\ by Lemma~\ref{lem:esssup}. Let $r<\infty$. If $p=\infty$, then $q=r$ and $|fg|^{r}\le\norm{f}_{\infty}^{r}|g|^{r}$ a.e.; integrate. The case $q=\infty$ is the same. If $p,q<\infty$, then $\frac{p}{r},\frac{q}{r}>1$ and $\frac{r}{p}+\frac{r}{q}=1$; applying Theorem~\ref{thm:holder} to $|f|^{r}$ and $|g|^{r}$ with exponents $\frac pr,\frac qr$ gives
+\[
+\int|f|^{r}|g|^{r}\dmu\le\Bigl(\int|f|^{p}\dmu\Bigr)^{r/p}\Bigl(\int|g|^{q}\dmu\Bigr)^{r/q},
+\]
+and we take $r$-th roots.
+\end{proof}
+
+By induction, if $\frac1r=\sum_{i=1}^{k}\frac{1}{p_{i}}$, then $\norm{f_{1}\cdots f_{k}}_{r}\le\prod_{i}\norm{f_{i}}_{p_{i}}$.
+
+\subsection{Equality in Hölder's inequality}
+
+\begin{theorem}\label{thm:holder-eq}
+\begin{enumerate}
+\item Let $1<p<\infty$, $f\in L^{p}$, $g\in L^{q}$. Then $\norm{fg}_{1}=\norm{f}_{p}\norm{g}_{q}$ if and only if there are constants $\alpha,\beta\ge0$, not both zero, with $\alpha|f|^{p}=\beta|g|^{q}$ a.e. When $\norm{f}_{p},\norm{g}_{q}>0$ this is equivalent to
+\[
+\frac{|f|^{p}}{\norm{f}_{p}^{p}}=\frac{|g|^{q}}{\norm{g}_{q}^{q}}\quad\text{a.e.}
+\]
+\item Let $f\in L^{1}$, $g\in L^{\infty}$. Then $\norm{fg}_{1}=\norm{f}_{1}\norm{g}_{\infty}$ if and only if $|g|=\norm{g}_{\infty}$ a.e.\ on the set $\{f\ne0\}$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) If $\norm{f}_{p}=0$, both sides of the equality are $0$, and $\alpha=1$, $\beta=0$ satisfy the condition; conversely, if the condition holds with $\beta=0$, then $\alpha>0$, $f=0$ a.e., and equality holds. The cases $\norm{g}_{q}=0$ or $\alpha=0$ are symmetric. Assume now $A=\norm{f}_{p}>0$ and $B=\norm{g}_{q}>0$, and let $F=|f|/A$, $G=|g|/B$,
+\[
+H=\frac{F^{p}}{p}+\frac{G^{q}}{q}-FG .
+\]
+By Young's inequality $H\ge0$ a.e., and by the proof of Theorem~\ref{thm:holder}, $\int H\dmu=1-\frac{\norm{fg}_{1}}{AB}$. Hence equality holds $\iff\int H=0\iff H=0$ a.e.\ (Article~II) $\iff F^{p}=G^{q}$ a.e.\ (the equality case of Young's inequality), i.e.\ $|f|^{p}/A^{p}=|g|^{q}/B^{q}$ a.e.; this is the condition with $\alpha=A^{-p}$, $\beta=B^{-q}$. Conversely, if $\alpha|f|^{p}=\beta|g|^{q}$ a.e.\ with $\alpha,\beta$ not both zero, then since $A,B>0$ both $\alpha$ and $\beta$ must be positive (e.g.\ $\alpha=0$ would force $g=0$ a.e.); integrating gives $\alpha A^{p}=\beta B^{q}$, whence $|f|^{p}/A^{p}=|g|^{q}/B^{q}$ a.e.
+
+(ii) By Hölder's inequality $\norm{fg}_{1}<\infty$, and
+\[
+\norm{f}_{1}\norm{g}_{\infty}-\norm{fg}_{1}=\int_{X}|f|\bigl(\norm{g}_{\infty}-|g|\bigr)\dmu ,
+\]
+where the integrand is nonnegative a.e.\ (Lemma~\ref{lem:esssup}). So the difference vanishes if and only if $|f|(\norm{g}_{\infty}-|g|)=0$ a.e., i.e.\ $|g|=\norm{g}_{\infty}$ a.e.\ on $\{f\ne0\}$.
+\end{proof}
+
+\begin{example}\label{ex:holder-eq}
+For $p=1$, $q=\infty$ the equality condition is sometimes misstated as ``$f$ and $g$ have the same support a.e.''. This is neither sufficient nor necessary. On $[0,1]$ take $f\equiv1$ and $g(x)=x$: the sets $\{f\ne0\}$ and $\{g\ne0\}$ differ by a null set, yet $\norm{fg}_{1}=\tfrac12<1=\norm{f}_{1}\norm{g}_{\infty}$. Conversely, take $f=\ind_{[0,1/2]}$ and $g\equiv1$: the supports differ, yet $\norm{fg}_{1}=\tfrac12=\norm{f}_{1}\norm{g}_{\infty}$. For $1<p<\infty$, the condition ``$|f|^{p}=\lambda|g|^{q}$ for some $\lambda\ge0$'' misses the case $g=0$, $f\ne0$ (where equality $0=0$ holds trivially); this is why the theorem uses two coefficients $\alpha,\beta$, not both zero.
+\end{example}
+
+\subsection{Minkowski's inequality}
+
+\begin{theorem}[Minkowski's inequality]\label{thm:minkowski}
+Let $1\le p\le\infty$ and $f,g\in L^{p}(X,\mu)$. Then $f+g\in L^{p}$ and
+\[
+\norm{f+g}_{p}\le\norm{f}_{p}+\norm{g}_{p}.
+\]
+Consequently, for $1\le p\le\infty$, $\norm{\cdot}_{p}$ is a seminorm on $\mathcal{L}^{p}$ and $L^{p}(X,\mu)$ is a normed space.
+\end{theorem}
+
+\begin{proof}
+$p=1$: integrate $|f+g|\le|f|+|g|$. $p=\infty$: by Lemma~\ref{lem:esssup}, outside a null set $|f+g|\le|f|+|g|\le\norm{f}_{\infty}+\norm{g}_{\infty}$.
+
+Let $1<p<\infty$. By Proposition~\ref{prop:vector}, $f+g\in L^{p}$, i.e.\ $\norm{f+g}_{p}<\infty$; if $\norm{f+g}_{p}=0$ there is nothing to prove, so assume $0<\norm{f+g}_{p}<\infty$. Since $(p-1)q=p$,
+\[
+\bigl\||f+g|^{p-1}\bigr\|_{q}=\Bigl(\int|f+g|^{p}\dmu\Bigr)^{1/q}=\norm{f+g}_{p}^{p/q}=\norm{f+g}_{p}^{p-1}<\infty .
+\]
+Using $|f+g|\le|f|+|g|$ and Hölder's inequality,
+\[
+\begin{aligned}
+\norm{f+g}_{p}^{p}&=\int|f+g|\,|f+g|^{p-1}\dmu
+\le\int|f|\,|f+g|^{p-1}\dmu+\int|g|\,|f+g|^{p-1}\dmu\\
+&\le\bigl(\norm{f}_{p}+\norm{g}_{p}\bigr)\,\norm{f+g}_{p}^{p-1}.
+\end{aligned}
+\]
+Dividing by $\norm{f+g}_{p}^{p-1}\in(0,\infty)$ gives the result.
+\end{proof}
+
+\begin{remark}
+The preliminary step ``$\norm{f+g}_{p}<\infty$'' is essential: without it the final step might be a division by $\infty$. The proof above is valid on every measure space; finite sums and series are merely the special case of counting measure.
+\end{remark}
+
+\begin{corollary}[Discrete Minkowski inequality]\label{cor:mink-discrete}
+For $1\le p<\infty$ and $\K$-valued sequences (finite or infinite) $(x_{k})$, $(y_{k})$,
+\[
+\Bigl(\sum_{k}|x_{k}+y_{k}|^{p}\Bigr)^{1/p}\le\Bigl(\sum_{k}|x_{k}|^{p}\Bigr)^{1/p}+\Bigl(\sum_{k}|y_{k}|^{p}\Bigr)^{1/p}.
+\]
+In particular $(\K^{n},\norm{\cdot}_{p})$ and $\ell^{p}$ ($1\le p\le\infty$) are normed spaces.
+\end{corollary}
+
+\begin{proof}
+Apply Theorem~\ref{thm:minkowski} to counting measure on $\{1,\dots,n\}$ or $\N$ (Example~\ref{ex:counting}); if the right side is $\infty$ there is nothing to prove.
+\end{proof}
+
+The ``integral form'' of Minkowski's inequality often quoted, $\bigl(\int_{a}^{b}|f+g|^{p}\bigr)^{1/p}\le\bigl(\int_{a}^{b}|f|^{p}\bigr)^{1/p}+\bigl(\int_{a}^{b}|g|^{p}\bigr)^{1/p}$, is just Theorem~\ref{thm:minkowski} for $X=[a,b]$; it requires only $f,g\in L^{p}[a,b]$, $1\le p<\infty$.
+
+\begin{theorem}[Equality in Minkowski's inequality]\label{thm:mink-eq}
+Let $1<p<\infty$ and $f,g\in L^{p}$. Then $\norm{f+g}_{p}=\norm{f}_{p}+\norm{g}_{p}$ if and only if there is $\lambda\ge0$ with $f=\lambda g$ a.e.\ or $g=\lambda f$ a.e.
+\end{theorem}
+
+\begin{proof}
+Sufficiency: if $g=\lambda f$, then $\norm{f+g}_{p}=(1+\lambda)\norm{f}_{p}=\norm{f}_{p}+\norm{g}_{p}$.
+
+Necessity: if $f=0$ a.e., then $f=0\cdot g$; similarly if $g=0$ a.e. Let $\norm{f}_{p},\norm{g}_{p}>0$, so that $\norm{f+g}_{p}=\norm{f}_{p}+\norm{g}_{p}>0$. Put $h=|f+g|^{p-1}$; then $\norm{h}_{q}=\norm{f+g}_{p}^{p-1}>0$. In the proof of Theorem~\ref{thm:minkowski},
+\[
+\norm{f+g}_{p}^{p}\le\int(|f|+|g|)h\dmu\le\bigl(\norm{f}_{p}+\norm{g}_{p}\bigr)\norm{h}_{q}=\norm{f+g}_{p}^{p},
+\]
+so both inequalities are equalities.
+
+Equality in the first gives $\int(|f|+|g|-|f+g|)h\dmu=0$ with a nonnegative integrand, so $|f+g|=|f|+|g|$ a.e.\ on $S=\{f+g\ne0\}$. The second is the sum of the two Hölder inequalities $\int|f|h\le\norm{f}_{p}\norm{h}_{q}$ and $\int|g|h\le\norm{g}_{p}\norm{h}_{q}$, so both are equalities. By Theorem~\ref{thm:holder-eq}(i),
+\[
+\frac{|f|^{p}}{\norm{f}_{p}^{p}}=\frac{h^{q}}{\norm{h}_{q}^{q}}=\frac{|f+g|^{p}}{\norm{f+g}_{p}^{p}}\quad\text{a.e.},
+\]
+i.e.\ $|f|=s|f+g|$ a.e.\ with $s=\norm{f}_{p}/\norm{f+g}_{p}>0$; likewise $|g|=t|f+g|$ a.e.\ with $t=\norm{g}_{p}/\norm{f+g}_{p}>0$. In particular $f=g=0$ a.e.\ on $X\setminus S$.
+
+On $S$, for complex numbers $z=f(x)$, $w=g(x)$, the identity $|z+w|^{2}=|z|^{2}+|w|^{2}+2\operatorname{Re}(z\bar w)$ shows that $|z+w|=|z|+|w|$ is equivalent to $z\bar w=|z||w|\ge0$, i.e.\ one of $z,w$ is a nonnegative multiple of the other; consequently $z=\frac{|z|}{|z+w|}(z+w)$. Therefore $f=s(f+g)$ and $g=t(f+g)$ a.e.\ on $S$, and these identities also hold a.e.\ on $X\setminus S$. Hence $tf=st(f+g)=sg$ a.e., i.e.\ $f=\frac{s}{t}g$ a.e.
+\end{proof}
+
+\begin{remark}
+For $p=1$, $\norm{f+g}_{1}=\norm{f}_{1}+\norm{g}_{1}$ if and only if $|f+g|=|f|+|g|$ a.e., i.e.\ $f\bar g\ge0$ a.e.; this does not force $f$ and $g$ to be proportional (any two nonnegative functions give equality). For $p=\infty$ there is no proportionality characterisation either: $f=\ind_{[0,1]}$, $g=\ind_{[0,2]}$ satisfy $\norm{f+g}_{\infty}=2=\norm{f}_{\infty}+\norm{g}_{\infty}$.
+\end{remark}
+
+\subsection{The case $0<p<1$}
+
+\begin{proposition}[Reverse Minkowski inequality]\label{prop:reverse}
+Let $0<p<1$ and let $f,g$ be nonnegative measurable functions. Then $\norm{f+g}_{p}\ge\norm{f}_{p}+\norm{g}_{p}$.
+\end{proposition}
+
+\begin{proof}
+Since $f+g\ge f$ and $f+g\ge g$, if $\norm{f}_{p}$ or $\norm{g}_{p}$ is $\infty$ so is the left side, and if one of them is $0$ the claim is also clear. Let $a=\norm{f}_{p}$ and $b=\norm{g}_{p}$ lie in $(0,\infty)$, and put $u=f/a$, $v=g/b$, $\lambda=\frac{a}{a+b}$. Then
+\[
+f+g=(a+b)\bigl(\lambda u+(1-\lambda)v\bigr).
+\]
+The function $t\mapsto t^{p}$ is concave on $[0,\infty)$, so $(\lambda u+(1-\lambda)v)^{p}\ge\lambda u^{p}+(1-\lambda)v^{p}$. Integrating and using $\int u^{p}=\int v^{p}=1$ gives $\int(f+g)^{p}\dmu\ge(a+b)^{p}$.
+\end{proof}
+
+\begin{example}\label{ex:p-less-1-L}
+If $X$ contains disjoint measurable sets $A,B$ with $0<\mu(A),\mu(B)<\infty$, then for $0<p<1$
+\[
+\norm{\ind_{A}+\ind_{B}}_{p}=\bigl(\mu(A)+\mu(B)\bigr)^{1/p}>\mu(A)^{1/p}+\mu(B)^{1/p}=\norm{\ind_{A}}_{p}+\norm{\ind_{B}}_{p},
+\]
+the strict inequality coming from $(s+t)^{r}>s^{r}+t^{r}$ for $r=\frac1p>1$ and $s,t>0$. So in this situation $\norm{\cdot}_{p}$ is not a seminorm.
+\end{example}
+
+\begin{remark}
+Note that the reverse inequality holds only for \emph{nonnegative} functions and $0<p<1$ (for general functions take $g=-f$); for $p=1$ one has the usual triangle inequality, and for $p=0$ the formula is meaningless. On the other hand, by Proposition~\ref{prop:vector}, for $0<p<1$
+\[
+d_{p}(f,g)=\int_{X}|f-g|^{p}\dmu
+\]
+satisfies the triangle inequality and is a translation-invariant metric on $L^{p}$, and the method of Theorem~\ref{thm:riesz-fischer} shows that $(L^{p},d_{p})$ is complete. In general, however, $L^{p}$ ($0<p<1$) is not normable; for instance, one can show that the only continuous linear functional on $L^{p}[0,1]$ is zero. From now on we mainly consider $1\le p\le\infty$.
+\end{remark}
+
+\subsection{The parallelogram law}
+
+\begin{proposition}\label{prop:parallelogram}
+Suppose $X$ contains disjoint measurable sets $A,B$ with $0<\mu(A),\mu(B)<\infty$, and let $1\le p\le\infty$. Then the norm of $L^{p}(X,\mu)$ satisfies the parallelogram law
+\[
+\norm{f+g}_{p}^{2}+\norm{f-g}_{p}^{2}=2\norm{f}_{p}^{2}+2\norm{g}_{p}^{2}\qquad(\forall f,g\in L^{p})
+\]
+if and only if $p=2$.
+\end{proposition}
+
+\begin{proof}
+For $p=2$, expand $\norm{f\pm g}_{2}^{2}=\norm{f}_{2}^{2}\pm2\operatorname{Re}\langle f,g\rangle+\norm{g}_{2}^{2}$ and add. Let $p\ne2$. For $p<\infty$ take $f=\mu(A)^{-1/p}\ind_{A}$, $g=\mu(B)^{-1/p}\ind_{B}$; for $p=\infty$ take $f=\ind_{A}$, $g=\ind_{B}$. Then $\norm{f}_{p}=\norm{g}_{p}=1$ and the right side equals $4$. As $A,B$ are disjoint, $|f\pm g|^{p}=|f|^{p}+|g|^{p}$, so for $p<\infty$ we get $\norm{f\pm g}_{p}=2^{1/p}$ and the left side is $2\cdot2^{2/p}\ne4$; for $p=\infty$, $\norm{f\pm g}_{\infty}=1$ and the left side is $2\ne4$.
+\end{proof}
+
+By the Jordan--von Neumann theorem (a norm comes from an inner product if and only if it satisfies the parallelogram law), under the above hypothesis $L^{2}$ is the only $L^{p}$ space whose norm comes from an inner product.
+
+\section{Completeness: the Riesz--Fischer Theorem}
+
+\begin{theorem}[Riesz--Fischer]\label{thm:riesz-fischer}
+For $1\le p<\infty$, $L^{p}(X,\mu)$ is a Banach space.
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:series} it suffices to show that every absolutely convergent series in $L^{p}$ converges. Let $f_{k}\in L^{p}$ with $\sum_{k=1}^{\infty}\norm{f_{k}}_{p}=S<\infty$, and put
+\[
+G_{n}=\sum_{k=1}^{n}|f_{k}|,\qquad G=\sum_{k=1}^{\infty}|f_{k}|:X\to[0,\infty].
+\]
+By Minkowski's inequality, $\norm{G_{n}}_{p}\le\sum_{k=1}^{n}\norm{f_{k}}_{p}\le S$. Since $G_{n}^{p}\uparrow G^{p}$, the monotone convergence theorem gives
+\[
+\int_{X}G^{p}\dmu=\lim_{n\to\infty}\int_{X}G_{n}^{p}\dmu\le S^{p}<\infty .
+\]
+Hence $G<\infty$ a.e.: with $E=\{G<\infty\}$ we have $\mu(X\setminus E)=0$. For $x\in E$ the numerical series $\sum_{k}f_{k}(x)$ converges absolutely, hence converges by completeness of $\K$. Define
+\[
+F(x)=\begin{cases}\sum_{k=1}^{\infty}f_{k}(x),&x\in E,\\ 0,&x\notin E.\end{cases}
+\]
+$F$ is the pointwise limit of the measurable functions $\ind_{E}\sum_{k\le n}f_{k}$, hence measurable, and $|F|\le G$, so $F\in L^{p}$. Finally, with $S_{n}=\sum_{k=1}^{n}f_{k}$, on $E$ we have
+\[
+|F-S_{n}|=\Bigl|\sum_{k>n}f_{k}\Bigr|\le\sum_{k>n}|f_{k}|\le G,\qquad |F-S_{n}|\to0 .
+\]
+Thus $|F-S_{n}|^{p}\to0$ a.e.\ and $|F-S_{n}|^{p}\le G^{p}\in L^{1}$, and the dominated convergence theorem gives $\norm{F-S_{n}}_{p}\to0$. So $\sum f_{k}$ converges to $F$ in $L^{p}$.
+\end{proof}
+
+\begin{remark}
+Two steps of the proof cannot be omitted, and almost everywhere convergence must not be confused with convergence in $L^{p}$: (a) Minkowski's inequality and the monotone convergence theorem show that $G=\sum|f_{k}|\in L^{p}$, so that the series converges absolutely a.e.\ and the limit function is defined at all; (b) the dominated convergence theorem upgrades a.e.\ convergence to $L^{p}$ convergence. If one starts from a Cauchy sequence, one also needs the fact that a Cauchy sequence with a convergent subsequence converges; this is contained in the proof of Theorem~\ref{thm:series}.
+\end{remark}
+
+\begin{corollary}
+$\ell^{p}$ ($1\le p<\infty$) is a Banach space; for every measure space, $L^{2}(X,\mu)$ is a Hilbert space.
+\end{corollary}
+
+The function $G$ in the proof yields another useful result.
+
+\begin{theorem}[An a.e.\ convergent subsequence]\label{thm:subseq}
+Let $1\le p<\infty$ and $f_{n}\to f$ in $L^{p}$. Then there are a subsequence $(f_{n_{k}})$ and $h\in L^{p}$ such that $f_{n_{k}}\to f$ a.e.\ and $|f_{n_{k}}|\le h$ a.e.\ for all $k$.
+\end{theorem}
+
+\begin{proof}
+Choose $n_{1}<n_{2}<\cdots$ with $\norm{f_{n_{k}}-f}_{p}\le2^{-k}$ and put $G=\sum_{k}|f_{n_{k}}-f|$. As in the proof of Theorem~\ref{thm:riesz-fischer}, $\norm{G}_{p}\le\sum_{k}2^{-k}=1$, so $G<\infty$ a.e., and the terms of a convergent series tend to $0$: $|f_{n_{k}}-f|\to0$ a.e. Moreover $|f_{n_{k}}|\le|f|+G=:h\in L^{p}$.
+\end{proof}
+
+The next two examples show that, even on a finite measure space, convergence in $L^{p}$ and a.e.\ convergence do not imply each other; so passing to a subsequence in Theorem~\ref{thm:subseq} is necessary.
+
+\begin{example}[The typewriter sequence]\label{ex:typewriter}
+On $[0,1]$, for $n=2^{j}+i$ ($j\ge0$, $0\le i<2^{j}$) let $f_{n}=\ind_{[i2^{-j},(i+1)2^{-j}]}$. Then $\norm{f_{n}}_{p}^{p}=2^{-j}\to0$, so $f_{n}\to0$ in $L^{p}$ for every $1\le p<\infty$. But for each $x\in[0,1]$, the $2^{j}$ intervals of generation $j$ cover $[0,1]$, so $f_{n}(x)=1$ for infinitely many $n$; and for $j\ge2$, $x$ belongs to at most two of the intervals of generation $j$, so $f_{n}(x)=0$ for infinitely many $n$ as well. Hence $(f_{n}(x))$ diverges at every point. On the other hand, the subsequence $f_{2^{j}}=\ind_{[0,2^{-j}]}$ tends to $0$ on $(0,1]$, in accordance with Theorem~\ref{thm:subseq}.
+\end{example}
+
+\begin{example}\label{ex:ae-not-Lp}
+On $[0,1]$ let $g_{n}=n^{1/p}\ind_{(0,1/n)}$. Then $g_{n}\to0$ everywhere, but $\norm{g_{n}}_{p}=1$, so $g_{n}$ does not converge to $0$ in $L^{p}$.
+\end{example}
+
+Almost everywhere convergence together with an $L^{p}$ dominating function implies $L^{p}$ convergence (dominated convergence). The exact characterisation of when a.e.\ convergence (or convergence in measure) can be upgraded to $L^{1}$ convergence is Vitali's convergence theorem, whose key hypothesis is uniform integrability; see the supplementary article \emph{Uniform Integrability and $L^{1}$ Convergence}. Here is another frequently used sufficient condition.
+
+\begin{proposition}\label{prop:riesz-scheffe}
+Let $1\le p<\infty$, $f_{n},f\in L^{p}$, $f_{n}\to f$ a.e., and $\norm{f_{n}}_{p}\to\norm{f}_{p}$. Then $\norm{f_{n}-f}_{p}\to0$.
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:vector}, $\Phi_{n}=2^{p-1}(|f_{n}|^{p}+|f|^{p})-|f_{n}-f|^{p}\ge0$, and $\Phi_{n}\to2^{p}|f|^{p}$ a.e. By Fatou's lemma,
+\[
+2^{p}\int|f|^{p}\le\liminf_{n\to\infty}\int\Phi_{n}=2^{p}\int|f|^{p}-\limsup_{n\to\infty}\int|f_{n}-f|^{p},
+\]
+where we used $\int|f_{n}|^{p}\to\int|f|^{p}$. Since $\int|f|^{p}<\infty$, we get $\limsup\int|f_{n}-f|^{p}\le0$.
+\end{proof}
+
+\section{The Space $L^{\infty}$}
+
+\subsection{Properties of the essential supremum}
+
+\begin{proposition}\label{prop:cont-esssup}
+Let $U\subseteq\R^{n}$ be open and $f:U\to\K$ continuous. Then $\norm{f}_{L^{\infty}(U)}=\sup_{U}|f|$.
+\end{proposition}
+
+\begin{proof}
+``$\le$'' is clear. Let $t<\sup_{U}|f|$. Then $\{x\in U:|f(x)|>t\}$ is a nonempty open set; it contains an open ball and so has positive measure. Hence no $M\le t$ is an a.e.\ upper bound of $|f|$, and $\norm{f}_{\infty}\ge t$.
+\end{proof}
+
+In particular, continuous functions that agree a.e.\ agree everywhere, so $f\mapsto[f]$ embeds $(C[a,b],\norm{\cdot}_{u})$ isometrically into $L^{\infty}[a,b]$ (apply the proposition on $(a,b)$ and note $\sup_{(a,b)}|f|=\max_{[a,b]}|f|$).
+
+\subsection{Completeness}
+
+\begin{theorem}\label{thm:Linfty-complete}
+\begin{enumerate}
+\item $f_{n}\to f$ in $L^{\infty}$ if and only if there is a null set $N$ such that $f_{n}\to f$ uniformly on $X\setminus N$.
+\item $L^{\infty}(X,\mu)$ is a Banach space.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) If $\norm{f_{n}-f}_{\infty}\to0$, let $N=\bigcup_{n}\{|f_{n}-f|>\norm{f_{n}-f}_{\infty}\}$; by Lemma~\ref{lem:esssup} this is a countable union of null sets, hence null, and on $X\setminus N$ we have $\sup|f_{n}-f|\le\norm{f_{n}-f}_{\infty}\to0$. Conversely, if $f_{n}\to f$ uniformly on $X\setminus N$, then $\norm{f_{n}-f}_{\infty}\le\sup_{X\setminus N}|f_{n}-f|\to0$.
+
+(ii) Let $(f_{n})$ be a Cauchy sequence in $L^{\infty}$ and put
+\[
+N=\bigcup_{m,n}\bigl\{|f_{m}-f_{n}|>\norm{f_{m}-f_{n}}_{\infty}\bigr\}\ \cup\ \bigcup_{n}\bigl\{|f_{n}|>\norm{f_{n}}_{\infty}\bigr\},
+\]
+a countable union of null sets, so $\mu(N)=0$. On $X\setminus N$, $\sup|f_{m}-f_{n}|\le\norm{f_{m}-f_{n}}_{\infty}$, so $(f_{n})$ is uniformly Cauchy on $X\setminus N$. Let $f=\lim f_{n}$ on $X\setminus N$ and $f=0$ on $N$; $f$ is measurable. Given $\varepsilon>0$, choose $N_{\varepsilon}$ with $\norm{f_{m}-f_{n}}_{\infty}<\varepsilon$ for $m,n\ge N_{\varepsilon}$; letting $m\to\infty$ gives $\sup_{X\setminus N}|f_{n}-f|\le\varepsilon$ for $n\ge N_{\varepsilon}$. Hence $|f|\le\norm{f_{N_{\varepsilon}}}_{\infty}+\varepsilon$ on $X\setminus N$, so $f\in L^{\infty}$, and $\norm{f_{n}-f}_{\infty}\le\varepsilon$.
+\end{proof}
+
+\begin{remark}
+The key point of the proof is that each inequality $|f_{m}-f_{n}|\le\norm{f_{m}-f_{n}}_{\infty}$ holds only outside a null set, but there are only countably many index pairs $(m,n)$, so all exceptional sets can be collected into a single null set $N$, off which genuine uniform convergence takes place. Countability is essential here.
+\end{remark}
+
+Hence $\ell^{\infty}$ is a Banach space. Together with Theorem~\ref{thm:riesz-fischer}, $L^{p}(X,\mu)$ is a Banach space for every $1\le p\le\infty$.
+
+\subsection{The limit of $\norm{f}_{p}$ as $p\to\infty$}
+
+\begin{theorem}\label{thm:p-to-infty}
+Suppose $f\in L^{r}$ for some $0<r<\infty$. Then $\lim_{p\to\infty}\norm{f}_{p}=\norm{f}_{\infty}$ (in $[0,\infty]$).
+\end{theorem}
+
+\begin{proof}
+If $f=0$ a.e.\ the claim is trivial, so let $\norm{f}_{\infty}>0$.
+
+Lower bound: let $0<t<\norm{f}_{\infty}$ and $A_{t}=\{|f|>t\}$. By definition of the essential supremum $\mu(A_{t})>0$; by Chebyshev's inequality $\mu(A_{t})\le t^{-r}\norm{f}_{r}^{r}<\infty$. Hence
+\[
+\norm{f}_{p}\ge\Bigl(\int_{A_{t}}t^{p}\dmu\Bigr)^{1/p}=t\,\mu(A_{t})^{1/p}\xrightarrow[p\to\infty]{}t,
+\]
+so $\liminf_{p\to\infty}\norm{f}_{p}\ge t$; letting $t\uparrow\norm{f}_{\infty}$ gives $\liminf\norm{f}_{p}\ge\norm{f}_{\infty}$.
+
+Upper bound: if $\norm{f}_{\infty}=\infty$ we are done. Otherwise, for $p>r$, $|f|^{p}=|f|^{p-r}|f|^{r}\le\norm{f}_{\infty}^{p-r}|f|^{r}$ a.e., so
+\[
+\norm{f}_{p}\le\norm{f}_{\infty}^{1-r/p}\,\norm{f}_{r}^{r/p}\xrightarrow[p\to\infty]{}\norm{f}_{\infty},
+\]
+where we used $0<\norm{f}_{r}<\infty$.
+\end{proof}
+
+If $\mu(X)<\infty$ then $L^{\infty}\subseteq L^{r}$ (Theorem~\ref{thm:finite-inclusion}), so the theorem applies to every $f\in L^{\infty}$. In general the hypothesis $f\in L^{r}$ cannot be dropped: $f\equiv1$ on $\R$ has $\norm{f}_{p}=\infty$ for $p<\infty$ but $\norm{f}_{\infty}=1$.
+
+\subsection{Non-separability}
+
+A metric space is \textbf{separable} if it has a countable dense subset.
+
+\begin{proposition}\label{prop:Linfty-nonsep}
+$L^{\infty}[0,1]$ and $\ell^{\infty}$ are not separable.
+\end{proposition}
+
+\begin{proof}
+For $t\in(0,1]$ let $f_{t}=\ind_{[0,t]}$. If $s<t$, then $|f_{s}-f_{t}|=1$ on the set $(s,t]$ of positive measure, so $\norm{f_{s}-f_{t}}_{\infty}=1$. Thus the open balls $B(f_{t},\frac12)$, $t\in(0,1]$, are pairwise disjoint and uncountably many; a dense subset must meet each of them and is therefore uncountable. For $\ell^{\infty}$ consider the indicator sequences $\ind_{A}$ of subsets $A\subseteq\N$: there are uncountably many, at mutual distance $1$.
+\end{proof}
+
+\section{Inclusions between $L^{p}$ Spaces}
+
+\subsection{Finite measure spaces}
+
+\begin{theorem}\label{thm:finite-inclusion}
+Let $\mu(X)<\infty$ and $0<p<q\le\infty$. Then $L^{q}(X,\mu)\subseteq L^{p}(X,\mu)$ and
+\[
+\norm{f}_{p}\le\mu(X)^{\frac1p-\frac1q}\norm{f}_{q}.
+\]
+In particular, for $1\le p<q\le\infty$ the inclusion $L^{q}\hookrightarrow L^{p}$ is a bounded linear map with operator norm $\mu(X)^{1/p-1/q}$ (attained at constant functions).
+\end{theorem}
+
+\begin{proof}
+$q=\infty$: $\int|f|^{p}\le\norm{f}_{\infty}^{p}\mu(X)$. $q<\infty$: apply Hölder's inequality to $|f|^{p}$ and $1$ with the exponent $r=\frac qp>1$ and its conjugate $r'=\frac{q}{q-p}$:
+\[
+\int|f|^{p}\cdot1\dmu\le\Bigl(\int|f|^{q}\dmu\Bigr)^{p/q}\mu(X)^{1-p/q}.
+\]
+Take $p$-th roots. For the constant function $f\equiv1$, $\norm{1}_{p}=\mu(X)^{1/p}$ and the two sides agree.
+\end{proof}
+
+On a probability space ($\mu(X)=1$), $\norm{f}_{p}$ is nondecreasing in $p$, and $L^{\infty}\subseteq L^{q}\subseteq L^{p}\subseteq L^{1}$ for $1\le p<q\le\infty$.
+
+\begin{remark}[On the closed graph theorem]
+Continuity of the inclusion can also be obtained from the closed graph theorem, which states: if $V,W$ are Banach spaces and $T:V\to W$ is a linear map defined on \emph{all} of $V$ whose graph $\{(x,Tx):x\in V\}$ is closed in $V\times W$, then $T$ is bounded. The argument runs as follows: suppose it is known that $L^{q}\subseteq L^{p}$ ($1\le p,q\le\infty$), and let $f_{n}\to f$ in $L^{q}$ and $f_{n}\to g$ in $L^{p}$. By Theorem~\ref{thm:subseq} (or Theorem~\ref{thm:Linfty-complete} if $p$ or $q$ is $\infty$) a subsequence converges a.e.\ to $f$, and a further subsequence converges a.e.\ to $g$, so $f=g$ a.e.; the graph is closed and the inclusion is bounded. But this argument presupposes the inclusion itself, which fails on general measure spaces (Example~\ref{ex:no-inclusion}). When $\mu(X)<\infty$, Hölder's inequality gives an explicit constant and the closed graph theorem is not needed.
+\end{remark}
+
+\subsection{No inclusions in general}
+
+\begin{example}\label{ex:no-inclusion}
+The finiteness assumption in Theorem~\ref{thm:finite-inclusion} cannot be dropped. On $(\R,m)$, let $0<p<q<\infty$. By Example~\ref{ex:power},
+\[
+x^{-1/p}\ind_{(1,\infty)}\in L^{q}\setminus L^{p},\qquad x^{-1/q}\ind_{(0,1)}\in L^{p}\setminus L^{q}.
+\]
+(For the first, $\frac{q}{p}>1$ while $\frac pp=1$; for the second, $\frac pq<1$ while $\frac qq=1$.) Also $1\in L^{\infty}(\R)\setminus L^{p}(\R)$ and $x^{-1/(2p)}\ind_{(0,1)}\in L^{p}(\R)\setminus L^{\infty}(\R)$. So on $\R$ no two $L^{p}$ spaces with different exponents are comparable.
+\end{example}
+
+\subsection{Sequence spaces: the inclusion reverses}
+
+\begin{theorem}\label{thm:lp-inclusion}
+Let $0<p<q\le\infty$. Then $\ell^{p}\subseteq\ell^{q}$ and $\norm{x}_{q}\le\norm{x}_{p}$. The inclusion is strict.
+\end{theorem}
+
+\begin{proof}
+$q=\infty$: for each $n$, $|x_{n}|^{p}\le\sum_{k}|x_{k}|^{p}$. Let $q<\infty$ and $x\ne0$. By homogeneity we may assume $\norm{x}_{p}=1$; then $|x_{n}|\le1$, hence $|x_{n}|^{q}\le|x_{n}|^{p}$, and summing gives $\norm{x}_{q}^{q}\le1$. Strictness: $x_{n}=n^{-1/p}$ satisfies $\sum n^{-q/p}<\infty$ but $\sum n^{-1}=\infty$, so $x\in\ell^{q}\setminus\ell^{p}$.
+\end{proof}
+
+Compare Example~\ref{ex:power}: a finite measure rules out ``largeness at infinity'', so spaces with smaller exponents are larger; under counting measure every nonempty set has measure at least $1$, which rules out ``local singularities'', so spaces with larger exponents are larger. On $\R$ both phenomena are present, and there is no inclusion at all.
+
+\subsection{The interpolation inequality}
+
+\begin{theorem}[Interpolation inequality]\label{thm:interpolation}
+Let $0<p<r<q\le\infty$ and define $\theta\in(0,1)$ by
+\[
+\frac1r=\frac{\theta}{p}+\frac{1-\theta}{q}.
+\]
+Then for $f\in L^{p}\cap L^{q}$,
+\[
+\norm{f}_{r}\le\norm{f}_{p}^{\theta}\,\norm{f}_{q}^{1-\theta}.
+\]
+In particular $L^{p}\cap L^{q}\subseteq L^{r}$.
+\end{theorem}
+
+\begin{proof}
+If $q=\infty$, then $\theta=\frac pr$, and $|f|^{r}=|f|^{p}|f|^{r-p}\le\norm{f}_{\infty}^{r-p}|f|^{p}$ a.e.; integrating and taking $r$-th roots gives $\norm{f}_{r}\le\norm{f}_{p}^{p/r}\norm{f}_{\infty}^{1-p/r}$. Let $q<\infty$. Write $|f|=|f|^{\theta}\cdot|f|^{1-\theta}$ and apply the generalised Hölder inequality (Corollary~\ref{cor:gen-holder}) with exponents $\frac{p}{\theta}$ and $\frac{q}{1-\theta}$, which is legitimate precisely because $\frac1r=\frac{\theta}{p}+\frac{1-\theta}{q}$:
+\[
+\norm{f}_{r}\le\bigl\||f|^{\theta}\bigr\|_{p/\theta}\,\bigl\||f|^{1-\theta}\bigr\|_{q/(1-\theta)}=\norm{f}_{p}^{\theta}\,\norm{f}_{q}^{1-\theta}. \qedhere
+\]
+\end{proof}
+
+\begin{remark}
+The interpolation inequality says equivalently that $\frac1p\mapsto\log\norm{f}_{p}$ is a convex function on the interval where it is finite. The analogous statement for linear operators is the Riesz--Thorin interpolation theorem, which we do not pursue here.
+\end{remark}
+
+\begin{corollary}\label{cor:sum}
+Let $0<p<r<q\le\infty$. Then $L^{r}\subseteq L^{p}+L^{q}$, i.e.\ every $f\in L^{r}$ can be written as $f=g+h$ with $g\in L^{p}$ and $h\in L^{q}$.
+\end{corollary}
+
+\begin{proof}
+Let $g=f\ind_{\{|f|>1\}}$ and $h=f\ind_{\{|f|\le1\}}$. On $\{|f|>1\}$ we have $|f|^{p}\le|f|^{r}$, so $g\in L^{p}$. If $q=\infty$, then $|h|\le1$; if $q<\infty$, then $|f|^{q}\le|f|^{r}$ on $\{|f|\le1\}$, so $h\in L^{q}$.
+\end{proof}
+
+Intuitively, the ``tall peaks'' of $f$ belong to the space with the smaller exponent and the ``low plateau'' to the space with the larger exponent.
+
+\section{Dense Subspaces and Separability}
+
+\subsection{Simple functions}
+
+Recall the approximation theorem of Article~II: for a nonnegative measurable $f:X\to[0,\infty]$ there are simple functions $0\le\varphi_{1}\le\varphi_{2}\le\cdots$ converging to $f$ pointwise, and uniformly on every set on which $f$ is bounded. For a $\K$-valued measurable $f=u+iv$, apply this to $u^{\pm}$ and $v^{\pm}$ to obtain simple functions $\varphi_{n}=(a_{n}-b_{n})+i(c_{n}-d_{n})$ with $0\le a_{n}\uparrow u^{+}$, etc. Since $a_{n}$ and $b_{n}$ have disjoint supports, $|a_{n}-b_{n}|=a_{n}+b_{n}\le|u|$, and likewise $|c_{n}-d_{n}|\le|v|$; hence
+\[
+|\varphi_{n}|\le|f|,\qquad \varphi_{n}\to f\ \text{pointwise},
+\]
+uniformly on every set on which $f$ is bounded.
+
+\begin{theorem}\label{thm:simple-dense}
+\begin{enumerate}
+\item Let $1\le p<\infty$. The simple functions of the form $\sum_{i=1}^{N}a_{i}\ind_{E_{i}}$ ($a_{i}\in\K$, $\mu(E_{i})<\infty$) are dense in $L^{p}(X,\mu)$.
+\item The simple functions are dense in $L^{\infty}(X,\mu)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(i) Let $f\in L^{p}$ and take $\varphi_{n}$ as above. If $\varphi_{n}$ takes a nonzero value $a$ on a set $E$, then $|f|\ge|a|$ on $E$, and Chebyshev's inequality gives $\mu(E)\le|a|^{-p}\norm{f}_{p}^{p}<\infty$; so $\varphi_{n}$ is of the stated form. Moreover $|f-\varphi_{n}|^{p}\le(2|f|)^{p}\in L^{1}$ and $|f-\varphi_{n}|^{p}\to0$ pointwise, so $\norm{f-\varphi_{n}}_{p}\to0$ by dominated convergence.
+
+(ii) Let $f\in L^{\infty}$. Redefining $f$ to be $0$ on the null set $\{|f|>\norm{f}_{\infty}\}$ we obtain a representative that is bounded everywhere; then $\varphi_{n}\to f$ uniformly on $X$, so $\norm{f-\varphi_{n}}_{\infty}\le\sup_{X}|f-\varphi_{n}|\to0$.
+\end{proof}
+
+\begin{remark}
+In (i) the condition $\mu(E_{i})<\infty$ is automatic: a simple function in $L^{p}$ ($p<\infty$) has finite-measure level sets for its nonzero values. In (ii) one cannot require $\mu(E_{i})<\infty$: if $\mu(X)=\infty$, every such simple function $\varphi$ vanishes on a set of infinite measure, so $\norm{1-\varphi}_{\infty}\ge1$.
+\end{remark}
+
+\subsection{Continuous functions with compact support on $\R^{n}$}
+
+Let $C_{c}(\R^{n})$ be the space of continuous $\K$-valued functions on $\R^{n}$ whose support $\supp f=\overline{\{f\ne0\}}$ is compact. Such functions are bounded and vanish outside a set of finite measure, so $C_{c}(\R^{n})\subseteq L^{p}(\R^{n})$ for all $0<p\le\infty$.
+
+\begin{lemma}[Urysohn's lemma in $\R^{n}$]\label{lem:urysohn}
+Let $K\subseteq U\subseteq\R^{n}$ with $K$ compact and $U$ open. Then there is $g\in C_{c}(\R^{n})$ with $0\le g\le1$, $g=1$ on $K$ and $\supp g\subseteq U$.
+\end{lemma}
+
+\begin{proof}
+If $U=\R^{n}$ let $\delta=1$; otherwise let $\delta=\inf_{x\in K}d(x,U^{c})$. The function $x\mapsto d(x,U^{c})$ is continuous and positive on $K$ and attains its minimum on the compact set $K$, so $\delta>0$ (if $K=\varnothing$ take $g=0$). Put
+\[
+g(x)=\max\Bigl(0,\ 1-\frac{2\,d(x,K)}{\delta}\Bigr).
+\]
+Since $d(\cdot,K)$ is $1$-Lipschitz, $g$ is continuous, $0\le g\le1$ and $g=1$ on $K$. Moreover $\supp g\subseteq\{x:d(x,K)\le\delta/2\}$, a closed bounded set, hence compact; its points are at distance less than $\delta$ from $K$, so they cannot lie in $U^{c}$, and it is contained in $U$.
+\end{proof}
+
+\begin{theorem}\label{thm:Cc-dense}
+For $1\le p<\infty$, $C_{c}(\R^{n})$ is dense in $L^{p}(\R^{n})$.
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:simple-dense}(i) and Minkowski's inequality it suffices to show: for every measurable $E$ with $m(E)<\infty$ and every $\varepsilon>0$ there is $g\in C_{c}(\R^{n})$ with $\norm{\ind_{E}-g}_{p}<\varepsilon$. (If $\norm{\ind_{E_{i}}-g_{i}}_{p}<\varepsilon$, then $\norm{\sum a_{i}\ind_{E_{i}}-\sum a_{i}g_{i}}_{p}<\varepsilon\sum|a_{i}|$.) By regularity of Lebesgue measure (Article~I) there are a compact $K$ and an open $U$ with $K\subseteq E\subseteq U$ and $m(U\setminus K)<\varepsilon^{p}$. Take $g$ as in Lemma~\ref{lem:urysohn}; then $\ind_{K}\le g\le\ind_{U}$, and hence $|g-\ind_{E}|\le\ind_{U\setminus K}$: on $K$ both equal $1$, outside $U$ both vanish, and on $U\setminus K$ both lie in $[0,1]$. Therefore
+\[
+\norm{g-\ind_{E}}_{p}\le m(U\setminus K)^{1/p}<\varepsilon. \qedhere
+\]
+\end{proof}
+
+\begin{remark}
+\begin{enumerate}
+\item The general form of this result is: if $X$ is a locally compact Hausdorff space and $\mu$ a Radon measure on $X$, then $C_{c}(X)$ is dense in $L^{p}(X,\mu)$ for $1\le p<\infty$. We have proved only the case of $\R^{n}$; the same proof works for $C_{c}(U)$ in $L^{p}(U)$, $U\subseteq\R^{n}$ open.
+\item The result fails for $p=\infty$. In fact the $L^{\infty}$-distance from $\ind_{[0,1]}$ to $C_{c}(\R)$ is at least $\frac12$: if $g$ is continuous with $\norm{g-\ind_{[0,1]}}_{\infty}=c<\frac12$, then $\{x\in(0,1):|g(x)-1|>c\}$ is an open null set, hence empty, i.e.\ $|g-1|\le c$ on $(0,1)$, and by continuity $g(1)\ge1-c>\frac12$; likewise $|g|\le c$ on $(1,2)$ gives $g(1)\le c<\frac12$, a contradiction.
+\item By Theorems~\ref{thm:riesz-fischer} and~\ref{thm:Cc-dense}, $L^{p}(\R^{n})$ is a Banach space containing $C_{c}(\R^{n})$ as a dense subspace, i.e.\ it is the completion of $(C_{c}(\R^{n}),\norm{\cdot}_{p})$. Likewise $L^{1}[0,2]$ is the completion of the incomplete space $(C[0,2],\norm{\cdot}_{1})$ of Example~\ref{ex:C-L1}.
+\end{enumerate}
+\end{remark}
+
+As a typical application of density we show that translation is continuous in $L^{p}$. For $h\in\R^{n}$ let $(\tau_{h}f)(x)=f(x-h)$. By translation invariance of Lebesgue measure (Article~I), $\int f(x-h)\dx=\int f(x)\dx$ for indicator functions, hence for simple functions, and by monotone convergence for nonnegative measurable functions; therefore $\norm{\tau_{h}f}_{p}=\norm{f}_{p}$.
+
+\begin{theorem}[Continuity of translation]\label{thm:translation}
+Let $1\le p<\infty$ and $f\in L^{p}(\R^{n})$. Then $\lim_{h\to0}\norm{\tau_{h}f-f}_{p}=0$.
+\end{theorem}
+
+\begin{proof}
+Given $\varepsilon>0$, choose by Theorem~\ref{thm:Cc-dense} a function $g\in C_{c}(\R^{n})$ with $\norm{f-g}_{p}<\varepsilon$, and let $\supp g\subseteq B(0,R)$. Being continuous on a compact set and zero outside it, $g$ is uniformly continuous on $\R^{n}$, so $\sup_{x}|g(x-h)-g(x)|\to0$ as $h\to0$. For $|h|\le1$, $\tau_{h}g-g$ vanishes outside $B(0,R+1)$, hence
+\[
+\norm{\tau_{h}g-g}_{p}\le\sup_{x}|g(x-h)-g(x)|\cdot m\bigl(B(0,R+1)\bigr)^{1/p}\xrightarrow[h\to0]{}0 .
+\]
+Therefore
+\[
+\norm{\tau_{h}f-f}_{p}\le\norm{\tau_{h}(f-g)}_{p}+\norm{\tau_{h}g-g}_{p}+\norm{g-f}_{p}<2\varepsilon+\norm{\tau_{h}g-g}_{p},
+\]
+and $\limsup_{h\to0}\norm{\tau_{h}f-f}_{p}\le2\varepsilon$.
+\end{proof}
+
+The result fails for $p=\infty$: for $f=\ind_{[0,1]}$ and any $0<|h|<1$, $\tau_{h}f-f$ takes the values $\pm1$ on a set of positive measure, so $\norm{\tau_{h}f-f}_{\infty}=1$.
+
+\subsection{Separability}
+
+\begin{theorem}\label{thm:separable}
+For $1\le p<\infty$, $L^{p}(\R^{n})$ is separable.
+\end{theorem}
+
+\begin{proof}
+For $j\ge0$, a dyadic cube of order $j$ is a set $\prod_{i=1}^{n}[k_{i}2^{-j},(k_{i}+1)2^{-j})$ with $k\in\mathbb{Z}^{n}$. Let $\mathcal{D}$ be the set of finite linear combinations, with coefficients in $\Q+i\Q$ (in $\Q$ in the real case), of indicator functions of dyadic cubes; $\mathcal{D}$ is countable.
+
+Given $f\in L^{p}$ and $\varepsilon>0$, choose $g\in C_{c}(\R^{n})$ with $\norm{f-g}_{p}<\varepsilon$ and a positive integer $R$ with $\supp g\subseteq Q_{R}=[-R,R)^{n}$. By uniform continuity of $g$ there is $j$ such that $|g(x)-g(y)|<\eta$ whenever $x,y$ lie in the same dyadic cube of order $j$, where $\eta>0$ is to be chosen. $Q_{R}$ is tiled exactly by finitely many dyadic cubes $Q$ of order $j$; for each such $Q$ choose a point $x_{Q}\in Q$ and $c_{Q}\in\Q+i\Q$ with $|c_{Q}-g(x_{Q})|<\eta$, and put $\psi=\sum_{Q}c_{Q}\ind_{Q}\in\mathcal{D}$. Then $|g-\psi|<2\eta$ on $Q_{R}$ and $g=\psi=0$ outside $Q_{R}$, so
+\[
+\norm{g-\psi}_{p}\le2\eta\,(2R)^{n/p}.
+\]
+Choosing $\eta$ so that the right side is less than $\varepsilon$ gives $\norm{f-\psi}_{p}<2\varepsilon$.
+\end{proof}
+
+\begin{remark}
+Separability is not a property of $L^{p}$ ($1\le p<\infty$) on general measure spaces. Let $X$ be an uncountable set (e.g.\ $\R$) with counting measure; the functions $e_{x}=\ind_{\{x\}}$ ($x\in X$) satisfy $\norm{e_{x}-e_{y}}_{p}=2^{1/p}$ for $x\ne y$, and the argument of Proposition~\ref{prop:Linfty-nonsep} shows that $L^{p}(X,\mu)$ is not separable. A commonly used sufficient condition is that $\mu$ be $\sigma$-finite and $\M$ be countably generated (modulo null sets); then $L^{p}(X,\mu)$ is separable for $1\le p<\infty$. $L^{\infty}$, on the other hand, fails to be separable in essentially every infinite situation of interest (Proposition~\ref{prop:Linfty-nonsep}).
+\end{remark}
+
+\section{A Brief Introduction to Duality}
+
+This section is only a brief discussion; the full representation theorem requires the Radon--Nikodym theorem and is postponed.
+
+\begin{proposition}\label{prop:dual-isometry}
+Let $1\le p\le\infty$, let $q$ be the conjugate exponent and $g\in L^{q}(X,\mu)$. Then
+\[
+\Lambda_{g}(f)=\int_{X}fg\dmu\qquad(f\in L^{p})
+\]
+defines a bounded linear functional on $L^{p}$ with $\norm{\Lambda_{g}}\le\norm{g}_{q}$. If $1<p\le\infty$, or if $p=1$ and $\mu$ is $\sigma$-finite, then $\norm{\Lambda_{g}}=\norm{g}_{q}$. Thus in these cases $g\mapsto\Lambda_{g}$ is a linear isometry (in particular injective) from $L^{q}$ into $(L^{p})^{*}$.
+\end{proposition}
+
+\begin{proof}
+$\Lambda_{g}(f)$ does not depend on the representatives, is linear in $f$, and $|\Lambda_{g}(f)|\le\norm{f}_{p}\norm{g}_{q}$ by Hölder's inequality. We prove the reverse inequality, assuming $g\ne0$. Let $\sgn z=z/|z|$ for $z\ne0$ and $\sgn0=0$; then $g\,\overline{\sgn g}=|g|$.
+
+$1<p<\infty$: let $f=|g|^{q-1}\overline{\sgn g}$. Then $|f|^{p}=|g|^{(q-1)p}=|g|^{q}$, so $\norm{f}_{p}=\norm{g}_{q}^{q/p}<\infty$, and $\Lambda_{g}(f)=\int|g|^{q}=\norm{g}_{q}^{q}$. Hence
+\[
+\norm{\Lambda_{g}}\ge\frac{\norm{g}_{q}^{q}}{\norm{g}_{q}^{q/p}}=\norm{g}_{q}^{q(1-1/p)}=\norm{g}_{q}.
+\]
+
+$p=\infty$ ($q=1$): let $f=\overline{\sgn g}$; then $\norm{f}_{\infty}\le1$ and $\Lambda_{g}(f)=\norm{g}_{1}$.
+
+$p=1$ ($q=\infty$), $\mu$ $\sigma$-finite: let $0<t<\norm{g}_{\infty}$; then $A=\{|g|>t\}$ has $\mu(A)>0$. Write $X=\bigcup_{k}X_{k}$ with $X_{k}$ increasing and $\mu(X_{k})<\infty$; then $\mu(A\cap X_{k})\uparrow\mu(A)>0$, so some $B=A\cap X_{k}$ has $0<\mu(B)<\infty$. Let $f=\mu(B)^{-1}\ind_{B}\overline{\sgn g}$; then $\norm{f}_{1}=1$ and
+\[
+\Lambda_{g}(f)=\frac{1}{\mu(B)}\int_{B}|g|\dmu\ge t .
+\]
+So $\norm{\Lambda_{g}}\ge t$; let $t\uparrow\norm{g}_{\infty}$.
+\end{proof}
+
+\begin{theorem}[Riesz representation theorem for $L^{p}$]\label{thm:riesz-rep}
+\begin{enumerate}
+\item Let $1<p<\infty$. For every $\Lambda\in(L^{p})^{*}$ there is a unique $g\in L^{q}$ with $\Lambda=\Lambda_{g}$; hence $(L^{p})^{*}$ is isometrically isomorphic to $L^{q}$.
+\item Let $\mu$ be $\sigma$-finite. Then $(L^{1})^{*}$ is isometrically isomorphic to $L^{\infty}$ (again via $g\mapsto\Lambda_{g}$).
+\end{enumerate}
+\end{theorem}
+
+The proof requires the Radon--Nikodym theorem (or, for (i), the uniform convexity of $L^{p}$) and is omitted here. Uniqueness and the isometry property are already given by Proposition~\ref{prop:dual-isometry}; the difficulty lies in surjectivity. Note that the representing function $g$ belongs to $L^{q}$, not to $L^{p}$.
+
+\begin{example}[$\sigma$-finiteness cannot be omitted]\label{ex:non-sigma}
+Let $X=\{a\}$ with $\mu(\{a\})=\infty$. Then $\int|f|\dmu=|f(a)|\cdot\infty$, so $L^{1}=\{0\}$ and $(L^{1})^{*}=\{0\}$; but $X$ has no nonempty null sets, so $L^{\infty}=\K$. The map $g\mapsto\Lambda_{g}$ is the zero map and is not injective.
+\end{example}
+
+\begin{remark}[The case $p=\infty$]
+By Proposition~\ref{prop:dual-isometry}, $L^{1}$ embeds isometrically into $(L^{\infty})^{*}$, but in general not surjectively, so ``$(L^{p})^{*}=L^{q}$'' fails in general for $p=\infty$. Take $\ell^{\infty}$: on the subspace $c$ of convergent sequences, $\ell(x)=\lim_{n}x_{n}$ is a bounded linear functional of norm $1$; by the Hahn--Banach theorem it extends with the same norm to a functional $\Lambda$ on $\ell^{\infty}$. If $\Lambda=\Lambda_{y}$ with $y\in\ell^{1}$, then $y_{k}=\Lambda(e_{k})=\lim_{n}(e_{k})_{n}=0$ for every $k$, so $\Lambda=0$, contradicting $\Lambda(1,1,\dots)=1$.
+\end{remark}
+
+\begin{remark}
+When $\mu$ is $\sigma$-finite, $L^{\infty}=(L^{1})^{*}$, and by the Banach--Alaoglu theorem the closed unit ball of $L^{\infty}$ is compact in the weak$^{*}$ topology $\sigma(L^{\infty},L^{1})$. For $1<p<\infty$, Theorem~\ref{thm:riesz-rep} gives $(L^{p})^{**}\cong(L^{q})^{*}\cong L^{p}$, i.e.\ $L^{p}$ is reflexive. These matters belong to functional analysis.
+\end{remark}
+
+\section*{Summary}
+
+The table summarises the main results of this article on $L^{p}(X,\mu)$ (``$\R^{n}$'' indicates a statement proved for $(\R^{n},m)$ that may fail on general measure spaces). In the column $0<p<1$, rows 2--5 follow by the same proofs as for $p\ge1$, with the metric $d_{p}$ in place of the norm.
+
+\begin{center}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Property & $0<p<1$ & $1\le p<\infty$ & $p=\infty$\\
+\midrule
+$\norm{\cdot}_{p}$ is a norm & no & yes & yes\\
+complete & yes (metric $d_{p}$) & yes & yes\\
+simple functions dense & yes & yes & yes\\
+$C_{c}$ dense & yes ($\R^{n}$) & yes ($\R^{n}$) & no\\
+separable & yes ($\R^{n}$) & yes ($\R^{n}$) & no\\
+dual & trivial ($\R^{n}$) & $L^{q}$ ($p=1$: $\sigma$-finite) & in general $\supsetneq L^{1}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The proofs rest on only three tools. Young's inequality (a consequence of convexity) yields Hölder's inequality, and Hölder's inequality yields Minkowski's; Minkowski's inequality together with the monotone and dominated convergence theorems gives completeness; and the regularity of Lebesgue measure gives the density of $C_{c}$ and separability. The relations between different $L^{p}$ spaces are governed entirely by the behaviour of the measure ``locally'' and ``at infinity''.
+
+\begin{thebibliography}{9}
+\bibitem{folland} G.~B.~Folland, \emph{Real Analysis: Modern Techniques and Their Applications}, 2nd ed., Wiley, 1999.
+\bibitem{rudin} W.~Rudin, \emph{Real and Complex Analysis}, 3rd ed., McGraw--Hill, 1987.
+\bibitem{brezis} H.~Brezis, \emph{Functional Analysis, Sobolev Spaces and Partial Differential Equations}, Springer, 2011.
+\bibitem{stein} E.~M.~Stein and R.~Shakarchi, \emph{Real Analysis: Measure Theory, Integration, and Hilbert Spaces}, Princeton University Press, 2005.
+\end{thebibliography}
+
+\end{document}

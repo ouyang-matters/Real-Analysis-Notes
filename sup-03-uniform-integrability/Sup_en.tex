@@ -1,0 +1,873 @@
+\documentclass[11pt]{article}
+
+\usepackage{math_article}
+\usepackage{series_ra}
+
+\renewcommand{\ArticleNumeral}{}
+\renewcommand{\ArticleTitle}{Uniform Integrability and the\\Vitali Convergence Theorem}
+\renewcommand{\ArticleAuthor}{Anqiao Ouyang}
+\renewcommand{\ArticleDate}{August 2026}
+
+\begin{document}
+
+\maketitle
+
+
+\section*{Introduction}
+
+
+When studying the various modes of convergence for sequences of functions, it is natural to harbor an expectation:
+
+if $f_n$ approaches $f$ in ever stronger senses, shouldn't the integrals approach each other as well?
+
+In other words, when can we pass from
+
+\[
+f_n\to f
+\]
+
+to
+
+\[
+\int_X f_n\,d\mu
+\longrightarrow
+\int_X f\,d\mu?
+\]
+
+This question is a familiar one in Lebesgue integration theory. The monotone convergence theorem settles it by means of nonnegativity and monotonicity; the dominated convergence theorem instead requires a single integrable dominating function $g$ with
+
+\[
+|f_n|\leq g.
+\]
+
+All of these conditions do the same job: they prevent the ``mass'' of the sequence from escaping in some way.
+
+But the requirement of a dominating function is sometimes too strong.
+
+A sequence of functions may admit no common integrable upper bound at all and still have perfectly good integral behavior. What really matters then is not any single dominating function, but a uniform control of the whole family over the ``regions where the function values are large.''
+
+This is \textbf{uniform integrability}.
+
+
+\section{Concentrated Mass}
+
+
+Let us start with the simplest example.
+
+On $([0,1],\mathcal B,m)$ define
+
+\[
+f_n(x)
+=
+n\mathbf 1_{(0,1/n)}(x).
+\]
+
+For any fixed $x>0$, once $n$ is large enough,
+
+\[
+x\notin(0,1/n),
+\]
+
+and hence
+
+\[
+f_n(x)\to0.
+\]
+
+Therefore
+
+\[
+f_n\to0
+\qquad\text{a.e.}
+\]
+
+At the same time, for any $\varepsilon>0$ and $n>\varepsilon$,
+
+\[
+\{|f_n|>\varepsilon\}
+=
+(0,1/n),
+\]
+
+so that
+
+\[
+m(\{|f_n|>\varepsilon\})
+=
+\frac1n\to0.
+\]
+
+Hence the sequence also converges to $0$ in measure.
+
+However,
+
+\[
+\int_0^1|f_n|\,dx = n\cdot\frac{1}{n} = 1.
+\]
+
+Thus
+
+\[
+\|f_n\|_{L^1}=1
+\]
+
+stays constant, and a fortiori we cannot have
+
+\[
+f_n\to0
+\quad\text{in }L^1.
+\]
+
+What goes wrong?
+
+It is not that the total integral of the sequence grows. In fact it is always equal to $1$.
+
+What actually changes is that this integral is squeezed onto smaller and smaller sets:
+
+\[
+\text{height }n
+\qquad
+\times
+\qquad
+\text{width }\frac1n.
+\]
+
+The sets shrink while the function values grow, and the two effects exactly cancel.
+
+Consequently, merely knowing
+
+\[
+\sup_n\|f_n\|_1<\infty
+\]
+
+is not enough.
+
+We need to rule out this phenomenon of ``a finite amount of mass concentrating in infinitely tall spikes.''
+
+
+\section{Definition}
+
+
+Let $(X,\mathcal F,\mu)$ be a measure space and let $\mathcal G\subset L^1(\mu)$ be a family of integrable functions.
+
+If
+
+\[
+\lim_{K\to\infty}
+\sup_{f\in\mathcal G}
+\int_{\{|f|>K\}}|f|\,d\mu
+=
+0,
+\]
+
+then $\mathcal G$ is said to be \textbf{uniformly integrable}.
+
+For a sequence $\{f_n\}$ this reads
+
+\[
+\lim_{K\to\infty}
+\sup_n
+\int_{\{|f_n|>K\}}
+|f_n|\,d\mu
+=
+0.
+\]
+
+The definition is concerned not with the whole integral
+
+\[
+\int_X|f_n|\,d\mu,
+\]
+
+but with the part where the function values are very large:
+
+\[
+\int_{\{|f_n|>K\}}|f_n|\,d\mu.
+\]
+
+For a fixed large $K$, each function may well have a part exceeding $K$. But if the family is uniformly integrable, then as soon as $K$ is large enough, the integral mass carried by these parts can be made arbitrarily small \textbf{simultaneously}.
+
+The crucial ingredient here is the
+
+\[
+\sup_n.
+\]
+
+For any single $f_n\in L^1$ we already have
+
+\[
+\int_{\{|f_n|>K\}}|f_n|\,d\mu\to0.
+\]
+
+Uniform integrability demands that this convergence hold uniformly over the whole family.
+
+It is therefore not just another way of saying ``each function is integrable,'' but a genuine \textbf{property of the family}. In probability theory, uniform integrability is usually defined by exactly the same tail-integral condition.
+
+
+\section{Boundedness}
+
+
+First of all, uniform integrability implies
+
+\[
+\sup_{f\in\mathcal G}
+\|f\|_1<\infty.
+\]
+
+The proof is not complicated.
+
+By uniform integrability we can choose some $K>0$ such that
+
+\[
+\sup_{f\in\mathcal G}
+\int_{\{|f|>K\}}|f|\,d\mu
+<1.
+\]
+
+Split the integral into two parts:
+
+\[
+\int_X|f|\,d\mu
+=
+\int_{\{|f|\leq K\}}|f|\,d\mu
++
+\int_{\{|f|>K\}}|f|\,d\mu.
+\]
+
+If $\mu(X)<\infty$, the first term satisfies
+
+\[
+\int_{\{|f|\leq K\}}|f|\,d\mu
+\leq
+K\mu(X).
+\]
+
+Hence
+
+\[
+\|f\|_1
+\leq
+K\mu(X)+1.
+\]
+
+Therefore
+
+\[
+\sup_{f\in\mathcal G}\|f\|_1<\infty.
+\]
+
+The converse, however, fails.
+
+The sequence
+
+\[
+f_n=n\mathbf1_{(0,1/n)}
+\]
+
+from the previous section is already a counterexample. Although
+
+\[
+\sup_n\|f_n\|_1=1,
+\]
+
+as soon as $n>K$ we have
+
+\[
+\{|f_n|>K\}
+=
+(0,1/n),
+\]
+
+and so
+
+\[
+\int_{\{|f_n|>K\}}|f_n|\,dx
+=
+1.
+\]
+
+Thus for every $K$,
+
+\[
+\sup_n
+\int_{\{|f_n|>K\}}|f_n|\,dx
+=
+1.
+\]
+
+The sequence is not uniformly integrable.
+
+So
+
+\[
+\boxed{
+\text{uniformly integrable}
+\Longrightarrow
+L^1\text{-bounded}
+}
+\]
+
+while the converse does not hold.
+
+What separates the two is precisely control over the \textbf{concentration of mass}.
+
+
+\section{Small Sets}
+
+
+On a finite measure space, uniform integrability admits another very important interpretation.
+
+If $\mathcal G$ is uniformly integrable, then for every $\varepsilon>0$ there exists $\delta>0$ such that for every measurable set $E$ with
+
+\[
+\mu(E)<\delta
+\]
+
+we have
+
+\[
+\sup_{f\in\mathcal G}
+\int_E|f|\,d\mu
+<
+\varepsilon.
+\]
+
+In words:
+
+\begin{quote}
+A sufficiently small set cannot carry a large amount of the $L^1$ mass of any function in the family.
+\end{quote}
+
+
+The proof starts directly from truncation.
+
+By uniform integrability, choose $K$ such that
+
+\[
+\sup_{f\in\mathcal G}
+\int_{\{|f|>K\}}|f|\,d\mu
+<
+\frac{\varepsilon}{2}.
+\]
+
+For any measurable set $E$,
+
+\[
+\int_E|f|\,d\mu
+=
+\int_{E\cap\{|f|\leq K\}}|f|\,d\mu
++
+\int_{E\cap\{|f|>K\}}|f|\,d\mu.
+\]
+
+The first term is at most
+
+\[
+K\mu(E),
+\]
+
+and the second is at most
+
+\[
+\frac{\varepsilon}{2}.
+\]
+
+So it suffices to take
+
+\[
+\delta=\frac{\varepsilon}{2K};
+\]
+
+whenever $\mu(E)<\delta$ we then get
+
+\[
+\int_E|f|\,d\mu<\varepsilon.
+\]
+
+This is in fact closer to the geometric meaning of uniform integrability than the tail-integral definition.
+
+Ordinary $L^1$-boundedness only controls
+
+\[
+\int_X|f|,
+\]
+
+whereas uniform integrability further requires that \textbf{integral mass cannot concentrate arbitrarily on smaller and smaller sets.}
+
+On a finite measure space, this ``uniform absolute continuity on small sets,'' together with uniform $L^1$-boundedness, conversely characterizes uniform integrability.
+
+
+\section{$L^p$ Control}
+
+
+Uniform integrability may still look somewhat abstract, but there is a very commonly used sufficient condition.
+
+Let
+
+\[
+1<p<\infty
+\]
+
+and suppose the family $\mathcal G$ satisfies
+
+\[
+\sup_{f\in\mathcal G}\|f\|_p\leq C.
+\]
+
+Then $\mathcal G$ is uniformly integrable (in the $L^1$ sense).
+
+Indeed, on the set
+
+\[
+A_K=\{|f|>K\}
+\]
+
+we have
+
+\[
+|f|
+\leq
+\frac{|f|^p}{K^{p-1}},
+\]
+
+and hence
+
+\[
+\int_{A_K}|f|\,d\mu
+\leq
+\frac1{K^{p-1}}
+\int_{A_K}|f|^p\,d\mu
+\leq
+\frac{\|f\|_p^p}{K^{p-1}}.
+\]
+
+Therefore
+
+\[
+\sup_{f\in\mathcal G}
+\int_{\{|f|>K\}}|f|\,d\mu
+\leq
+\frac{C^p}{K^{p-1}}.
+\]
+
+Since $p>1$,
+
+\[
+K^{1-p}\to0,
+\]
+
+and uniform integrability follows.
+
+This also shows why $p=1$ is a special, critical position.
+
+If all we have is
+
+\[
+\sup_n\|f_n\|_1<\infty,
+\]
+
+the right-hand side produces no factor that vanishes as $K\to\infty$.
+
+But as soon as there is even a little extra integrability,
+
+\[
+p>1,
+\]
+
+we obtain the factor
+
+\[
+K^{1-p},
+\]
+
+which automatically controls the tail of large function values.
+
+
+\section{Dominated Convergence}
+
+
+The hypothesis of the dominated convergence theorem also yields uniform integrability automatically.
+
+Suppose there exists
+
+\[
+g\in L^1(\mu)
+\]
+
+such that for all $n$,
+
+\[
+|f_n|\leq g
+\qquad\text{a.e.}
+\]
+
+If
+
+\[
+|f_n|>K,
+\]
+
+then necessarily also
+
+\[
+g>K.
+\]
+
+Hence
+
+\[
+\{|f_n|>K\}
+\subseteq
+\{g>K\},
+\]
+
+and
+
+\[
+\int_{\{|f_n|>K\}}|f_n|\,d\mu
+\leq
+\int_{\{g>K\}}g\,d\mu.
+\]
+
+Since $g\in L^1$,
+
+\[
+\int_{\{g>K\}}g\,d\mu\to0.
+\]
+
+Therefore
+
+\[
+\{f_n\}
+\]
+
+is uniformly integrable.
+
+Thus the common dominating function in the dominated convergence theorem actually provides more structure than is needed to prove convergence of the integrals.
+
+What it gives is
+
+\[
+|f_n|\leq g\in L^1,
+\]
+
+whereas what is really responsible for controlling the tails of the integrals is
+
+\[
+\{f_n\}\text{ uniformly integrable}.
+\]
+
+This is one of the reasons why the Vitali convergence theorem is more flexible than the dominated convergence theorem. Uniform integrability can be viewed as a relaxation of the integrable-domination condition.
+
+
+\section{Vitali's Theorem}
+
+
+We can now return to the original question.
+
+Suppose
+
+\[
+\mu(X)<\infty
+\]
+
+and
+
+\[
+f_n\to f
+\qquad\text{in measure}.
+\]
+
+Convergence in measure alone does not imply $L^1$ convergence; the spike functions have already shown this.
+
+The Vitali convergence theorem states that the missing condition is precisely uniform integrability:
+
+\[
+\boxed{
+f_n\to f\text{ in measure}
++
+\{f_n\}\text{ uniformly integrable}
+\Longrightarrow
+f_n\to f\text{ in }L^1.
+}
+\]
+
+In fact, within this framework one also obtains a corresponding converse: when $f_n\to f$ in measure, $L^1$ convergence and uniform integrability are essentially equivalent. The version of Vitali's theorem for probability measures is usually stated in exactly this form.
+
+Why does the theorem hold?
+
+Take $\eta>0$ and define the bad set
+
+\[
+A_n
+=
+\{|f_n-f|>\eta\}.
+\]
+
+Since
+
+\[
+f_n\to f
+\qquad\text{in measure},
+\]
+
+we have
+
+\[
+\mu(A_n)\to0.
+\]
+
+Now split the $L^1$ error as
+
+\[
+\int_X|f_n-f|\,d\mu
+=
+\int_{X\setminus A_n}|f_n-f|\,d\mu
++
+\int_{A_n}|f_n-f|\,d\mu.
+\]
+
+On $X\setminus A_n$,
+
+\[
+|f_n-f|\leq\eta,
+\]
+
+so
+
+\[
+\int_{X\setminus A_n}|f_n-f|\,d\mu
+\leq
+\eta\mu(X).
+\]
+
+Meanwhile the measure of $A_n$ tends to zero.
+
+Uniform integrability guarantees exactly that on such shrinking sets,
+
+\[
+\int_{A_n}|f_n|
+\]
+
+as well as the corresponding contribution of the limit function cannot retain a fixed positive mass.
+
+Hence the second term tends to zero as well.
+
+Finally, letting first $n\to\infty$ and then $\eta\to0$, we obtain
+
+\[
+\|f_n-f\|_1\to0.
+\]
+
+This proof reveals the true structure of Vitali's theorem:
+
+\[
+\boxed{
+\begin{array}{c}
+\text{convergence in measure}\\
+\Downarrow\\
+\text{measure of the bad set}\to 0
+\end{array}
+\qquad+\qquad
+\begin{array}{c}
+\text{uniform integrability}\\
+\Downarrow\\
+\text{small sets cannot carry much integral}
+\end{array}
+}
+\]
+
+The two pieces fit together into exactly $L^1$ convergence.
+
+
+\section{Two Kinds of Control}
+
+
+Looking back at the dominated convergence theorem from here, we find that the logic of the two theorems is in fact very close.
+
+Dominated convergence uses one fixed function
+
+\[
+g\in L^1
+\]
+
+to control all the $f_n$ at once.
+
+This is \textbf{pointwise control}:
+
+\[
+|f_n(x)|\leq g(x).
+\]
+
+Uniform integrability does not require such a $g$ to exist.
+
+It only requires that the tails of the family be controlled uniformly in the integral sense:
+
+\[
+\sup_n
+\int_{\{|f_n|>K\}}|f_n|
+\to0.
+\]
+
+This is \textbf{mass control}.
+
+Consequently there can be uniformly integrable sequences for which no common $L^1$ dominating function exists. Vitali's theorem still handles such cases; this is exactly where it strictly goes beyond the direct scope of the dominated convergence theorem. Stanford's lecture notes on probability theory also give examples of this kind: ``uniformly integrable, but with no common integrable dominating variable.''
+
+So the two theorems can be understood within one logical framework:
+
+\[
+\text{DCT}
+:
+\quad
+\text{common }L^1\text{ domination}
+\Longrightarrow
+\text{uniform integrability}
+\Longrightarrow
+L^1\text{ limit under control},
+\]
+
+and Vitali starts directly from the middle layer.
+
+
+\section{Infinite Measure}
+
+
+There is one more boundary here that is easy to overlook.
+
+The finite-measure assumption above is not entirely inessential.
+
+On
+
+\[
+(\mathbb R,\mathcal B,m)
+\]
+
+consider
+
+\[
+f_n(x)
+=
+\frac1n\mathbf1_{[0,n]}(x).
+\]
+
+Clearly
+
+\[
+\|f_n\|_1=1.
+\]
+
+Moreover, since
+
+\[
+\|f_n\|_\infty=\frac1n,
+\]
+
+in fact
+
+\[
+f_n\to0
+\]
+
+even uniformly, so of course also in measure.
+
+On the other hand, for $K>1$,
+
+\[
+\{|f_n|>K\}=\varnothing
+\]
+
+for all $n$, so by the tail-integral definition $\{f_n\}$ is uniformly integrable.
+
+Yet
+
+\[
+\|f_n\|_1=1
+\]
+
+still does not tend to zero.
+
+Here the mass does not concentrate on smaller and smaller sets; instead, a different phenomenon occurs:
+
+\[
+\text{the mass spreads out over larger and larger regions of the space.}
+\]
+
+On a finite measure space there is not enough room for this behavior; on an infinite measure space it requires additional control.
+
+Hence, for a general measure space, controlling only the tail in the direction
+
+\[
+|f_n|\to\infty
+\]
+
+is not enough; one must also prevent the integral mass from escaping to the ``far away'' parts of the space.
+
+General Vitali-type results therefore add a tightness condition: one can find a region of finite measure outside of which the integral mass is uniformly small for all $n$. The version for general measure spaces genuinely needs this spatial kind of control in addition to control of large values.
+
+The two phenomena are best kept apart:
+
+\[
+\boxed{
+\begin{aligned}
+\text{concentration}
+&:\quad
+\text{mass squeezes into smaller and smaller sets},\\
+\text{escape}
+&:\quad
+\text{mass runs off to larger and larger regions of space}.
+\end{aligned}
+}
+\]
+
+Uniform integrability rules out the former first; on infinite measure spaces the latter must be dealt with in addition.
+
+
+\section*{Summary}
+
+
+Uniform integrability is not about whether a single function is integrable, but about whether the integral mass of a family of functions is uniformly controlled.
+
+It requires
+
+\[
+\lim_{K\to\infty}
+\sup_n
+\int_{\{|f_n|>K\}}
+|f_n|\,d\mu
+=
+0,
+\]
+
+that is, a sequence cannot preserve a fixed amount of integral mass through ever taller and ever narrower spikes.
+
+Consequently,
+
+\[
+\sup_n\|f_n\|_1<\infty
+\]
+
+by itself is not sufficient, whereas uniform $L^p$ control for any $p>1$ automatically yields uniform integrability.
+
+More importantly, on a finite measure space the Vitali convergence theorem ties it to the convergence behavior of the sequence:
+
+\[
+\boxed{
+f_n\to f\text{ in measure}
+\quad+\quad
+\{f_n\}\text{ uniformly integrable}
+\quad\Longrightarrow\quad
+f_n\to f\text{ in }L^1.
+}
+\]
+
+Convergence in measure tells us that the points where the error is large become fewer and fewer.
+
+Uniform integrability tells us that these ever fewer points cannot still carry a large amount of integral.
+
+The two conditions control two different problems, and together they supply exactly the missing step from convergence in measure to $L^1$ convergence.
+
+From this point of view, uniform integrability is not yet another ``mode of convergence.''
+
+It is closer to a \textbf{compactness condition}: it controls how the mass of a family of functions is distributed, and decides when we may safely pass the limit inside the integral sign.
+
+\end{document}

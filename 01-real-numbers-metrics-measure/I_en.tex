@@ -1,0 +1,2736 @@
+\documentclass[11pt]{article}
+
+\usepackage{math_article}
+\usepackage{series_ra}
+
+\renewcommand{\ArticleNumeral}{I}
+\renewcommand{\ArticleTitle}{Real Numbers, Metrics, and Measure}
+\renewcommand{\ArticleAuthor}{Anqiao Ouyang}
+\renewcommand{\ArticleDate}{February 2024 \quad\textperiodcentered\quad Revised August 2026}
+
+\begin{document}
+
+\maketitle
+
+\section*{Introduction}
+
+In high-school calculus we have already met limits, continuity, differentiation and integration; what real analysis does is to understand more deeply the mathematical structure behind them. For example, why can we trust that a sequence which keeps approaching some position really has a limit? Why does the real line never suddenly exhibit an undefinable ``gap'' somewhere? And when we extend integration from intervals to more complicated sets, how should we rigorously define the ``size'' of a set?
+
+These questions look scattered, but in fact they are very closely connected to one another.
+
+The completeness of the real numbers guarantees that many limiting processes do not leave the space we are studying; metrics generalize ``distance'' and ``approach'' to more general sets; and measure theory, starting from a different direction, tries to assign sizes to sets and ultimately lays the foundation for the Lebesgue integral.
+
+What I hope to do here is to place several concepts that will recur again and again along a single logical line, so that readers meeting these objects for the first time understand why they arise and how the different definitions are actually related.
+
+\subsection*{Real Analysis and the Theory of Functions of a Real Variable}
+
+The terms ``real analysis'' and ``theory of functions of a real variable'' are not used in a completely uniform way across textbooks and curricula.
+
+Some courses simply treat Real Analysis as the theory of functions of a real variable; others regard the latter as the part of real analysis centered on Lebesgue measure and the Lebesgue integral, and place metric spaces, general measure spaces, function spaces and the like in a broader analytic framework.
+
+This article does not attempt to prescribe a single usage.
+
+For convenience in what follows, we roughly regard Lebesgue measure, measurable functions, the Lebesgue integral and related questions on
+
+\[
+(\mathbb{R}^{n},\mathcal{L},m)
+\]
+
+as the main content of the classical theory of functions of a real variable, while general measure spaces
+
+\[
+(X,\mathcal{F},\mu)
+\]
+
+together with more abstract metric spaces, function spaces and so on are placed in the broader framework of real analysis.
+
+This distinction serves only to organize the article and does not affect any mathematical definition.
+
+From this point of view, the present article actually has two tasks at once.
+
+On the one hand, we must build the measure-theoretic foundation for the Lebesgue integral to come; on the other, we introduce in advance more abstract language such as metric spaces. That way, when we later discuss $L^{p}$ spaces, Banach spaces and even more general problems in analysis, we will not need to set up these concepts again.
+
+The reader is assumed to be familiar with basic set notation and to have a first acquaintance with limits, derivatives and integrals. Beyond that, most concepts will be introduced from their definitions.
+
+\section{Real Numbers and the Foundations of Analysis}
+
+\subsection{The Algebraic Structure of the Real Numbers}
+
+To discuss limits and completeness in analysis, we first need to be clear about the structure of the real numbers we are using.
+
+Denote the set of real numbers by
+
+\[
+\mathbb{R}.
+\]
+
+On $\mathbb{R}$ we define addition and multiplication
+
+\[
++:\mathbb{R}\times\mathbb{R}\rightarrow\mathbb{R},
+\]
+\[
+\cdot:\mathbb{R}\times\mathbb{R}\rightarrow\mathbb{R}.
+\]
+
+That is, for any $x,y\in\mathbb{R}$ we have
+
+\[
+x+y\in\mathbb{R},\qquad xy\in\mathbb{R}.
+\]
+
+Addition and multiplication of real numbers satisfy a familiar list of properties. For any $x,y,z\in\mathbb{R}$,
+
+\[
+x+(y+z)=(x+y)+z,
+\]
+\[
+x(yz)=(xy)z,
+\]
+\[
+x+y=y+x,
+\]
+\[
+xy=yx,
+\]
+
+and
+
+\[
+x(y+z)=xy+xz.
+\]
+
+Moreover, there exist an additive identity $0$ and a multiplicative identity $1\ne0$ such that
+
+\[
+x+0=x,
+\]
+\[
+x\cdot1=x.
+\]
+
+Every $x\in\mathbb{R}$ has an additive inverse $-x$ satisfying
+
+\[
+x+(-x)=0,
+\]
+
+and every nonzero real number $x$ has a multiplicative inverse $x^{-1}$ satisfying
+
+\[
+xx^{-1}=1.
+\]
+
+An algebraic structure satisfying these properties is called a \textbf{field}.
+
+Hence
+
+\[
+(\mathbb{R},+,\cdot)
+\]
+
+is a field.
+
+These conditions alone, however, are not enough to characterize the real numbers, because the rational numbers
+
+\[
+\mathbb{Q}
+\]
+
+form a field as well.
+
+The real numbers also carry an order structure.
+
+Consider the relation $\leq$ on $\mathbb{R}$. It satisfies
+
+\[
+x\leq x,
+\]
+
+if
+
+\[
+x\leq y,\qquad y\leq x,
+\]
+
+then
+
+\[
+x=y,
+\]
+
+if
+
+\[
+x\leq y,\qquad y\leq z,
+\]
+
+then
+
+\[
+x\leq z,
+\]
+
+and any two real numbers are comparable:
+
+\[
+x\leq y \quad\text{or}\quad y\leq x.
+\]
+
+In addition, the order must be compatible with the field operations.
+
+If
+
+\[
+x\leq y,
+\]
+
+then for any $z\in\mathbb{R}$,
+
+\[
+x+z\leq y+z.
+\]
+
+If
+
+\[
+0\leq x,\qquad0\leq y,
+\]
+
+then
+
+\[
+0\leq xy.
+\]
+
+A field with these properties is called an \textbf{ordered field}.
+
+So $\mathbb{R}$ is an ordered field.
+
+But $\mathbb{Q}$ is still an ordered field too.
+
+What truly distinguishes $\mathbb{R}$ from $\mathbb{Q}$ is completeness.
+
+\subsection{Suprema and Completeness}
+
+Let
+
+\[
+E\subseteq\mathbb{R}.
+\]
+
+If there exists $M\in\mathbb{R}$ such that
+
+\[
+x\leq M,\qquad\forall x\in E,
+\]
+
+then $M$ is called an \textbf{upper bound} of $E$.
+
+For example, the set
+
+\[
+E=(0,1)
+\]
+
+has infinitely many upper bounds:
+
+\[
+1,\ 2,\ 10,\ldots
+\]
+
+are all upper bounds of it.
+
+We are more interested in the smallest of these upper bounds.
+
+If $\alpha$ satisfies
+
+\[
+x\leq\alpha,\qquad\forall x\in E,
+\]
+
+and for every upper bound $M$ of $E$ we have
+
+\[
+\alpha\leq M,
+\]
+
+then $\alpha$ is called the \textbf{supremum} of $E$, written
+
+\[
+\alpha=\sup E.
+\]
+
+Lower bounds and the infimum
+
+\[
+\inf E
+\]
+
+are defined analogously.
+
+Here one must distinguish the supremum from the maximum.
+
+For example,
+
+\[
+E=(0,1)
+\]
+
+satisfies
+
+\[
+\sup E=1,
+\]
+
+but
+
+\[
+1\notin E.
+\]
+
+So $E$ has no maximum.
+
+One of the most important properties of the real numbers is the following.
+
+\textbf{Supremum Property}
+
+Every nonempty set
+
+\[
+E\subseteq\mathbb{R}
+\]
+
+that is bounded above has a supremum
+
+\[
+\sup E\in\mathbb{R}.
+\]
+
+This is one basic formulation of the completeness of the real numbers.
+
+The rational numbers do not have this property.
+
+For example, consider
+
+\[
+E=\{q\in\mathbb{Q}:q>0,\ q^{2}<2\}.
+\]
+
+This set is clearly bounded above in $\mathbb{Q}$; for instance, $2$ is an upper bound.
+
+But if it had a supremum $\alpha$ in $\mathbb{Q}$, this supremum would have to correspond to
+
+\[
+\alpha^{2}=2,
+\]
+
+that is,
+
+\[
+\alpha=\sqrt{2}.
+\]
+
+However,
+
+\[
+\sqrt{2}\notin\mathbb{Q}.
+\]
+
+So $E$ has no supremum in $\mathbb{Q}$.
+
+From the point of view of the number line, this situation can be understood as a ``gap'' in $\mathbb{Q}$, and the completeness of $\mathbb{R}$ guarantees that no such gaps exist.
+
+Therefore, in a suitable sense, the real numbers can be characterized as a \textbf{complete ordered field}.
+
+Completeness looks like merely one property concerning suprema, but in fact it underpins a great many basic results of analysis.
+
+For example, the Archimedean property can be derived from it.
+
+\textbf{Archimedean Property}
+
+For any $x\in\mathbb{R}$ there exists $n\in\mathbb{N}$ such that
+
+\[
+n>x.
+\]
+
+The proof is not complicated.
+
+Suppose $\mathbb{N}$ were bounded above in $\mathbb{R}$. By completeness,
+
+\[
+\alpha=\sup\mathbb{N}
+\]
+
+exists.
+
+Then
+
+\[
+\alpha-1<\alpha.
+\]
+
+Since $\alpha$ is the least upper bound, $\alpha-1$ cannot still be an upper bound of $\mathbb{N}$, so there exists $n\in\mathbb{N}$ with
+
+\[
+n>\alpha-1.
+\]
+
+Hence
+
+\[
+n+1>\alpha.
+\]
+
+But $n+1\in\mathbb{N}$, contradicting the fact that $\alpha$ is an upper bound of $\mathbb{N}$.
+
+Therefore $\mathbb{N}$ is not bounded above in $\mathbb{R}$.
+
+From this we immediately obtain a fact that is used constantly in limit proofs later on:
+
+for any $\varepsilon>0$ there exists $n\in\mathbb{N}$ such that
+
+\[
+\frac{1}{n}<\varepsilon.
+\]
+
+It suffices to choose
+
+\[
+n>\frac{1}{\varepsilon}.
+\]
+
+Completeness further yields the nested interval theorem, the Bolzano--Weierstrass theorem, the monotone convergence theorem for bounded monotone sequences, and other results. They look different in form, but at their core they all express the fact that the real numbers have no gaps.
+
+\subsection{Dedekind Cuts}
+
+So far we have treated completeness as a property that the real numbers already possess.
+
+Another approach is to start from the rational numbers and construct the real numbers directly.
+
+Dedekind cuts are a classical such construction.
+
+Let
+
+\[
+A\subsetneq\mathbb{Q}.
+\]
+
+If $A$ satisfies:
+
+\begin{enumerate}
+  \item $A\ne\varnothing$;
+  \item if $x\in A$ and $y<x$, then $y\in A$;
+  \item $A$ has no greatest element;
+\end{enumerate}
+
+then $A$ can be regarded as the left half of a Dedekind cut.
+
+For a rational number $r$ we may define
+
+\[
+A_{r}=\{q\in\mathbb{Q}:q<r\}.
+\]
+
+This set corresponds precisely to the rational number $r$.
+
+What is really interesting is that even when a position corresponds to no rational number, we can still obtain a legitimate cut.
+
+For example, define
+
+\[
+A=\{q\in\mathbb{Q}:q<0\ \text{or}\ q^{2}<2\}.
+\]
+
+This set describes exactly all the rational numbers to the left of $\sqrt{2}$ on the number line.
+
+Although
+
+\[
+\sqrt{2}\notin\mathbb{Q},
+\]
+
+the set $A$ itself can be defined entirely in terms of rational numbers.
+
+We may therefore regard this cut itself as a new number.
+
+Following this idea, one can define the set of real numbers to be the set of all Dedekind cuts, define addition, multiplication and order on it, and finally prove that the resulting structure is a complete ordered field.
+
+What deserves more attention here is the difference between Dedekind cuts and the supremum property.
+
+Dedekind cuts are a \textbf{method of constructing the real numbers}, whereas the supremum property is a \textbf{completeness property} of the real numbers.
+
+Once $\mathbb{R}$ has been established, real analysis usually does not return to Dedekind cuts every time, but uses the completeness of the real numbers directly.
+
+Likewise, one can construct the real numbers via equivalence classes of Cauchy sequences. The real number systems obtained from different constructions are isomorphic as ordered fields, so the analysis that follows need only concern itself with the structural properties they share.
+
+\subsection{Metric Spaces}
+
+On the real line we use
+
+\[
+|x-y|
+\]
+
+to denote the distance between two real numbers.
+
+In two- or three-dimensional Euclidean space we use the familiar Pythagorean theorem.
+
+But the objects of analysis are not necessarily ordinary geometric points. We may also study functions, sequences, matrices and all sorts of more abstract objects.
+
+It is therefore worthwhile to isolate the properties that ``distance'' really needs to satisfy.
+
+Let $X$ be a nonempty set.
+
+A function
+
+\[
+d:X\times X\rightarrow[0,\infty)
+\]
+
+is called a \textbf{metric} on $X$ if, for any $x,y,z\in X$,
+
+\[
+d(x,y)\geq0,
+\]
+
+and
+
+\[
+d(x,y)=0\Longleftrightarrow x=y,
+\]
+
+and also
+
+\[
+d(x,y)=d(y,x),
+\]
+
+as well as
+
+\[
+d(x,z)\leq d(x,y)+d(y,z).
+\]
+
+In this case
+
+\[
+(X,d)
+\]
+
+is called a \textbf{metric space}.
+
+The most familiar example is
+
+\[
+X=\mathbb{R}^{n}.
+\]
+
+If
+
+\[
+x=(x_{1},\ldots,x_{n}),\qquad y=(y_{1},\ldots,y_{n}),
+\]
+
+then the usual Euclidean distance is
+
+\[
+d_{2}(x,y)=\left(\sum_{i=1}^{n}|x_{i}-y_{i}|^{2}\right)^{1/2}.
+\]
+
+But this is not the only possible metric on $\mathbb{R}^{n}$.
+
+For example, one can also define
+
+\[
+d_{1}(x,y)=\sum_{i=1}^{n}|x_{i}-y_{i}|
+\]
+
+and
+
+\[
+d_{\infty}(x,y)=\max_{1\leq i\leq n}|x_{i}-y_{i}|.
+\]
+
+They all satisfy the metric axioms.
+
+Even on an arbitrary set $X$ we can define the discrete metric
+
+\[
+d(x,y)=\begin{cases}0, & x=y,\\ 1, & x\ne y.\end{cases}
+\]
+
+So a metric space need not have any familiar geometric shape.
+
+What it really provides is the notion of ``how close two points are.''
+
+Given $x\in X$ and $r>0$, define the open ball
+
+\[
+B_{r}(x)=\{y\in X:d(x,y)<r\}.
+\]
+
+A set $U\subseteq X$ is called open if for every $x\in U$ there exists $r>0$ such that
+
+\[
+B_{r}(x)\subseteq U.
+\]
+
+All the open sets generated by a metric form a topology.
+
+Thus a metric not only defines distance but also automatically provides open sets, closed sets, neighborhoods, continuity, convergence and other structures on the space.
+
+\subsection{Limits and Convergence}
+
+A sequence in $X$ is essentially a map
+
+\[
+x:\mathbb{N}\rightarrow X,
+\]
+
+usually written
+
+\[
+(x_{n})^{\infty}_{n=1}.
+\]
+
+For real numbers, we are used to thinking of convergence of a sequence as its terms getting closer and closer to some number.
+
+Metric spaces allow this definition to be generalized completely.
+
+Let $(X,d)$ be a metric space.
+
+If there exists $x\in X$ such that for every $\varepsilon>0$ there exists $N\in\mathbb{N}$ with
+
+\[
+n\geq N\Longrightarrow d(x_{n},x)<\varepsilon,
+\]
+
+then $(x_{n})$ is said to converge to $x$, written
+
+\[
+x_{n}\rightarrow x.
+\]
+
+Formally, this can be written as
+
+\[
+\forall\varepsilon>0,\ \exists N\in\mathbb{N},\ \forall n\geq N,\ d(x_{n},x)<\varepsilon.
+\]
+
+In understanding this definition, the most important thing is not to think of $\varepsilon$ as ``a very small number,'' but to pay attention to the order of the quantifiers.
+
+What we require is this:
+
+no matter how strict an error $\varepsilon$ someone hands us, we can always find a position $N$ such that from that term onward all terms of the sequence remain forever in the $\varepsilon$-neighborhood of $x$.
+
+This definition first of all yields a basic result.
+
+\textbf{Uniqueness of Limits}
+
+In a metric space, a convergent sequence has at most one limit.
+
+Suppose
+
+\[
+x_{n}\rightarrow x
+\]
+
+and
+
+\[
+x_{n}\rightarrow y.
+\]
+
+If $x\ne y$, then
+
+\[
+d(x,y)>0.
+\]
+
+Take
+
+\[
+\varepsilon=\frac{1}{3}d(x,y).
+\]
+
+For $n$ large enough we have simultaneously
+
+\[
+d(x_{n},x)<\varepsilon
+\]
+
+and
+
+\[
+d(x_{n},y)<\varepsilon.
+\]
+
+Then by the triangle inequality,
+
+\[
+d(x,y)\leq d(x,x_{n})+d(x_{n},y)<2\varepsilon=\frac{2}{3}d(x,y),
+\]
+
+a contradiction.
+
+Hence
+
+\[
+x=y.
+\]
+
+\subsection{Cauchy Sequences and Complete Spaces}
+
+Sometimes we do not know where a sequence ought to converge.
+
+Instead of comparing it directly with a candidate limit, we can then check whether the later terms of the sequence get closer and closer to one another.
+
+If for every $\varepsilon>0$ there exists $N\in\mathbb{N}$ such that
+
+\[
+m,n\geq N\Longrightarrow d(x_{m},x_{n})<\varepsilon,
+\]
+
+then $(x_{n})$ is called a \textbf{Cauchy sequence}.
+
+Every convergent sequence is a Cauchy sequence.
+
+Indeed, if
+
+\[
+x_{n}\rightarrow x,
+\]
+
+then given $\varepsilon>0$ we can choose $N$ such that
+
+\[
+n\geq N\Longrightarrow d(x_{n},x)<\frac{\varepsilon}{2}.
+\]
+
+Hence for any $m,n\geq N$,
+
+\[
+d(x_{m},x_{n})\leq d(x_{m},x)+d(x,x_{n})<\varepsilon.
+\]
+
+The converse, however, need not hold.
+
+A metric space is called \textbf{complete} if every Cauchy sequence in it converges to some point of the space.
+
+The real line
+
+\[
+(\mathbb{R},|\cdot|)
+\]
+
+is complete,
+
+whereas
+
+\[
+(\mathbb{Q},|\cdot|)
+\]
+
+is not.
+
+For example, one can construct a sequence of rational numbers $(q_{n})$ such that
+
+\[
+q_{n}\rightarrow\sqrt{2}
+\]
+
+holds in $\mathbb{R}$.
+
+$(q_{n})$ is a Cauchy sequence, but it has no limit in $\mathbb{Q}$, because
+
+\[
+\sqrt{2}\notin\mathbb{Q}.
+\]
+
+This in fact reflects the same phenomenon as the completeness discussed earlier via suprema.
+
+In the real numbers, the various forms of completeness---the supremum property, Cauchy completeness, convergence of bounded monotone sequences, the nested interval property and so on---can all be derived from one another.
+
+This is a very typical phenomenon in real analysis: one and the same structural property may have many equivalent descriptions that look completely different on the surface.
+
+There is also a simple result that will be used frequently later.
+
+\textbf{Boundedness of Cauchy Sequences}
+
+Every Cauchy sequence is bounded.
+
+Let $(x_{n})$ be a Cauchy sequence.
+
+Take
+
+\[
+\varepsilon=1.
+\]
+
+There exists $N$ such that
+
+\[
+m,n\geq N\Longrightarrow d(x_{m},x_{n})<1.
+\]
+
+Fixing $m=N$, we get
+
+\[
+n\geq N\Longrightarrow d(x_{n},x_{N})<1.
+\]
+
+So the whole tail of the sequence lies in the open ball
+
+\[
+B_{1}(x_{N}).
+\]
+
+Only finitely many points remain:
+
+\[
+x_{1},\ldots,x_{N-1}.
+\]
+
+Taking
+
+\[
+R=1+\max_{1\leq k<N}d(x_{k},x_{N}),
+\]
+
+we obtain
+
+\[
+x_{n}\in B_{R}(x_{N}),\qquad\forall n\in\mathbb{N}.
+\]
+
+Hence the whole sequence is bounded.
+
+\subsection{Compactness}
+
+Another concept very closely related to completeness is compactness.
+
+Let $K\subseteq X$.
+
+If a family of open sets
+
+\[
+\{U_{\alpha}\}_{\alpha\in I}
+\]
+
+satisfies
+
+\[
+K\subseteq\bigcup_{\alpha\in I}U_{\alpha},
+\]
+
+it is called an open cover of $K$.
+
+If from every open cover of $K$ one can extract finitely many open sets
+
+\[
+U_{\alpha_{1}},\ldots,U_{\alpha_{m}}
+\]
+
+that still cover $K$, then $K$ is called compact.
+
+In a metric space, compactness is equivalent to sequential compactness:
+
+every sequence in $K$ has a convergent subsequence whose limit still belongs to $K$.
+
+In finite-dimensional Euclidean space there is also the famous Heine--Borel theorem:
+
+\[
+K\subseteq\mathbb{R}^{n}
+\]
+
+is compact if and only if $K$ is closed and bounded.
+
+That is,
+
+\[
+K\text{ compact}\Longleftrightarrow K\text{ closed and bounded}.
+\]
+
+It should be stressed, however, that ``closed and bounded is equivalent to compact'' is a special property of finite-dimensional Euclidean space and does not carry over directly to arbitrary metric spaces.
+
+For example, the closed unit ball of an infinite-dimensional normed space is in general not compact.
+
+Every compact metric space is complete, but a complete space need not be compact.
+
+The difference between these two concepts will become quite pronounced later on, in function spaces.
+
+\subsection{Algebraic Structures}
+
+At this point let us briefly insert some algebraic language that we will keep encountering later.
+
+It is not the core of the measure theory in this article, but many spaces in analysis carry both algebraic and topological structure, so fixing the meaning of these words in advance will be quite convenient.
+
+Let $G$ be a nonempty set, and define a binary operation
+
+\[
+\cdot:G\times G\rightarrow G.
+\]
+
+If the following hold:
+
+\begin{enumerate}
+  \item associativity
+  \[
+  (xy)z=x(yz);
+  \]
+  \item there exists an identity element $e\in G$ with
+  \[
+  ex=xe=x;
+  \]
+  \item every $x\in G$ has an inverse $x^{-1}$ such that
+  \[
+  xx^{-1}=x^{-1}x=e;
+  \]
+\end{enumerate}
+
+then
+
+\[
+(G,\cdot)
+\]
+
+is called a \textbf{group}.
+
+If moreover
+
+\[
+xy=yx,
+\]
+
+it is called an abelian (or commutative) group.
+
+If only closure and associativity are required, we obtain a semigroup; if a semigroup also has an identity element, we obtain a monoid.
+
+On a set $R$, consider two operations $+$ and $\cdot$.
+
+If
+
+\[
+(R,+)
+\]
+
+is an abelian group, multiplication is associative, and multiplication distributes over addition on both sides,
+
+\[
+x(y+z)=xy+xz,
+\]
+\[
+(x+y)z=xz+yz,
+\]
+
+then
+
+\[
+(R,+,\cdot)
+\]
+
+is called a \textbf{ring}.
+
+If multiplication is commutative, it is called a commutative ring.
+
+If there is also a multiplicative identity $1$, it is called a ring with identity (a unital ring).
+
+A field, then, further requires on top of this that all nonzero elements form an abelian group under multiplication.
+
+Thus a field $K$ can be described concisely by
+
+\[
+(K,+)\text{ is an abelian group},
+\]
+\[
+(K\setminus\{0\},\cdot)\text{ is an abelian group},
+\]
+
+together with the distributivity of multiplication over addition.
+
+Common examples include
+
+\[
+\mathbb{Q},\qquad\mathbb{R},\qquad\mathbb{C}.
+\]
+
+These algebraic structures belong to abstract algebra proper, but analysis constantly combines them with limits, topology and measure.
+
+For example, topological groups, Banach algebras, and Haar measure on locally compact groups are all built on such a combination of ``algebraic structure + analytic structure.''
+
+\section{Measure Spaces}
+
+\subsection{Measure and Cardinality}
+
+If we want to describe the size of a set, the first thing that comes to mind is usually the number of its elements, that is, its cardinality.
+
+For finite sets this is of course entirely natural.
+
+For example, the size of
+
+\[
+A=\{1,2,3\}
+\]
+
+can be written as
+
+\[
+|A|=3.
+\]
+
+But as soon as we enter continuous spaces, cardinality can no longer express the geometric size we actually care about.
+
+For example,
+
+\[
+[0,1]
+\]
+
+and
+
+\[
+[0,100]
+\]
+
+have the same cardinality.
+
+In fact both are equinumerous with the whole set of real numbers $\mathbb{R}$.
+
+Yet in terms of length,
+
+\[
+[0,100]
+\]
+
+should obviously be a hundred times larger than
+
+\[
+[0,1].
+\]
+
+We therefore need a different kind of ``size.''
+
+In one dimension this size corresponds to length; in two dimensions, to area; in three dimensions, to volume.
+
+What measure theory does is to generalize these notions uniformly to more general sets and spaces.
+
+This is also the foundation on which the Lebesgue integral rests.
+
+The Riemann integral starts mainly from partitioning the domain into intervals, whereas Lebesgue's theory first needs to know which sets can be measured and how large their measures are.
+
+So the first question is not ``what is the measure,'' but rather:
+
+which sets are we actually allowed to measure?
+
+\subsection{$\sigma$-Algebras}
+
+Let $X$ be a nonempty set.
+
+Denote its power set by
+
+\[
+\mathcal{P}(X)=\{A:A\subseteq X\}.
+\]
+
+A family of sets
+
+\[
+\mathcal{F}\subseteq\mathcal{P}(X)
+\]
+
+satisfying:
+
+\begin{enumerate}
+  \item \[
+  X\in\mathcal{F};
+  \]
+  \item if
+  \[
+  A\in\mathcal{F},
+  \]
+  then
+  \[
+  A^{c}=X\setminus A\in\mathcal{F};
+  \]
+  \item if
+  \[
+  A_{1},A_{2},\ldots\in\mathcal{F},
+  \]
+  then
+  \[
+  \bigcup_{n=1}^{\infty}A_{n}\in\mathcal{F};
+  \]
+\end{enumerate}
+
+is called a \textbf{$\sigma$-algebra} on $X$.
+
+From the first and second conditions we immediately get
+
+\[
+\varnothing\in\mathcal{F},
+\]
+
+since
+
+\[
+\varnothing=X^{c}.
+\]
+
+Using De Morgan's law,
+
+\[
+\left(\bigcup_{n=1}^{\infty}A_{n}\right)^{c}=\bigcap_{n=1}^{\infty}A_{n}^{c},
+\]
+
+we see that $\mathcal{F}$ is also closed under countable intersections:
+
+\[
+A_{1},A_{2},\ldots\in\mathcal{F}\Longrightarrow\bigcap_{n=1}^{\infty}A_{n}\in\mathcal{F}.
+\]
+
+Finite unions and finite intersections are of course special cases of countable unions and intersections.
+
+The simplest $\sigma$-algebra is
+
+\[
+\{\varnothing,X\},
+\]
+
+called the trivial $\sigma$-algebra.
+
+The largest one is
+
+\[
+\mathcal{P}(X).
+\]
+
+Why does the definition require \textbf{countable} unions rather than arbitrary unions?
+
+One important reason is that limits in analysis are by their nature indexed by sequences.
+
+For instance, if
+
+\[
+A_{1}\subseteq A_{2}\subseteq\cdots,
+\]
+
+we frequently need to study
+
+\[
+\bigcup_{n=1}^{\infty}A_{n}.
+\]
+
+This countable structure matches exactly with the theory of limits, series and integration.
+
+On the other hand, if a $\sigma$-algebra were required to be closed under arbitrary unions, many natural measurable structures would become too strong, and might ultimately even force us to include sets we do not want to include.
+
+Given a family of sets
+
+\[
+\mathcal{C}\subseteq\mathcal{P}(X),
+\]
+
+the intersection of all $\sigma$-algebras containing $\mathcal{C}$ is again a $\sigma$-algebra.
+
+Hence there exists a smallest $\sigma$-algebra containing $\mathcal{C}$, denoted
+
+\[
+\sigma(\mathcal{C}),
+\]
+
+and called the \textbf{$\sigma$-algebra generated by} $\mathcal{C}$.
+
+This will be very important later when we define Borel sets.
+
+\subsection{Measurable Spaces and Measures}
+
+If $X$ is equipped with a $\sigma$-algebra $\mathcal{F}$, the pair
+
+\[
+(X,\mathcal{F})
+\]
+
+is called a \textbf{measurable space}.
+
+The sets in $\mathcal{F}$ are called measurable sets.
+
+Note that ``measurable'' here only means that the set has been admitted into the system of sets we are allowed to measure.
+
+At this point no size has actually been assigned to it yet.
+
+For that we need to define a measure.
+
+A function
+
+\[
+\mu:\mathcal{F}\rightarrow[0,\infty]
+\]
+
+satisfying
+
+\[
+\mu(\varnothing)=0
+\]
+
+and countable additivity:
+
+if
+
+\[
+A_{i}\cap A_{j}=\varnothing\qquad(i\ne j),
+\]
+
+then
+
+\[
+\mu\left(\bigcup_{n=1}^{\infty}A_{n}\right)=\sum_{n=1}^{\infty}\mu(A_{n}),
+\]
+
+is called a \textbf{measure} on $\mathcal{F}$.
+
+The triple
+
+\[
+(X,\mathcal{F},\mu)
+\]
+
+is called a \textbf{measure space}.
+
+A measure is allowed to take the value $+\infty$.
+
+This is necessary. For example, the Lebesgue measure of the whole real line is
+
+\[
+m(\mathbb{R})=+\infty.
+\]
+
+Many basic properties follow from countable additivity.
+
+First, finite additivity.
+
+If
+
+\[
+A\cap B=\varnothing,
+\]
+
+then
+
+\[
+\mu(A\cup B)=\mu(A)+\mu(B).
+\]
+
+Second, monotonicity.
+
+If
+
+\[
+A\subseteq B,
+\]
+
+then we can write
+
+\[
+B=A\cup(B\setminus A),
+\]
+
+where the two sets are disjoint, so
+
+\[
+\mu(B)=\mu(A)+\mu(B\setminus A)\geq\mu(A).
+\]
+
+Hence
+
+\[
+A\subseteq B\Longrightarrow\mu(A)\leq\mu(B).
+\]
+
+If
+
+\[
+A_{1}\subseteq A_{2}\subseteq\cdots,
+\]
+
+and we set
+
+\[
+A=\bigcup_{n=1}^{\infty}A_{n},
+\]
+
+then we also have \textbf{continuity from below}:
+
+\[
+\mu(A)=\lim_{n\to\infty}\mu(A_{n}).
+\]
+
+For the proof, split the sequence of sets into pairwise disjoint pieces:
+
+\[
+B_{1}=A_{1},
+\]
+\[
+B_{n}=A_{n}\setminus A_{n-1},\qquad n\geq2.
+\]
+
+Then
+
+\[
+A_{n}=\bigcup_{k=1}^{n}B_{k}
+\]
+
+and
+
+\[
+A=\bigcup_{k=1}^{\infty}B_{k}.
+\]
+
+By countable additivity,
+
+\[
+\mu(A_{n})=\sum_{k=1}^{n}\mu(B_{k}),
+\]
+
+while
+
+\[
+\mu(A)=\sum_{k=1}^{\infty}\mu(B_{k}).
+\]
+
+Therefore
+
+\[
+\mu(A_{n})\rightarrow\mu(A).
+\]
+
+Likewise, if
+
+\[
+A_{1}\supseteq A_{2}\supseteq\cdots
+\]
+
+and
+
+\[
+\mu(A_{1})<\infty,
+\]
+
+then
+
+\[
+\mu\left(\bigcap_{n=1}^{\infty}A_{n}\right)=\lim_{n\to\infty}\mu(A_{n}).
+\]
+
+This is called \textbf{continuity from above}.
+
+These results will come up again and again in the integration and limit theorems later.
+
+\subsection{Null Sets and Completeness}
+
+If
+
+\[
+N\in\mathcal{F}
+\]
+
+satisfies
+
+\[
+\mu(N)=0,
+\]
+
+then $N$ is called a null set.
+
+A very natural question is:
+
+if
+
+\[
+A\subseteq N,
+\]
+
+must $A$ be measurable?
+
+The answer is: not necessarily.
+
+Although, from the point of view of ``size,'' we would certainly like
+
+\[
+\mu(A)=0,
+\]
+
+$A$ must first belong to $\mathcal{F}$ before the measure $\mu(A)$ is even defined.
+
+If a measure space has the property that
+
+whenever
+
+\[
+N\in\mathcal{F},\qquad\mu(N)=0,
+\]
+
+every
+
+\[
+A\subseteq N
+\]
+
+belongs to $\mathcal{F}$,
+
+then the measure space is called \textbf{complete}.
+
+Note that completeness here is not the same concept as Cauchy completeness of metric spaces.
+
+Although the same word is used, the two concern entirely different structures.
+
+\subsection{Borel Sets}
+
+Let $X$ be a topological space with topology $\tau$.
+
+Since $\tau$ is precisely the family of all open subsets of $X$, we can consider the $\sigma$-algebra generated by these open sets:
+
+\[
+\mathcal{B}(X)=\sigma(\tau).
+\]
+
+This is called the \textbf{Borel $\sigma$-algebra} on $X$.
+
+Its elements are called \textbf{Borel sets}.
+
+So Borel sets can be understood as
+
+the sets that can be produced from all open sets by countably many operations of taking unions, intersections and complements.
+
+All closed sets are of course Borel sets as well, since closed sets are complements of open sets.
+
+On the real line,
+
+\[
+\mathcal{B}(\mathbb{R})
+\]
+
+can also be generated by all open intervals:
+
+\[
+\mathcal{B}(\mathbb{R})=\sigma\big(\{(a,b):a<b\}\big).
+\]
+
+In fact the generators can be reduced even further, for example
+
+\[
+\mathcal{B}(\mathbb{R})=\sigma\big(\{(-\infty,a):a\in\mathbb{R}\}\big).
+\]
+
+A measure defined on the Borel $\sigma$-algebra is called a Borel measure.
+
+Note that the Borel $\sigma$-algebra itself is in general not complete.
+
+That is, some subsets of a Borel null set may fail to be Borel sets.
+
+This point will later become the key to distinguishing Borel measurable sets from Lebesgue measurable sets.
+
+\section{Outer Measure and the Carathéodory Construction}
+
+\subsection{Outer Measure}
+
+At this point the definition of a measure seems complete.
+
+But a very practical problem remains:
+
+if we want to construct Lebesgue measure starting from the most basic notion of interval length, at the outset we do not even know which sets ought to be measurable.
+
+So we cannot simply first write
+
+\[
+\mu:\mathcal{F}\rightarrow[0,\infty]
+\]
+
+and then assume that a suitable $\mathcal{F}$ already exists.
+
+The more natural approach is to go the other way around.
+
+We first try to assign to \textbf{all subsets} of $X$ a size in an outer sense, and then pick out from them the sets that are genuinely well behaved.
+
+This is outer measure.
+
+Let $X$ be a set.
+
+A function
+
+\[
+\mu^{*}:\mathcal{P}(X)\rightarrow[0,\infty]
+\]
+
+satisfying:
+
+\begin{enumerate}
+  \item \[
+  \mu^{*}(\varnothing)=0;
+  \]
+  \item if
+  \[
+  A\subseteq B,
+  \]
+  then
+  \[
+  \mu^{*}(A)\leq\mu^{*}(B);
+  \]
+  \item for any sequence of sets $(A_{n})$,
+  \[
+  \mu^{*}\left(\bigcup_{n=1}^{\infty}A_{n}\right)\leq\sum_{n=1}^{\infty}\mu^{*}(A_{n});
+  \]
+\end{enumerate}
+
+is called an \textbf{outer measure} on $X$.
+
+Compared with a measure, the most obvious difference is this:
+
+a measure requires countable \textbf{additivity} on pairwise disjoint sets,
+
+\[
+\mu\left(\bigcup_{n}A_{n}\right)=\sum_{n}\mu(A_{n}),
+\]
+
+whereas an outer measure requires only countable \textbf{subadditivity}
+
+\[
+\mu^{*}\left(\bigcup_{n}A_{n}\right)\leq\sum_{n}\mu^{*}(A_{n}).
+\]
+
+This is precisely the price paid for enlarging the domain to all subsets.
+
+\subsection{The Covering Construction}
+
+One of the most natural sources of outer measures is coverings.
+
+Suppose we already know how to assign sizes to a family of relatively simple sets
+
+\[
+\mathcal{C}.
+\]
+
+Denote this size function by
+
+\[
+\rho:\mathcal{C}\rightarrow[0,\infty].
+\]
+
+For an arbitrary set $E\subseteq X$, we may not yet know how to measure $E$ directly.
+
+So we consider covering it by countably many simple sets:
+
+\[
+E\subseteq\bigcup_{k=1}^{\infty}C_{k},\qquad C_{k}\in\mathcal{C}.
+\]
+
+Each cover has a total size
+
+\[
+\sum_{k=1}^{\infty}\rho(C_{k}).
+\]
+
+Some covers may be very wasteful.
+
+So we take the infimum over all possible covers:
+
+\[
+\mu^{*}(E)=\inf\left\{\sum_{k=1}^{\infty}\rho(C_{k}):E\subseteq\bigcup_{k=1}^{\infty}C_{k},\ C_{k}\in\mathcal{C}\right\}.
+\]
+
+Intuitively, we first wrap $E$ from the outside with sets of known size, and then keep looking for tighter and tighter covers.
+
+This is also one very natural way to understand the name ``outer measure.''
+
+Since this is an infimum, for any $\varepsilon>0$, as long as $\mu^{*}(E)<\infty$, we can find a cover satisfying
+
+\[
+\sum_{k=1}^{\infty}\rho(C_{k})<\mu^{*}(E)+\varepsilon.
+\]
+
+In general one cannot guarantee that some cover actually attains the infimum.
+
+This is why, in measure theory, $\varepsilon$ is often used to express ``arbitrarily close to optimal, without requiring the optimum to be attained.''
+
+This covering definition does indeed produce an outer measure.
+
+The empty set clearly gets measure $0$ from the empty cover.
+
+If
+
+\[
+A\subseteq B,
+\]
+
+then any family of sets covering $B$ also covers $A$, so
+
+\[
+\mu^{*}(A)\leq\mu^{*}(B).
+\]
+
+As for
+
+\[
+E=\bigcup_{n=1}^{\infty}E_{n},
+\]
+
+choose for each $E_{n}$ a cover that nearly attains its outer measure, and put all these covers together; this gives a cover of $E$.
+
+Taking the error for each to be
+
+\[
+\frac{\varepsilon}{2^{n}},
+\]
+
+we obtain
+
+\[
+\mu^{*}(E)\leq\sum_{n=1}^{\infty}\mu^{*}(E_{n})+\varepsilon.
+\]
+
+Letting $\varepsilon\rightarrow0$ then gives
+
+\[
+\mu^{*}(E)\leq\sum_{n=1}^{\infty}\mu^{*}(E_{n}).
+\]
+
+So subadditivity indeed holds.
+
+\subsection{Carathéodory Measurability}
+
+We now have an outer measure defined on
+
+\[
+\mathcal{P}(X).
+\]
+
+The next problem to solve is:
+
+on which sets does the outer measure genuinely recover a countably additive measure?
+
+Carathéodory gave a very elegant criterion.
+
+Let $E\subseteq X$.
+
+If for every $A\subseteq X$ we have
+
+\[
+\mu^{*}(A)=\mu^{*}(A\cap E)+\mu^{*}(A\cap E^{c}),
+\]
+
+then $E$ is called \textbf{Carathéodory measurable}.
+
+This condition deserves to be understood slowly.
+
+The set $E$ splits an arbitrary set $A$ into two disjoint parts:
+
+\[
+A\cap E
+\]
+
+and
+
+\[
+A\cap E^{c}.
+\]
+
+Since
+
+\[
+A=(A\cap E)\cup(A\cap E^{c}),
+\]
+
+subadditivity of the outer measure always gives
+
+\[
+\mu^{*}(A)\leq\mu^{*}(A\cap E)+\mu^{*}(A\cap E^{c}).
+\]
+
+So what the Carathéodory condition really demands is the reverse inequality:
+
+\[
+\mu^{*}(A)\geq\mu^{*}(A\cap E)+\mu^{*}(A\cap E^{c}).
+\]
+
+In other words, cutting a set with $E$ does not increase the total outer measure out of nowhere.
+
+From this point of view, measurable sets are exactly those sets that can ``cut cleanly'' through every set.
+
+Denote the collection of all Carathéodory measurable sets by
+
+\[
+\mathcal{M}_{\mu^{*}}.
+\]
+
+A fundamental theorem states:
+
+\textbf{Carathéodory's Measurability Theorem}
+
+$\mathcal{M}_{\mu^{*}}$ is a $\sigma$-algebra, and
+
+\[
+\mu=\mu^{*}|_{\mathcal{M}_{\mu^{*}}}
+\]
+
+is a complete measure.
+
+This theorem is precisely the heart of the passage from outer measures to genuine measures.
+
+Let us write out its main logic.
+
+First,
+
+\[
+X\in\mathcal{M}_{\mu^{*}},
+\]
+
+because for any $A\subseteq X$,
+
+\[
+A\cap X=A,\qquad A\cap X^{c}=\varnothing,
+\]
+
+so
+
+\[
+\mu^{*}(A)=\mu^{*}(A)+0.
+\]
+
+Second, the measurability condition is completely symmetric in $E$ and $E^{c}$.
+
+Hence
+
+\[
+E\in\mathcal{M}_{\mu^{*}}\Longrightarrow E^{c}\in\mathcal{M}_{\mu^{*}}.
+\]
+
+Next consider finite unions.
+
+If
+
+\[
+E,F\in\mathcal{M}_{\mu^{*}},
+\]
+
+then we first use the measurability of $E$ to split an arbitrary $A$ into
+
+\[
+A\cap E
+\]
+
+and
+
+\[
+A\cap E^{c}.
+\]
+
+Then we use the measurability of $F$ to split the second part:
+
+\[
+A\cap E^{c}=(A\cap E^{c}\cap F)\cup(A\cap E^{c}\cap F^{c}).
+\]
+
+Hence
+
+\[
+\mu^{*}(A)=\mu^{*}(A\cap E)+\mu^{*}(A\cap E^{c}\cap F)+\mu^{*}(A\cap E^{c}\cap F^{c}).
+\]
+
+Note that
+
+\[
+(A\cap E)\cup(A\cap E^{c}\cap F)=A\cap(E\cup F),
+\]
+
+while
+
+\[
+A\cap E^{c}\cap F^{c}=A\cap(E\cup F)^{c}.
+\]
+
+Combined with the subadditivity of the outer measure, this yields
+
+\[
+\mu^{*}(A)=\mu^{*}(A\cap(E\cup F))+\mu^{*}(A\cap(E\cup F)^{c}).
+\]
+
+Therefore
+
+\[
+E\cup F\in\mathcal{M}_{\mu^{*}}.
+\]
+
+For countable unions, we can first make the sequence of sets disjoint.
+
+Given
+
+\[
+E_{1},E_{2},\ldots\in\mathcal{M}_{\mu^{*}},
+\]
+
+define
+
+\[
+F_{1}=E_{1},
+\]
+
+and
+
+\[
+F_{n}=E_{n}\setminus\bigcup_{k=1}^{n-1}E_{k},\qquad n\geq2.
+\]
+
+Then each $F_{n}$ is measurable, the $F_{n}$ are pairwise disjoint, and
+
+\[
+\bigcup_{n=1}^{\infty}F_{n}=\bigcup_{n=1}^{\infty}E_{n}.
+\]
+
+For any $A\subseteq X$, repeated use of the measurability of the $F_{n}$ shows that for every $N$,
+
+\[
+\mu^{*}(A)\geq\sum_{n=1}^{N}\mu^{*}(A\cap F_{n})+\mu^{*}\left(A\cap\left(\bigcup_{n=1}^{N}F_{n}\right)^{c}\right).
+\]
+
+Let
+
+\[
+F=\bigcup_{n=1}^{\infty}F_{n}.
+\]
+
+Since
+
+\[
+A\cap F^{c}\subseteq A\cap\left(\bigcup_{n=1}^{N}F_{n}\right)^{c},
+\]
+
+monotonicity gives
+
+\[
+\mu^{*}(A)\geq\sum_{n=1}^{N}\mu^{*}(A\cap F_{n})+\mu^{*}(A\cap F^{c}).
+\]
+
+Letting $N\rightarrow\infty$,
+
+\[
+\mu^{*}(A)\geq\sum_{n=1}^{\infty}\mu^{*}(A\cap F_{n})+\mu^{*}(A\cap F^{c}).
+\]
+
+On the other hand, by subadditivity,
+
+\[
+\mu^{*}(A\cap F)\leq\sum_{n=1}^{\infty}\mu^{*}(A\cap F_{n}).
+\]
+
+Hence
+
+\[
+\mu^{*}(A)\geq\mu^{*}(A\cap F)+\mu^{*}(A\cap F^{c}).
+\]
+
+Combining this with the reverse inequality given by subadditivity, we obtain equality.
+
+So $F$ is measurable.
+
+Therefore $\mathcal{M}_{\mu^{*}}$ is a $\sigma$-algebra.
+
+After restricting the outer measure to this $\sigma$-algebra,
+
+\[
+\mu(E)=\mu^{*}(E),
+\]
+
+one can show that $\mu$ is countably additive, so it is a genuine measure.
+
+Moreover, this measure is automatically complete.
+
+If
+
+\[
+N\in\mathcal{M}_{\mu^{*}},\qquad\mu(N)=0,
+\]
+
+and
+
+\[
+A\subseteq N,
+\]
+
+then
+
+\[
+\mu^{*}(A)=0.
+\]
+
+For any $T\subseteq X$,
+
+\[
+\mu^{*}(T\cap A)=0.
+\]
+
+By subadditivity,
+
+\[
+\mu^{*}(T)\leq\mu^{*}(T\cap A)+\mu^{*}(T\cap A^{c})=\mu^{*}(T\cap A^{c}).
+\]
+
+On the other hand,
+
+\[
+T\cap A^{c}\subseteq T,
+\]
+
+so
+
+\[
+\mu^{*}(T\cap A^{c})\leq\mu^{*}(T).
+\]
+
+Therefore
+
+\[
+\mu^{*}(T)=\mu^{*}(T\cap A)+\mu^{*}(T\cap A^{c}).
+\]
+
+Thus $A$ is Carathéodory measurable as well.
+
+This shows that the Carathéodory measure obtained from an outer measure is complete by nature.
+
+\subsection{Carathéodory Extension}
+
+Carathéodory's measurability theorem and Carathéodory's extension theorem often appear in the same construction, so they are easily confused.
+
+But they emphasize two different questions.
+
+Carathéodory's measurability theorem starts from an outer measure
+
+\[
+\mu^{*}
+\]
+
+that already exists, and singles out a family of measurable sets.
+
+Carathéodory's extension theorem, on the other hand, asks:
+
+if we know a measure only on a family of simple sets, can we extend it to the $\sigma$-algebra generated by those sets?
+
+Let $\mathcal{A}$ be an algebra of sets on $X$.
+
+That is, $\mathcal{A}$ is closed under finite unions and complements.
+
+Let
+
+\[
+\mu_{0}:\mathcal{A}\rightarrow[0,\infty]
+\]
+
+be a premeasure.
+
+A premeasure is required to satisfy: whenever
+
+\[
+A_{n}\in\mathcal{A}
+\]
+
+are pairwise disjoint and
+
+\[
+\bigcup_{n=1}^{\infty}A_{n}\in\mathcal{A},
+\]
+
+then
+
+\[
+\mu_{0}\left(\bigcup_{n=1}^{\infty}A_{n}\right)=\sum_{n=1}^{\infty}\mu_{0}(A_{n}).
+\]
+
+Using $\mu_{0}$ we can define an outer measure on all subsets,
+
+\[
+\mu^{*}(E)=\inf\left\{\sum_{n=1}^{\infty}\mu_{0}(A_{n}):E\subseteq\bigcup_{n=1}^{\infty}A_{n},\ A_{n}\in\mathcal{A}\right\},
+\]
+
+and then use Carathéodory's criterion to obtain the measurable sets.
+
+Carathéodory's extension theorem tells us that
+
+$\mu_{0}$ extends to a measure on
+
+\[
+\sigma(\mathcal{A}).
+\]
+
+If $\mu_{0}$ is $\sigma$-finite, that is, there exist
+
+\[
+X=\bigcup_{n=1}^{\infty}A_{n},\qquad A_{n}\in\mathcal{A},
+\]
+
+with
+
+\[
+\mu_{0}(A_{n})<\infty,
+\]
+
+then this extension is moreover unique on
+
+\[
+\sigma(\mathcal{A}).
+\]
+
+This is one of the theoretical foundations for constructing Lebesgue measure from interval length.
+
+\subsection{Metric Outer Measures}
+
+If $X$ is moreover a metric space $(X,d)$, the outer measure can be further related to the distance on the space.
+
+For two nonempty sets
+
+\[
+A,B\subseteq X,
+\]
+
+define the distance between the sets as
+
+\[
+d(A,B)=\inf\{d(a,b):a\in A,\ b\in B\}.
+\]
+
+If
+
+\[
+d(A,B)>0,
+\]
+
+then $A$ and $B$ are said to be positively separated.
+
+Let $\mu^{*}$ be an outer measure on $X$.
+
+If for all positively separated sets $A,B$ we have
+
+\[
+\mu^{*}(A\cup B)=\mu^{*}(A)+\mu^{*}(B),
+\]
+
+then $\mu^{*}$ is called a \textbf{metric outer measure}.
+
+Special care is needed here:
+
+``metric outer measure'' does not mean ``any outer measure that happens to be defined on a metric space.''
+
+The genuinely additional condition is additivity on positively separated sets.
+
+An important theorem states:
+
+for any metric outer measure on a metric space, all Borel sets are Carathéodory measurable.
+
+Therefore, if an outer measure is sufficiently compatible with the metric of the space, the Borel $\sigma$-algebra produced by the topology is naturally contained in its system of measurable sets.
+
+This is a very beautiful link between topology and measure.
+
+Another natural, older idea is to construct size using the diameters of sets.
+
+For
+
+\[
+E\subseteq X,
+\]
+
+define the diameter
+
+
+\[
+\operatorname{diam}(E)=\sup\{d(x,y):x,y\in E\}.
+\]
+
+We then try to cover $E$ by a family of small sets $U_{k}$ and compute
+
+\[
+\sum_{k}\operatorname{diam}(U_{k}).
+\]
+
+Strictly speaking, though, if we simply take
+
+\[
+\inf\sum_{k}\operatorname{diam}(U_{k}),
+\]
+
+the resulting object is closer to Hausdorff content than to the definition of the term ``metric outer measure'' itself.
+
+The genuine Hausdorff measure also restricts the diameters of the covering sets.
+
+For $s\geq0$ and $\delta>0$, define
+
+\[
+\mathcal{H}^{s}_{\delta}(E)=\inf\left\{\sum_{k=1}^{\infty}(\operatorname{diam}U_{k})^{s}:E\subseteq\bigcup_{k=1}^{\infty}U_{k},\ \operatorname{diam}U_{k}<\delta\right\}.
+\]
+
+As $\delta$ decreases, the admissible covers become more and more restricted, so
+
+\[
+\mathcal{H}^{s}_{\delta}(E)
+\]
+
+increases monotonically.
+
+Define
+
+\[
+\mathcal{H}^{s}(E)=\lim_{\delta\downarrow0}\mathcal{H}^{s}_{\delta}(E).
+\]
+
+This is the $s$-dimensional Hausdorff measure.
+
+For $s=1$ it is related to length; for $s=2$, to area; and for fractal sets one may even choose a non-integer $s$.
+
+So, starting from the intuition of ``covering by small balls or small sets and adding up diameters,'' one is in fact led quite naturally to fractal geometry and Hausdorff dimension.
+
+\section{Lebesgue Measure}
+
+\subsection{Rectangles and Volume}
+
+Let us now bring the discussion back to Euclidean space
+
+\[
+\mathbb{R}^{n}.
+\]
+
+Our goal is to construct a measure that gives length in one dimension, area in two dimensions and volume in three dimensions, and that remains meaningful for more complicated sets.
+
+First consider rectangles.
+
+Let
+
+\[
+R=\prod_{i=1}^{n}(a_{i},b_{i}).
+\]
+
+Define its volume as
+
+\[
+\lambda(R)=\prod_{i=1}^{n}(b_{i}-a_{i}).
+\]
+
+When $n=1$,
+
+\[
+R=(a,b)
+\]
+
+and
+
+\[
+\lambda(R)=b-a.
+\]
+
+When $n=2$,
+
+\[
+\lambda(R)=(b_{1}-a_{1})(b_{2}-a_{2}),
+\]
+
+which is just the ordinary area of a rectangle.
+
+This formula of course agrees with intuition.
+
+The real question is:
+
+if
+
+\[
+E\subseteq\mathbb{R}^{n}
+\]
+
+is a very irregular set, how should its volume be defined?
+
+\subsection{Lebesgue Outer Measure}
+
+Consider all covers by countably many open rectangles,
+
+\[
+E\subseteq\bigcup_{k=1}^{\infty}R_{k}.
+\]
+
+Each cover has a total volume
+
+\[
+\sum_{k=1}^{\infty}\lambda(R_{k}).
+\]
+
+Define
+
+\[
+m^{*}(E)=\inf\left\{\sum_{k=1}^{\infty}\lambda(R_{k}):E\subseteq\bigcup_{k=1}^{\infty}R_{k}\right\}.
+\]
+
+This is called the \textbf{Lebesgue outer measure} of $E$.
+
+It is clear from the construction that Lebesgue outer measure is a concrete instance of the general covering construction above.
+
+For example, for an interval
+
+\[
+I=(a,b),
+\]
+
+we clearly have
+
+\[
+m^{*}(I)\leq b-a,
+\]
+
+since $I$ itself is an admissible cover.
+
+What really needs proof is the reverse inequality
+
+\[
+m^{*}(I)\geq b-a.
+\]
+
+That is, no matter how we cover $(a,b)$ by countably many open intervals, the sum of their lengths can never be less than $b-a$.
+
+The proof can make use of compactness.
+
+Fix
+
+\[
+\varepsilon>0
+\]
+
+and consider the compact interval
+
+\[
+[a+\varepsilon,b-\varepsilon].
+\]
+
+Any family of open intervals covering $(a,b)$ certainly also covers this compact interval.
+
+By the Heine--Borel property, we can extract a finite subcover.
+
+For finitely many open intervals, one can show by arranging the endpoints that the total length needed to cover an interval is at least the length of that interval, so
+
+\[
+\sum_{k}|I_{k}|\geq b-a-2\varepsilon.
+\]
+
+Letting
+
+\[
+\varepsilon\downarrow0
+\]
+
+we get
+
+\[
+\sum_{k}|I_{k}|\geq b-a.
+\]
+
+Taking the infimum over all covers,
+
+\[
+m^{*}((a,b))=b-a.
+\]
+
+Thus the outer measure is indeed compatible with our familiar notion of length.
+
+\subsection{Lebesgue Measurable Sets}
+
+With the Lebesgue outer measure $m^{*}$ in hand, we can apply the Carathéodory criterion.
+
+If
+
+\[
+E\subseteq\mathbb{R}^{n}
+\]
+
+satisfies, for every
+
+\[
+A\subseteq\mathbb{R}^{n},
+\]
+
+\[
+m^{*}(A)=m^{*}(A\cap E)+m^{*}(A\cap E^{c}),
+\]
+
+then $E$ is called \textbf{Lebesgue measurable}.
+
+All Lebesgue measurable sets form a $\sigma$-algebra, usually denoted
+
+\[
+\mathcal{L}(\mathbb{R}^{n})
+\]
+
+or simply $\mathcal{L}$.
+
+On this $\sigma$-algebra define
+
+\[
+m(E)=m^{*}(E).
+\]
+
+We thus obtain the measure space
+
+\[
+(\mathbb{R}^{n},\mathcal{L},m).
+\]
+
+The $m$ here is Lebesgue measure.
+
+Since it comes from the Carathéodory construction,
+
+\[
+(\mathbb{R}^{n},\mathcal{L},m)
+\]
+
+is a complete measure space.
+
+So if
+
+\[
+N\in\mathcal{L},\qquad m(N)=0,
+\]
+
+then every
+
+\[
+A\subseteq N
+\]
+
+also belongs to $\mathcal{L}$, and
+
+\[
+m(A)=0.
+\]
+
+\subsection{Translation and Scaling}
+
+Lebesgue measure ought to agree with our basic intuitions about geometric volume.
+
+One of its most important properties is translation invariance.
+
+Let
+
+\[
+E\in\mathcal{L}(\mathbb{R}^{n})
+\]
+
+and
+
+\[
+a\in\mathbb{R}^{n}.
+\]
+
+Define
+
+\[
+E+a=\{x+a:x\in E\}.
+\]
+
+Then
+
+\[
+E+a
+\]
+
+is again Lebesgue measurable, and
+
+\[
+m(E+a)=m(E).
+\]
+
+In other words, moving a figure around in space should not change its volume.
+
+As for scaling, if
+
+\[
+c>0,
+\]
+
+define
+
+\[
+cE=\{cx:x\in E\}.
+\]
+
+Then
+
+\[
+m(cE)=c^{n}m(E).
+\]
+
+The exponent $n$ here comes from the dimension of the space.
+
+In two dimensions, if all side lengths are enlarged by a factor of $c$, the area is enlarged by a factor of
+
+\[
+c^{2}.
+\]
+
+In three dimensions it is
+
+\[
+c^{3}.
+\]
+
+This generalizes further to arbitrary invertible linear transformations.
+
+Let
+
+\[
+T:\mathbb{R}^{n}\rightarrow\mathbb{R}^{n}
+\]
+
+be an invertible linear map.
+
+If $E$ is Lebesgue measurable, then $T(E)$ is also Lebesgue measurable, and
+
+\[
+m(T(E))=|\det T|\,m(E).
+\]
+
+So
+
+\[
+|\det T|
+\]
+
+can be understood as the volume scaling factor of the linear transformation.
+
+From this point of view, the geometric meaning of the determinant in linear algebra finds a very natural expression in measure theory.
+
+\subsection{Borel Sets and Lebesgue Measurable Sets}
+
+Lebesgue outer measure is a metric outer measure.
+
+Hence all Borel sets are Lebesgue measurable:
+
+\[
+\mathcal{B}(\mathbb{R}^{n})\subseteq\mathcal{L}(\mathbb{R}^{n}).
+\]
+
+But this inclusion is in fact strict.
+
+The Lebesgue $\sigma$-algebra can be understood as the completion of the Borel $\sigma$-algebra with respect to Lebesgue measure.
+
+More precisely, if $E$ is Lebesgue measurable, then there exists a Borel set $B$ such that
+
+\[
+m(E\triangle B)=0,
+\]
+
+where
+
+\[
+E\triangle B=(E\setminus B)\cup(B\setminus E)
+\]
+
+denotes the symmetric difference.
+
+That is, every Lebesgue measurable set can be represented by some Borel set once a null set is ignored.
+
+Conversely, if $B$ is a Borel set and $N$ is an arbitrary subset of some Borel null set, then
+
+\[
+B\cup N
+\]
+
+is still Lebesgue measurable.
+
+So structurally, Lebesgue measurable sets can be understood as
+
+the Borel sets together with all subsets of null sets that completeness ought to add in.
+
+The Cantor set provides a very typical example.
+
+Denote the classical Cantor set by
+
+\[
+C\subseteq[0,1].
+\]
+
+It is closed, so
+
+\[
+C\in\mathcal{B}(\mathbb{R}).
+\]
+
+On the other hand,
+
+\[
+m(C)=0.
+\]
+
+Since Lebesgue measure is complete, every
+
+\[
+A\subseteq C
+\]
+
+is Lebesgue measurable, with
+
+\[
+m(A)=0.
+\]
+
+But not every subset of the Cantor set is a Borel set.
+
+Indeed, the Cantor set has the cardinality of the continuum,
+
+\[
+|C|=\mathfrak{c},
+\]
+
+so the number of its subsets is
+
+\[
+2^{\mathfrak{c}}.
+\]
+
+On the other hand, the total number of Borel sets in $\mathbb{R}$ is only
+
+\[
+\mathfrak{c}.
+\]
+
+By Cantor's theorem,
+
+\[
+2^{\mathfrak{c}}>\mathfrak{c}.
+\]
+
+Hence there must exist
+
+\[
+A\subseteq C
+\]
+
+that is not a Borel set.
+
+Yet it is still Lebesgue measurable.
+
+Therefore
+
+\[
+\mathcal{B}(\mathbb{R})\subsetneq\mathcal{L}(\mathbb{R}).
+\]
+
+\subsection{Regularity}
+
+Lebesgue measurable sets can be very complicated.
+
+But an important and very useful fact is that
+
+they can be approximated, in the sense of measure, by topologically well-behaved sets.
+
+For a Lebesgue measurable set
+
+\[
+E\subseteq\mathbb{R}^{n},
+\]
+
+we have outer regularity
+
+\[
+m(E)=\inf\{m(O):E\subseteq O,\ O\text{ open}\}.
+\]
+
+That is, $E$ can be approximated from outside by open sets.
+
+There is also inner regularity
+
+\[
+m(E)=\sup\{m(K):K\subseteq E,\ K\text{ compact}\}.
+\]
+
+That is, $E$ can be approximated from inside by compact sets.
+
+In particular, if
+
+\[
+m(E)<\infty,
+\]
+
+then for every $\varepsilon>0$ there exist an open set $O$ and a compact set $K$ with
+
+\[
+K\subseteq E\subseteq O
+\]
+
+and
+
+\[
+m(O\setminus E)<\varepsilon,
+\]
+\[
+m(E\setminus K)<\varepsilon.
+\]
+
+This shows that even if $E$ itself is very irregular, as long as we only care about measure we can still replace it by an open set or a compact set of almost the same size.
+
+Here the topological structure and the measure structure genuinely come into contact.
+
+\subsection{Non-measurable Sets}
+
+At this point a natural question may arise:
+
+since Lebesgue measurable sets are already so plentiful, why not simply declare every set in
+
+\[
+\mathcal{P}(\mathbb{R})
+\]
+
+to be measurable?
+
+The problem is that we cannot simultaneously keep all the properties we would like Lebesgue measure to have.
+
+The classical example is the Vitali set.
+
+On the interval
+
+\[
+[0,1]
+\]
+
+define the equivalence relation
+
+\[
+x\sim y\Longleftrightarrow x-y\in\mathbb{Q}.
+\]
+
+That is, two real numbers are put into the same equivalence class if their difference is rational.
+
+Using the axiom of choice, we can pick exactly one representative from each equivalence class.
+
+These representatives form a set $V$, called a Vitali set.
+
+Consider all rational numbers
+
+\[
+q\in\mathbb{Q}\cap[-1,1]
+\]
+
+and the translated sets
+
+\[
+V+q.
+\]
+
+Distinct such sets are pairwise disjoint.
+
+At the same time, their union covers $[0,1]$ and is contained in a bounded interval, for example
+
+\[
+[-1,2].
+\]
+
+If $V$ were Lebesgue measurable, then by translation invariance,
+
+\[
+m(V+q)=m(V).
+\]
+
+If
+
+\[
+m(V)=0,
+\]
+
+then the union of the countably many sets $V+q$ would still have measure zero.
+
+But this union covers $[0,1]$, contradicting
+
+\[
+m([0,1])=1.
+\]
+
+If
+
+\[
+m(V)>0,
+\]
+
+then since there are countably infinitely many pairwise disjoint translates,
+
+\[
+\sum_{q}m(V+q)=+\infty.
+\]
+
+But they all lie in the set $[-1,2]$ of finite measure, again a contradiction.
+
+Therefore $V$ cannot be Lebesgue measurable.
+
+So it is not that we are ``unwilling'' to define length for every set.
+
+Rather, once we require translation invariance, countable additivity, and that ordinary intervals have their usual length, non-measurable sets inevitably appear.
+
+This is also why measure theory must choose its $\sigma$-algebra carefully right from the start.
+
+\section*{Summary}
+
+Let us now reorganize the main structure of this article once more.
+
+The real numbers are first of all an ordered field.
+
+What truly distinguishes them from the rational numbers is completeness:
+
+\[
+\mathbb{R}\quad\text{is a complete ordered field}.
+\]
+
+Completeness allows limiting processes to remain stably inside the real number system.
+
+Abstracting distance further into a metric, we obtain metric spaces
+
+\[
+(X,d),
+\]
+
+in which we can define convergence, Cauchy sequences, completeness and compactness.
+
+On the other hand, to describe the size of sets, we first specify the system of sets that we allow ourselves to measure,
+
+\[
+\mathcal{F},
+\]
+
+obtaining a measurable space
+
+\[
+(X,\mathcal{F}).
+\]
+
+Adding a countably additive measure $\mu$, we obtain
+
+\[
+(X,\mathcal{F},\mu).
+\]
+
+When actually constructing Lebesgue measure, the order is exactly reversed.
+
+We first set up a relatively crude outer measure on all sets,
+
+\[
+\mu^{*},
+\]
+
+and then use the Carathéodory condition
+
+\[
+\mu^{*}(A)=\mu^{*}(A\cap E)+\mu^{*}(A\cap E^{c})
+\]
+
+to sift out the measurable sets.
+
+Finally, restricting the outer measure to these sets yields a genuine measure.
+
+In Euclidean space this process ultimately gives
+
+\[
+(\mathbb{R}^{n},\mathcal{L},m),
+\]
+
+that is, the Lebesgue measure space.
+
+\end{document}

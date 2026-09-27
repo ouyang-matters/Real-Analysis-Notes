@@ -1,0 +1,1039 @@
+\documentclass[11pt]{article}
+
+\usepackage{CJKutf8}
+\usepackage{math_article}
+\usepackage{series_ra}
+
+\renewcommand{\ArticleNumeral}{III}
+\renewcommand{\ArticleTitle}{赋范空间与 $L^{p}$ 空间}
+\renewcommand{\ArticleAuthor}{Anqiao Ouyang}
+\renewcommand{\ArticleDate}{September 2024 \quad\textperiodcentered\quad Revised September 2026}
+
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\norm}[1]{\lVert #1\rVert}
+\newcommand{\dmu}{\,\mathrm{d}\mu}
+\newcommand{\dx}{\,\mathrm{d}x}
+\newcommand{\ind}{\mathbf{1}}
+\DeclareMathOperator*{\esssup}{ess\,sup}
+\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\supp}{supp}
+
+% ------------------------------------------------------------
+% Local fixes for the theorem-like boxes of math_article.sty:
+% (1) `before upper' was set after `attach title to upper' and
+%     overwrote it, so the box titles were not printed;
+% (2) `use counter' resets \themathenv to \arabic{mathenv};
+%     restore section-based numbering;
+% (3) make \label inside a box refer to the box number.
+% ------------------------------------------------------------
+\makeatletter
+\tcbset{
+  math-env-base/.style={
+    enhanced, breakable, left=12pt, right=12pt, top=10pt, bottom=10pt,
+    boxrule=0pt, frame hidden, borderline west={2.5pt}{0pt}{#1},
+    colback=#1!6!article-bg, colframe=#1,
+    fonttitle=\sffamily\bfseries\small, coltitle=#1,
+    attach title to upper={\par\smallskip\setlength{\parskip}{0.4em}%
+      \phantomsection\edef\@currentlabel{\themathenv}},
+  },
+  math-env-light/.style={
+    enhanced, breakable, left=12pt, right=12pt, top=8pt, bottom=8pt,
+    boxrule=0pt, frame hidden, borderline west={2.0pt}{0pt}{article-border},
+    colback=article-bg, fonttitle=\sffamily\bfseries\small, coltitle=article-muted,
+    attach title to upper={\par\smallskip\setlength{\parskip}{0.4em}%
+      \phantomsection\edef\@currentlabel{\themathenv}},
+  },
+}
+\makeatother
+\AtBeginDocument{\renewcommand{\themathenv}{\thesection.\arabic{mathenv}}}
+
+\begin{document}
+\begin{CJK*}{UTF8}{gbsn}
+
+\maketitle
+
+\section*{引言}
+
+第 I 篇建立了测度空间与 $\R^{n}$ 上的 Lebesgue 测度，第 II 篇在一般测度空间上定义了可测函数与 Lebesgue 积分，并证明了单调收敛定理、Fatou 引理与控制收敛定理。本篇转换视角：不再逐个研究函数，而是把一整类函数视为一个向量空间中的点，用积分度量这些点的“大小”与“距离”。这一视角下最基本的对象是 $L^{p}$ 空间。
+
+$L^{p}$ 空间把三种结构结合在一起：线性结构（函数可以相加与数乘），度量结构（范数诱导距离，从而可以谈论收敛、Cauchy 列与完备性），以及测度结构（范数由积分给出）。本篇的主线如下：第 1 节介绍赋范空间与 Banach 空间的基本语言；第 2 节定义 $L^{p}$ 空间，并说明为什么必须把几乎处处相等的函数视为同一个元素；第 3 节证明 Young、Hölder 与 Minkowski 不等式及其取等条件；第 4 节证明 $1\le p<\infty$ 时 $L^{p}$ 的完备性（Riesz--Fischer 定理）；第 5 节单独讨论 $L^{\infty}$；第 6 节比较不同指数的 $L^{p}$ 空间；第 7 节讨论稠密子集与可分性；第 8 节简要介绍 $L^{p}$ 的对偶空间。
+
+\subsection*{约定}
+
+\begin{itemize}
+\item $\K$ 表示 $\R$ 或 $\C$。除特别声明外，$(X,\M,\mu)$ 是一个测度空间；“a.e.”（几乎处处）均相对于 $\mu$ 而言。$m$ 表示 $\R^{n}$ 上的 Lebesgue 测度。
+\item 可测函数、非负可测函数的积分以及可积函数的积分沿用第 II 篇的定义。复值函数 $f=u+iv$ 可测是指 $u,v$ 均可测；当 $|f|$ 可积时定义 $\int f\dmu=\int u\dmu+i\int v\dmu$。此时 $\bigl|\int f\dmu\bigr|\le\int|f|\dmu$：取 $|\alpha|=1$ 使 $\alpha\int f\dmu=\bigl|\int f\dmu\bigr|$，则
+\[
+\Bigl|\int f\dmu\Bigr|=\int \operatorname{Re}(\alpha f)\dmu\le\int|f|\dmu .
+\]
+\item 在 $[0,\infty]$ 中约定 $0\cdot\infty=0$，$1/\infty=0$，$\infty^{1/p}=\infty$。
+\item 对 $1\le p\le\infty$，称满足 $\frac1p+\frac1q=1$ 的 $q\in[1,\infty]$ 为 $p$ 的\textbf{共轭指数}；$p=1$ 时 $q=\infty$，$p=\infty$ 时 $q=1$。当 $1<p<\infty$ 时 $q=\frac{p}{p-1}$，并且 $(p-1)q=p$。
+\end{itemize}
+
+\section{赋范空间与 Banach 空间}
+
+\subsection{范数}
+
+第 I 篇在一般集合上引入了度量。当集合本身是向量空间时，更自然的做法是先度量每个向量的“长度”，再由长度得到距离。
+
+\begin{definition}[范数]
+设 $V$ 是域 $\K$ 上的向量空间。映射 $\norm{\cdot}:V\to[0,\infty)$ 称为 $V$ 上的一个\textbf{范数（norm）}，如果对任意 $x,y\in V$ 与 $\alpha\in\K$：
+\begin{enumerate}
+\item （正定性）$\norm{x}=0$ 蕴含 $x=0$；
+\item （齐次性）$\norm{\alpha x}=|\alpha|\,\norm{x}$；
+\item （三角不等式）$\norm{x+y}\le\norm{x}+\norm{y}$。
+\end{enumerate}
+只满足 (ii)(iii) 的映射称为\textbf{半范数（seminorm）}。配备了范数的向量空间 $(V,\norm{\cdot})$ 称为\textbf{赋范空间}。
+\end{definition}
+
+\begin{remark}
+\begin{enumerate}
+\item 齐次性可以弱化为 $\norm{\alpha x}\le|\alpha|\,\norm{x}$ 对一切 $\alpha$ 成立：当 $\alpha\ne0$ 时 $\norm{x}=\norm{\alpha^{-1}(\alpha x)}\le|\alpha|^{-1}\norm{\alpha x}$，反向不等式随之成立；当 $\alpha=0$ 时 $\norm{0}=\norm{0\cdot 0}\le 0$。
+\item 三角不等式说的是“和的范数不超过范数之和”，而不是相反。
+\item 范数是单个向量的函数；由它定义的 $d(x,y)=\norm{x-y}$ 是 $V$ 上的一个度量：正定性给出 $d(x,y)=0\Leftrightarrow x=y$，齐次性（取 $\alpha=-1$）给出对称性，三角不等式给出度量的三角不等式。这个度量还满足平移不变性 $d(x+z,y+z)=d(x,y)$ 与伸缩性 $d(\alpha x,\alpha y)=|\alpha|d(x,y)$。因此并非每个度量都来自范数：例如 $\R$ 上的离散度量（$x\ne y$ 时 $d(x,y)=1$）满足 $d(2,0)=d(1,0)=1$，不满足伸缩性。
+\end{enumerate}
+\end{remark}
+
+以下凡谈及赋范空间中的收敛、Cauchy 列、开集与闭集，均指相对于度量 $d(x,y)=\norm{x-y}$ 而言。
+
+\begin{proposition}\label{prop:norm-cont}
+设 $(V,\norm{\cdot})$ 是赋范空间。
+\begin{enumerate}
+\item 对任意 $x,y\in V$，$\bigl|\norm{x}-\norm{y}\bigr|\le\norm{x-y}$；特别地，范数是 $V$ 上的连续函数。
+\item 若 $x_{n}\to x$，$y_{n}\to y$，$\alpha_{n}\to\alpha$（$\alpha_n\in\K$），则 $x_{n}+y_{n}\to x+y$，$\alpha_{n}x_{n}\to\alpha x$。
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}[证明]
+(i) 由三角不等式 $\norm{x}\le\norm{x-y}+\norm{y}$，同理 $\norm{y}\le\norm{y-x}+\norm{x}$，而 $\norm{y-x}=\norm{x-y}$。
+
+(ii) $\norm{(x_{n}+y_{n})-(x+y)}\le\norm{x_{n}-x}+\norm{y_{n}-y}\to0$。又
+\[
+\norm{\alpha_{n}x_{n}-\alpha x}\le|\alpha_{n}|\,\norm{x_{n}-x}+|\alpha_{n}-\alpha|\,\norm{x},
+\]
+而 $(|\alpha_{n}|)$ 有界，故右端趋于 $0$。
+\end{proof}
+
+\subsection{Banach 空间与级数判别法}
+
+\begin{definition}[Banach 空间]
+赋范空间 $V$ 中的序列 $(x_{n})$ 称为 \textbf{Cauchy 列}，如果对任意 $\varepsilon>0$ 存在 $N$，使得 $m,n\ge N$ 时 $\norm{x_{m}-x_{n}}<\varepsilon$。若 $V$ 中每个 Cauchy 列都收敛到 $V$ 中某个元素，则称 $V$ 是\textbf{完备的}；完备的赋范空间称为 \textbf{Banach 空间}。
+\end{definition}
+
+在赋范空间中可以谈论级数。称 $\sum_{k=1}^{\infty}x_{k}$ \textbf{收敛}，如果部分和 $S_{n}=\sum_{k=1}^{n}x_{k}$ 在 $V$ 中收敛；称它\textbf{绝对收敛}，如果 $\sum_{k=1}^{\infty}\norm{x_{k}}<\infty$。在 $\R$ 中绝对收敛蕴含收敛，这正是 $\R$ 的完备性的一种表述。下面的定理说明这一现象在一般赋范空间中恰好刻画了完备性，它将是证明 $L^{p}$ 完备性的工具。
+
+\begin{theorem}[完备性的级数判别法]\label{thm:series}
+赋范空间 $V$ 是完备的，当且仅当 $V$ 中每个绝对收敛的级数都在 $V$ 中收敛。
+\end{theorem}
+
+\begin{proof}[证明]
+必要性：设 $V$ 完备且 $\sum\norm{x_{k}}<\infty$。对 $m>n$，
+\[
+\norm{S_{m}-S_{n}}=\Bigl\|\sum_{k=n+1}^{m}x_{k}\Bigr\|\le\sum_{k=n+1}^{\infty}\norm{x_{k}}\xrightarrow[n\to\infty]{}0,
+\]
+故 $(S_{n})$ 是 Cauchy 列，从而收敛。
+
+充分性：设 $(x_{n})$ 是 Cauchy 列。依次选取 $n_{1}<n_{2}<\cdots$，使得 $m,n\ge n_{k}$ 时 $\norm{x_{m}-x_{n}}<2^{-k}$。令 $y_{1}=x_{n_{1}}$，$y_{k+1}=x_{n_{k+1}}-x_{n_{k}}$，则 $\sum_{k}\norm{y_{k}}\le\norm{y_{1}}+\sum_{k}2^{-k}<\infty$。由假设 $\sum y_{k}$ 收敛到某个 $x\in V$，而它的第 $k$ 个部分和恰是 $x_{n_{k}}$，所以 $x_{n_{k}}\to x$。最后，对给定的 $\varepsilon>0$ 取 $N$ 使 $m,n\ge N$ 时 $\norm{x_{m}-x_{n}}<\varepsilon$，再取 $k$ 使 $n_{k}\ge N$ 且 $\norm{x_{n_{k}}-x}<\varepsilon$，则 $n\ge N$ 时
+\[
+\norm{x_{n}-x}\le\norm{x_{n}-x_{n_{k}}}+\norm{x_{n_{k}}-x}<2\varepsilon .
+\]
+故 $x_{n}\to x$。
+\end{proof}
+
+\subsection{有限维的例子：$\K^{n}$ 上的 $p$-范数}
+
+\begin{example}[$\K^{n}$ 上的 $p$-范数]\label{ex:Kn}
+对 $x=(x_{1},\dots,x_{n})\in\K^{n}$ 与 $1\le p<\infty$，令
+\[
+\norm{x}_{p}=\Bigl(\sum_{i=1}^{n}|x_{i}|^{p}\Bigr)^{1/p},\qquad \norm{x}_{\infty}=\max_{1\le i\le n}|x_{i}|.
+\]
+正定性与齐次性是显然的；$p=1$ 与 $p=\infty$ 时的三角不等式直接来自 $\K$ 中的三角不等式；$1<p<\infty$ 时的三角不等式就是离散形式的 Minkowski 不等式，将在第 3 节（推论~\ref{cor:mink-discrete}）证明。由它诱导的距离 $d_{p}(x,y)=\norm{x-y}_{p}$ 常称为 \textbf{Minkowski 距离}；$p=1,2,\infty$ 分别对应“曼哈顿距离”、欧氏距离与 Chebyshev 距离。由
+\[
+\norm{x}_{\infty}\le\norm{x}_{p}\le n^{1/p}\norm{x}_{\infty}
+\]
+可知 $\lim_{p\to\infty}\norm{x}_{p}=\norm{x}_{\infty}$，这解释了记号 $\norm{\cdot}_{\infty}$。图~\ref{fig:balls} 画出了 $\R^{2}$ 中的单位球 $B_{p}=\{x:\norm{x}_{p}\le1\}$。
+\end{example}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1.9]
+  \draw[->,article-muted] (-1.35,0) -- (1.4,0) node[right] {\small $x_1$};
+  \draw[->,article-muted] (0,-1.35) -- (0,1.4) node[above] {\small $x_2$};
+  \draw[ra-orange, line width=0.9pt] (-1,-1) rectangle (1,1);
+  \draw[ra-amber, line width=0.9pt] (0,0) circle (1);
+  \draw[article-text, line width=0.9pt] (1,0) -- (0,1) -- (-1,0) -- (0,-1) -- cycle;
+  \draw[article-muted, line width=0.8pt, dashed, domain=0:360, samples=200, smooth]
+     plot ({sign(cos(\x))*(cos(\x))^4},{sign(sin(\x))*(sin(\x))^4});
+  \begin{scope}[shift={(1.75,0.55)}, font=\small]
+    \draw[ra-orange, line width=0.9pt] (0,0.3) -- (0.3,0.3) node[right, article-text] {$p=\infty$};
+    \draw[ra-amber, line width=0.9pt] (0,0) -- (0.3,0) node[right, article-text] {$p=2$};
+    \draw[article-text, line width=0.9pt] (0,-0.3) -- (0.3,-0.3) node[right] {$p=1$};
+    \draw[article-muted, line width=0.8pt, dashed] (0,-0.6) -- (0.3,-0.6) node[right, article-text] {$p=\tfrac12$};
+  \end{scope}
+\end{tikzpicture}
+\caption{$\R^{2}$ 中 $\{\norm{x}_{p}\le1\}$ 的边界。$p\ge1$ 时单位球是凸集；$p=\tfrac12$ 时不是。}
+\label{fig:balls}
+\end{figure}
+
+\begin{example}[$0<p<1$ 时不是范数]\label{ex:p-less-1}
+当 $0<p<1$ 时，仍可用同一公式定义 $\norm{x}_{p}$，正定性与齐次性依然成立，但当 $n\ge2$ 时三角不等式不成立：取 $e_{1}=(1,0,\dots,0)$，$e_{2}=(0,1,0,\dots,0)$，则
+\[
+\norm{e_{1}+e_{2}}_{p}=2^{1/p}>2=\norm{e_{1}}_{p}+\norm{e_{2}}_{p}.
+\]
+几何上，任何范数的单位球都是凸集，因为 $\norm{x},\norm{y}\le1$ 与 $t\in[0,1]$ 蕴含 $\norm{tx+(1-t)y}\le t\norm{x}+(1-t)\norm{y}\le1$；而图~\ref{fig:balls} 中 $p=\tfrac12$ 的单位球不是凸的。
+
+在信号处理中还常用记号 $\norm{x}_{0}=\#\{i:x_{i}\ne0\}$（非零分量的个数）。它满足三角不等式，但不满足齐次性（$\norm{2x}_{0}=\norm{x}_{0}$），因此也不是范数。注意 $\norm{x}_{0}=\lim_{p\to0^{+}}\norm{x}_{p}^{p}$，它是 $\norm{x}_{p}^{p}$ 而不是 $\norm{x}_{p}$ 的极限。
+\end{example}
+
+有限维空间中所有范数在拓扑上没有差别。
+
+\begin{definition}[等价范数]
+向量空间 $V$ 上的两个范数 $\norm{\cdot}$ 与 $\norm{\cdot}'$ 称为\textbf{等价的}，如果存在常数 $0<c\le C$ 使得对一切 $x\in V$，$c\norm{x}\le\norm{x}'\le C\norm{x}$。
+\end{definition}
+
+等价范数给出相同的收敛序列、相同的 Cauchy 列与相同的开集。
+
+\begin{theorem}\label{thm:finite-dim}
+有限维向量空间上的任意两个范数都等价。
+\end{theorem}
+
+\begin{proof}[证明]
+取基 $e_{1},\dots,e_{n}$，把 $V$ 等同于 $\K^{n}$。只需证明任一范数 $\norm{\cdot}$ 都与 $\norm{\cdot}_{1}$ 等价。一方面，
+\[
+\norm{x}=\Bigl\|\sum_{i}x_{i}e_{i}\Bigr\|\le\sum_{i}|x_{i}|\,\norm{e_{i}}\le M\norm{x}_{1},\qquad M=\max_{i}\norm{e_{i}} .
+\]
+于是 $\bigl|\norm{x}-\norm{y}\bigr|\le M\norm{x-y}_{1}$，即 $\norm{\cdot}$ 关于 $\norm{\cdot}_{1}$ 连续。另一方面，把 $\K^{n}$ 视为 $\R^{n}$ 或 $\R^{2n}$，由 Cauchy--Schwarz 不等式 $\norm{x}_{1}\le\sqrt{n}\,\norm{x}_{2}$，又显然 $\norm{x}_{2}\le\norm{x}_{1}$，所以 $\norm{\cdot}_{1}$ 与欧氏范数给出相同的有界集与闭集。因此单位球面 $S=\{x:\norm{x}_{1}=1\}$ 是欧氏意义下的有界闭集，由 Heine--Borel 定理（第 I 篇）是紧集。连续函数 $\norm{\cdot}$ 在 $S$ 上取到最小值 $c$，且 $c>0$（$S$ 中不含 $0$）。对 $x\ne0$，
+\[
+\norm{x}=\norm{x}_{1}\,\Bigl\|\frac{x}{\norm{x}_{1}}\Bigr\|\ge c\norm{x}_{1}. \qedhere
+\]
+\end{proof}
+
+\begin{corollary}\label{cor:finite-complete}
+有限维赋范空间都是完备的；赋范空间的有限维子空间都是闭子空间。
+\end{corollary}
+
+\begin{proof}[证明]
+设 $(x^{(k)})$ 是有限维赋范空间中的 Cauchy 列。由定理~\ref{thm:finite-dim}，它关于 $\norm{\cdot}_{1}$ 也是 Cauchy 列，于是每个坐标 $(x^{(k)}_{i})_{k}$ 都是 $\K$ 中的 Cauchy 列，由 $\K$ 的完备性收敛到某个 $x_{i}$。于是 $\norm{x^{(k)}-x}_{1}\to0$，再由等价性 $\norm{x^{(k)}-x}\to0$。第二个结论来自：度量空间中的完备子集是闭集。
+\end{proof}
+
+\begin{remark}
+常说“$n$ 维赋范空间与 $\K^{n}$ 同构”，其精确含义是：$\K$ 上的 $n$ 维赋范空间与 $(\K^{n},\norm{\cdot}_{2})$ 之间存在一个双向连续的线性同构（线性同胚），但一般\emph{不是}等距同构。例如 $(\R^{2},\norm{\cdot}_{\infty})$ 与 $(\R^{2},\norm{\cdot}_{2})$ 之间不存在线性等距：线性映射把圆盘映成椭圆盘，而不可能映成正方形。
+\end{remark}
+
+\subsection{无穷维的例子}
+
+\begin{example}[{$C[a,b]$ 与上确界范数}]\label{ex:Cab}
+设 $C[a,b]$ 为 $[a,b]$ 上 $\K$ 值连续函数全体，令 $\norm{f}_{u}=\max_{x\in[a,b]}|f(x)|$（称为\textbf{一致范数}或上确界范数）。则 $(C[a,b],\norm{\cdot}_{u})$ 是 Banach 空间。
+
+事实上，设 $(f_{n})$ 是 Cauchy 列。对每个 $x$，$|f_{n}(x)-f_{m}(x)|\le\norm{f_{n}-f_{m}}_{u}$，故 $(f_{n}(x))$ 是 $\K$ 中的 Cauchy 列，记其极限为 $f(x)$。给定 $\varepsilon>0$，取 $N$ 使 $m,n\ge N$ 时 $\norm{f_{n}-f_{m}}_{u}<\varepsilon$；在 $|f_{n}(x)-f_{m}(x)|<\varepsilon$ 中令 $m\to\infty$，得 $n\ge N$ 时 $\sup_{x}|f_{n}(x)-f(x)|\le\varepsilon$，即 $f_{n}\to f$ 一致收敛。一致收敛的连续函数列的极限连续：对 $x_{0}\in[a,b]$，取 $\delta>0$ 使 $|x-x_{0}|<\delta$ 时 $|f_{N}(x)-f_{N}(x_{0})|<\varepsilon$，则
+\[
+|f(x)-f(x_{0})|\le|f(x)-f_{N}(x)|+|f_{N}(x)-f_{N}(x_{0})|+|f_{N}(x_{0})-f(x_{0})|<3\varepsilon .
+\]
+故 $f\in C[a,b]$ 且 $\norm{f_{n}-f}_{u}\to0$。
+\end{example}
+
+\begin{example}[同一空间上的不完备范数]\label{ex:C-L1}
+在 $C[0,2]$ 上令 $\norm{f}_{1}=\int_{0}^{2}|f(x)|\dx$。这是一个范数：若 $f$ 连续且 $|f(x_{0})|>0$，则 $|f|$ 在 $x_{0}$ 的某个邻域内大于 $|f(x_{0})|/2$，于是 $\norm{f}_{1}>0$。但 $(C[0,2],\norm{\cdot}_{1})$ 不完备。令
+\[
+f_{n}(x)=\begin{cases}0,&0\le x\le1,\\ n(x-1),&1<x<1+\tfrac1n,\\ 1,&1+\tfrac1n\le x\le2.\end{cases}
+\]
+当 $m>n$ 时 $f_{m}$ 与 $f_{n}$ 只在 $[1,1+\frac1n]$ 上不同，且差的绝对值不超过 $1$，故 $\norm{f_{m}-f_{n}}_{1}\le\frac1n$，$(f_{n})$ 是 Cauchy 列。若存在连续函数 $f$ 使 $\norm{f_{n}-f}_{1}\to0$，则 $\int_{0}^{1}|f|\le\norm{f-f_{n}}_{1}\to0$，故 $f=0$ 于 $[0,1]$；对任意 $\delta\in(0,1)$，当 $n>1/\delta$ 时 $\int_{1+\delta}^{2}|f-1|\le\norm{f-f_{n}}_{1}\to0$，故 $f=1$ 于 $[1+\delta,2]$，从而于 $(1,2]$。这与 $f$ 在 $1$ 处连续矛盾。
+
+所以同一个向量空间可以在一个范数下完备而在另一个范数下不完备；特别地，$\norm{\cdot}_{u}$ 与 $\norm{\cdot}_{1}$ 在 $C[0,2]$ 上不等价，这与定理~\ref{thm:finite-dim} 形成对照。第 7 节将看到，这个空间的“完备化”正是 $L^{1}[0,2]$。
+\end{example}
+
+\begin{example}[序列空间]\label{ex:lp}
+对 $1\le p<\infty$，令 $\ell^{p}$ 为满足 $\sum_{n}|x_{n}|^{p}<\infty$ 的 $\K$ 值序列 $x=(x_{n})_{n\ge1}$ 全体，$\norm{x}_{p}=(\sum_{n}|x_{n}|^{p})^{1/p}$；令 $\ell^{\infty}$ 为有界序列全体，$\norm{x}_{\infty}=\sup_{n}|x_{n}|$。例~\ref{ex:counting} 将说明它们是计数测度下的 $L^{p}$ 空间，因此下文关于 $L^{p}$ 的所有结论（Minkowski 不等式、完备性等）都适用于 $\ell^{p}$。
+\end{example}
+
+\subsection{有界线性映射}
+
+\begin{definition}
+设 $V,W$ 是 $\K$ 上的赋范空间。线性映射 $T:V\to W$ 称为\textbf{有界的}，如果存在常数 $C\ge0$ 使得对一切 $x\in V$，$\norm{Tx}_{W}\le C\norm{x}_{V}$。满足此式的最小常数
+\[
+\norm{T}=\sup_{\norm{x}_{V}\le1}\norm{Tx}_{W}
+\]
+称为 $T$ 的\textbf{算子范数}。取 $W=\K$ 时，有界线性映射称为有界线性泛函；$V$ 上全体有界线性泛函构成的空间记为 $V^{*}$，称为 $V$ 的\textbf{对偶空间}，它在算子范数下是 Banach 空间（证明与例~\ref{ex:Cab} 类似，只用到 $\K$ 的完备性）。
+\end{definition}
+
+\begin{proposition}\label{prop:bounded-cont}
+对线性映射 $T:V\to W$，以下三者等价：(a) $T$ 有界；(b) $T$ 连续；(c) $T$ 在 $0$ 处连续。
+\end{proposition}
+
+\begin{proof}[证明]
+(a)$\Rightarrow$(b)：$\norm{Tx-Ty}_{W}=\norm{T(x-y)}_{W}\le C\norm{x-y}_{V}$，$T$ 是 Lipschitz 的。(b)$\Rightarrow$(c) 显然。(c)$\Rightarrow$(a)：存在 $\delta>0$ 使 $\norm{x}_{V}\le\delta$ 时 $\norm{Tx}_{W}\le1$。对 $x\ne0$，
+\[
+\norm{Tx}_{W}=\frac{\norm{x}_{V}}{\delta}\Bigl\|T\Bigl(\frac{\delta x}{\norm{x}_{V}}\Bigr)\Bigr\|_{W}\le\frac{1}{\delta}\norm{x}_{V}. \qedhere
+\]
+\end{proof}
+
+\section{$L^{p}$ 空间}
+
+\subsection{$p$-范数与本质上确界}
+
+\begin{definition}\label{def:pnorm}
+设 $f$ 是 $X$ 上取值于 $\K$ 或 $[-\infty,\infty]$ 的可测函数。对 $0<p<\infty$，令
+\[
+\norm{f}_{p}=\Bigl(\int_{X}|f|^{p}\dmu\Bigr)^{1/p}\in[0,\infty].
+\]
+对 $p=\infty$，令
+\[
+\norm{f}_{\infty}=\esssup_{X}|f|=\inf\bigl\{M\ge0:\ \mu(\{x:|f(x)|>M\})=0\bigr\}\in[0,\infty],
+\]
+其中 $\inf\varnothing=\infty$。$\norm{f}_{\infty}$ 称为 $|f|$ 的\textbf{本质上确界（essential supremum）}，即 $|f|$ 的最小几乎处处上界。
+\end{definition}
+
+\begin{remark}
+定义中的条件“$\mu(\{|f|>M\})=0$”（即 $|f|\le M$ a.e.）不可省略：若要求 $|f|\le M$ 处处成立，得到的是普通上确界 $\sup|f|$，它会被零测集上的取值改变。例如 $f=\ind_{\Q}$ 在 $\R$ 上满足 $\sup|f|=1$，而 $\norm{f}_{\infty}=0$。
+\end{remark}
+
+\begin{lemma}\label{lem:esssup}
+对任意可测函数 $f$，$|f|\le\norm{f}_{\infty}$ a.e.；即定义中的下确界是可以取到的。
+\end{lemma}
+
+\begin{proof}[证明]
+若 $\norm{f}_{\infty}=\infty$，结论平凡。否则
+\[
+\{|f|>\norm{f}_{\infty}\}=\bigcup_{k=1}^{\infty}\Bigl\{|f|>\norm{f}_{\infty}+\tfrac1k\Bigr\},
+\]
+由下确界的定义右端每一项都是零测集，可数个零测集之并仍是零测集。
+\end{proof}
+
+\begin{lemma}\label{lem:null}
+设 $0<p\le\infty$，$f,g$ 可测。
+\begin{enumerate}
+\item $\norm{f}_{p}=0$ 当且仅当 $f=0$ a.e.；
+\item 若 $f=g$ a.e.，则 $\norm{f}_{p}=\norm{g}_{p}$；
+\item 若 $f$ 取值于 $\K$，$\alpha\in\K$，则 $\norm{\alpha f}_{p}=|\alpha|\,\norm{f}_{p}$。
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}[证明]
+(i) $p<\infty$ 时，由第 II 篇，非负可测函数 $|f|^{p}$ 的积分为零当且仅当 $|f|^{p}=0$ a.e.。$p=\infty$ 时，若 $\norm{f}_{\infty}=0$，由引理~\ref{lem:esssup} 得 $|f|\le0$ a.e.；反之显然。(ii) $p<\infty$ 时 $|f|^{p}=|g|^{p}$ a.e.，积分相同；$p=\infty$ 时，$\{|f|>M\}$ 与 $\{|g|>M\}$ 相差一个零测集。(iii) 由积分的齐次性（$p<\infty$）或由 $\{|\alpha f|>|\alpha|M\}=\{|f|>M\}$（$p=\infty$，$\alpha\ne0$）直接验证。
+\end{proof}
+
+\subsection{$L^{p}$ 空间的定义}
+
+\begin{definition}\label{def:calLp}
+对 $0<p\le\infty$，令
+\[
+\mathcal{L}^{p}(X,\mu)=\bigl\{f:X\to\K\ \big|\ f\text{ 可测},\ \norm{f}_{p}<\infty\bigr\}.
+\]
+\end{definition}
+
+\begin{proposition}\label{prop:vector}
+$\mathcal{L}^{p}(X,\mu)$ 在逐点加法与数乘下是 $\K$ 上的向量空间。更精确地，对 $a,b\in\K$：
+\[
+|a+b|^{p}\le 2^{p-1}\bigl(|a|^{p}+|b|^{p}\bigr)\quad(1\le p<\infty),\qquad
+|a+b|^{p}\le |a|^{p}+|b|^{p}\quad(0<p\le1).
+\]
+\end{proposition}
+
+\begin{proof}[证明]
+数乘封闭性来自引理~\ref{lem:null}(iii)。对 $1\le p<\infty$，函数 $t\mapsto t^{p}$ 在 $[0,\infty)$ 上是凸的，故
+\[
+\Bigl(\frac{|a|+|b|}{2}\Bigr)^{p}\le\frac{|a|^{p}+|b|^{p}}{2},
+\]
+结合 $|a+b|\le|a|+|b|$ 即得第一个不等式。对 $0<p\le1$ 与 $s,t\ge0$，$s+t>0$，由于 $\frac{s}{s+t},\frac{t}{s+t}\in[0,1]$ 而 $p\le1$，有
+\[
+1=\frac{s}{s+t}+\frac{t}{s+t}\le\Bigl(\frac{s}{s+t}\Bigr)^{p}+\Bigl(\frac{t}{s+t}\Bigr)^{p},
+\]
+即 $(s+t)^{p}\le s^{p}+t^{p}$；取 $s=|a|$，$t=|b|$ 即得第二个不等式。把这两个不等式应用于 $a=f(x)$，$b=g(x)$ 并积分，可知 $f,g\in\mathcal{L}^{p}$ 时 $f+g\in\mathcal{L}^{p}$（$p<\infty$）。$p=\infty$ 时，由引理~\ref{lem:esssup}，$|f+g|\le\norm{f}_{\infty}+\norm{g}_{\infty}$ a.e.。
+\end{proof}
+
+然而 $\norm{\cdot}_{p}$ 在 $\mathcal{L}^{p}$ 上一般不满足正定性：例如 $f=\ind_{\{0\}}$ 在 $(\R,m)$ 上满足 $\norm{f}_{p}=0$，但 $f\ne0$。补救的办法是不区分几乎处处相等的函数。关系“$f\sim g\iff f=g$ a.e.”是 $\mathcal{L}^{p}$ 上的等价关系（传递性来自两个零测集之并仍是零测集），且 $\mathcal{N}=\{f:f=0\ \text{a.e.}\}$ 是 $\mathcal{L}^{p}$ 的线性子空间。
+
+\begin{definition}[$L^{p}$ 空间]\label{def:Lp}
+对 $0<p\le\infty$，定义商空间
+\[
+L^{p}(X,\mu)=\mathcal{L}^{p}(X,\mu)/\mathcal{N},
+\]
+其元素是等价类 $[f]=\{g\in\mathcal{L}^{p}:g=f\ \text{a.e.}\}$，运算为 $[f]+[g]=[f+g]$，$\alpha[f]=[\alpha f]$，并令 $\norm{[f]}_{p}=\norm{f}_{p}$。
+\end{definition}
+
+由引理~\ref{lem:null}(ii)，$\norm{[f]}_{p}$ 与代表元的选取无关；由引理~\ref{lem:null}(i)，$\norm{[f]}_{p}=0$ 当且仅当 $[f]=[0]$。因此，一旦在第 3 节证明了 $1\le p\le\infty$ 时的三角不等式，$L^{p}(X,\mu)$ 就是赋范空间。
+
+\begin{remark}[记号约定]\label{rem:convention}
+\begin{enumerate}
+\item 按惯例我们把等价类 $[f]$ 与它的代表元 $f$ 等同，写作 $f\in L^{p}$；诸如 $f\ge0$、$f\le g$、$f=g$ 之类的关系都理解为几乎处处成立。但必须记住 $L^{p}$ 的元素不是函数：当单点是零测集时（例如 $(\R^{n},m)$），“$f\in L^{p}(\R)$ 在 $0$ 处的值”没有意义。
+\item 若 $f$ 取值于 $[-\infty,\infty]$ 且 $\norm{f}_{p}<\infty$（$p<\infty$），则 $f$ 几乎处处有限（否则 $|f|^{p}=\infty$ 于正测集上），因而与一个有限值函数几乎处处相等；所以允许 $L^{p}$ 的代表元取广义实数值不会带来任何变化。
+\item $L^{p}$ 对任何测度空间都有定义，不限于 Lebesgue 测度。当 $X=\R^{n}$ 或其可测子集 $E$ 并配备 Lebesgue 测度时，记作 $L^{p}(\R^{n})$、$L^{p}(E)$、$L^{p}[a,b]$ 等；在不引起混淆时也简写为 $L^{p}(X)$ 或 $L^{p}$。
+\end{enumerate}
+\end{remark}
+
+\subsection{两个基本例子}
+
+\begin{example}[计数测度与 $\ell^{p}$]\label{ex:counting}
+设 $X=\N$，$\M=\mathcal{P}(\N)$，$\mu$ 为计数测度（$\mu(A)=\#A$）。每个函数 $f:\N\to\K$ 都可测。对非负的 $f$，简单函数 $f\ind_{\{1,\dots,N\}}$ 单调上升趋于 $f$，由单调收敛定理
+\[
+\int_{\N}f\dmu=\lim_{N\to\infty}\sum_{n=1}^{N}f(n)=\sum_{n=1}^{\infty}f(n).
+\]
+由于唯一的零测集是 $\varnothing$，等价类只含一个函数，并且 $\norm{f}_{\infty}=\sup_{n}|f(n)|$。因此 $L^{p}(\N,\mu)=\ell^{p}$（$0<p\le\infty$），范数与例~\ref{ex:lp} 相同。同理，$X=\{1,\dots,n\}$ 上的计数测度给出 $(\K^{n},\norm{\cdot}_{p})$，即例~\ref{ex:Kn}。
+\end{example}
+
+\begin{example}[幂函数]\label{ex:power}
+设 $\alpha>0$，$0<p<\infty$。则
+\[
+x^{-\alpha}\in L^{p}(0,1)\iff \alpha p<1,\qquad x^{-\alpha}\in L^{p}(1,\infty)\iff \alpha p>1 .
+\]
+事实上，$x^{-\alpha p}\ind_{[\varepsilon,1)}$ 当 $\varepsilon\downarrow0$ 时单调上升趋于 $x^{-\alpha p}\ind_{(0,1)}$，由单调收敛定理以及连续函数在闭区间上的 Lebesgue 积分等于 Riemann 积分（第 II 篇），
+\[
+\int_{(0,1)}x^{-\alpha p}\dx=\lim_{\varepsilon\to0^{+}}\int_{\varepsilon}^{1}x^{-\alpha p}\dx=\begin{cases}\dfrac{1}{1-\alpha p},&\alpha p<1,\\[2mm] \infty,&\alpha p\ge1.\end{cases}
+\]
+$(1,\infty)$ 上的情形同理。于是 $x^{-\alpha}\ind_{(0,1)}$ 只属于指数较小的 $L^{p}$（局部奇性惩罚大的 $p$），而 $x^{-\alpha}\ind_{(1,\infty)}$ 只属于指数较大的 $L^{p}$（在无穷远处衰减过慢惩罚小的 $p$）。这一对照将在第 6 节中反复出现。
+\end{example}
+
+\section{Young、Hölder 与 Minkowski 不等式}
+
+\subsection{Young 不等式}
+
+\begin{lemma}[Young 不等式]\label{lem:young}
+设 $1<p<\infty$，$q$ 为其共轭指数，$a,b\ge0$。则
+\[
+ab\le\frac{a^{p}}{p}+\frac{b^{q}}{q},
+\]
+且等号成立当且仅当 $a^{p}=b^{q}$。
+\end{lemma}
+
+\begin{proof}[证明]
+若 $a=0$ 或 $b=0$，左端为 $0$，右端非负，并且右端为 $0$ 当且仅当 $a=b=0$，即当且仅当 $a^{p}=b^{q}$。设 $a,b>0$。由于 $(e^{t})''=e^{t}>0$，指数函数严格凸：对 $\lambda\in(0,1)$，
+\[
+e^{\lambda s+(1-\lambda)t}\le\lambda e^{s}+(1-\lambda)e^{t},
+\]
+且等号当且仅当 $s=t$ 时成立。取 $\lambda=\frac1p$（从而 $1-\lambda=\frac1q$），$s=\log a^{p}$，$t=\log b^{q}$，左端为 $e^{\log a+\log b}=ab$，右端为 $\frac{a^{p}}{p}+\frac{b^{q}}{q}$；等号当且仅当 $a^{p}=b^{q}$。
+\end{proof}
+
+\begin{remark}
+Young 不等式有一个直观的几何解释（图~\ref{fig:young}）：曲线 $y=x^{p-1}$ 与其反函数 $x=y^{q-1}$（注意 $(p-1)(q-1)=1$）将矩形 $[0,a]\times[0,b]$ 覆盖在两块区域之中，两块区域的面积分别是 $\int_{0}^{a}x^{p-1}\dx=\frac{a^{p}}{p}$ 与 $\int_{0}^{b}y^{q-1}\,\mathrm{d}y=\frac{b^{q}}{q}$；当且仅当 $b=a^{p-1}$（即 $a^{p}=b^{q}$）时两块区域恰好拼成矩形。
+\end{remark}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=2.4]
+  \fill[ra-orange!18] (0,0) -- plot[domain=0:1.2, samples=60] (\x,{\x*\x}) -- (1.2,0) -- cycle;
+  \fill[ra-amber!30] (0,0) -- plot[domain=0:1, samples=60] ({sqrt(\x)},\x) -- (0,1) -- cycle;
+  \draw[->,article-muted] (0,0) -- (1.45,0) node[right] {\small $x$};
+  \draw[->,article-muted] (0,0) -- (0,1.6) node[above] {\small $y$};
+  \draw[article-text, line width=0.9pt, domain=0:1.25, samples=60] plot (\x,{\x*\x}) node[right] {\small $y=x^{p-1}$};
+  \draw[article-text, dashed] (1.2,0) -- (1.2,1.44);
+  \draw[article-text, dashed] (0,1) -- (1.2,1);
+  \node[below] at (1.2,0) {\small $a$};
+  \node[left] at (0,1) {\small $b$};
+  \node at (0.95,0.35) {\small $\frac{a^{p}}{p}$};
+  \node at (0.35,0.62) {\small $\frac{b^{q}}{q}$};
+\end{tikzpicture}
+\caption{Young 不等式的几何解释（图中 $p=3$，$q=\tfrac32$）。两块阴影区域覆盖矩形 $[0,a]\times[0,b]$。}
+\label{fig:young}
+\end{figure}
+
+\subsection{Hölder 不等式}
+
+回忆内积空间 $V$ 中的 Cauchy--Schwarz 不等式 $|\langle u,v\rangle|\le\norm{u}\,\norm{v}$。Hölder 不等式是它在 $L^{p}$ 框架下的推广。
+
+\begin{theorem}[Hölder 不等式]\label{thm:holder}
+设 $1\le p\le\infty$，$q$ 为其共轭指数，$f,g$ 是 $X$ 上的 $\K$ 值可测函数。则
+\[
+\norm{fg}_{1}=\int_{X}|fg|\dmu\le\norm{f}_{p}\,\norm{g}_{q}
+\]
+（两端在 $[0,\infty]$ 中取值）。特别地，若 $f\in L^{p}$，$g\in L^{q}$，则 $fg\in L^{1}$ 且 $\bigl|\int_{X}fg\dmu\bigr|\le\norm{f}_{p}\norm{g}_{q}$。
+\end{theorem}
+
+\begin{proof}[证明]
+情形 $p=1$，$q=\infty$：由引理~\ref{lem:esssup}，$|fg|\le\norm{g}_{\infty}|f|$ a.e.（按约定 $0\cdot\infty=0$），积分即得。$p=\infty$ 的情形对称。
+
+情形 $1<p<\infty$。若 $\norm{f}_{p}=0$ 或 $\norm{g}_{q}=0$，则由引理~\ref{lem:null}，$f=0$ a.e. 或 $g=0$ a.e.，于是 $fg=0$ a.e.，两端都是 $0$。若二者都不为 $0$ 而其中之一为 $\infty$，右端为 $\infty$，不等式平凡。以下设 $A=\norm{f}_{p}$，$B=\norm{g}_{q}$ 都属于 $(0,\infty)$。对每个 $x$，以 $a=|f(x)|/A$，$b=|g(x)|/B$ 应用 Young 不等式：
+\[
+\frac{|f(x)g(x)|}{AB}\le\frac{1}{p}\frac{|f(x)|^{p}}{A^{p}}+\frac{1}{q}\frac{|g(x)|^{q}}{B^{q}}.
+\]
+两边积分，右端等于 $\frac1p\cdot1+\frac1q\cdot1=1$，于是 $\norm{fg}_{1}\le AB$。最后一个结论来自约定部分的 $\bigl|\int h\bigr|\le\int|h|$。
+\end{proof}
+
+\begin{remark}
+证明的逻辑顺序是：先把 $f,g$ 按范数归一化，对归一化后的函数逐点应用 Young 不等式，再积分。归一化要求 $0<\norm{f}_{p},\norm{g}_{q}<\infty$，因此范数为 $0$ 或 $\infty$ 的情形必须单独处理。还应注意两个函数分别以指数 $p$ 与 $q$ 度量：右端是 $(\int|f|^{p})^{1/p}(\int|g|^{q})^{1/q}$，指数满足 $1\le p,q\le\infty$。
+\end{remark}
+
+\begin{corollary}[Cauchy--Schwarz 不等式]\label{cor:cs}
+若 $f,g\in L^{2}(X,\mu)$，则 $\bigl|\int_{X}f\bar{g}\dmu\bigr|\le\norm{f}_{2}\norm{g}_{2}$。因此 $\langle f,g\rangle=\int_{X}f\bar{g}\dmu$ 是 $L^{2}$ 上的内积，且 $\langle f,f\rangle=\norm{f}_{2}^{2}$。
+\end{corollary}
+
+这对任意测度空间都成立，不限于 $L^{2}(S^{1})$。结合第 4 节的完备性，$L^{2}(X,\mu)$ 是一个 Hilbert 空间。取计数测度即得离散形式：
+\[
+\sum_{n}|x_{n}y_{n}|\le\Bigl(\sum_{n}|x_{n}|^{p}\Bigr)^{1/p}\Bigl(\sum_{n}|y_{n}|^{q}\Bigr)^{1/q}.
+\]
+
+\begin{corollary}[广义 Hölder 不等式]\label{cor:gen-holder}
+设 $0<p,q,r\le\infty$ 满足 $\frac1r=\frac1p+\frac1q$，$f,g$ 可测，则 $\norm{fg}_{r}\le\norm{f}_{p}\norm{g}_{q}$。
+\end{corollary}
+
+\begin{proof}[证明]
+若 $r=\infty$，则 $p=q=\infty$，由引理~\ref{lem:esssup}，$|fg|\le\norm{f}_{\infty}\norm{g}_{\infty}$ a.e.。设 $r<\infty$。若 $p=\infty$，则 $q=r$，$|fg|^{r}\le\norm{f}_{\infty}^{r}|g|^{r}$ a.e.，积分即得；$q=\infty$ 同理。若 $p,q<\infty$，则 $\frac{p}{r},\frac{q}{r}>1$ 且 $\frac{r}{p}+\frac{r}{q}=1$，对 $|f|^{r}$ 与 $|g|^{r}$ 以指数 $\frac pr,\frac qr$ 应用定理~\ref{thm:holder}：
+\[
+\int|f|^{r}|g|^{r}\dmu\le\Bigl(\int|f|^{p}\dmu\Bigr)^{r/p}\Bigl(\int|g|^{q}\dmu\Bigr)^{r/q},
+\]
+两边开 $r$ 次方即可。
+\end{proof}
+
+由归纳法，若 $\frac1r=\sum_{i=1}^{k}\frac{1}{p_{i}}$，则 $\norm{f_{1}\cdots f_{k}}_{r}\le\prod_{i}\norm{f_{i}}_{p_{i}}$。
+
+\subsection{Hölder 不等式的取等条件}
+
+\begin{theorem}\label{thm:holder-eq}
+\begin{enumerate}
+\item 设 $1<p<\infty$，$f\in L^{p}$，$g\in L^{q}$。则 $\norm{fg}_{1}=\norm{f}_{p}\norm{g}_{q}$ 当且仅当存在不全为零的常数 $\alpha,\beta\ge0$，使得 $\alpha|f|^{p}=\beta|g|^{q}$ a.e.。当 $\norm{f}_{p},\norm{g}_{q}>0$ 时，这等价于
+\[
+\frac{|f|^{p}}{\norm{f}_{p}^{p}}=\frac{|g|^{q}}{\norm{g}_{q}^{q}}\quad\text{a.e.}
+\]
+\item 设 $f\in L^{1}$，$g\in L^{\infty}$。则 $\norm{fg}_{1}=\norm{f}_{1}\norm{g}_{\infty}$ 当且仅当在集合 $\{f\ne0\}$ 上几乎处处有 $|g|=\norm{g}_{\infty}$。
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[证明]
+(i) 若 $\norm{f}_{p}=0$，则等式两端都为 $0$，而 $\alpha=1,\beta=0$ 满足条件；反之，若条件对 $\beta=0$ 成立，则 $\alpha>0$，$f=0$ a.e.，等式成立。$\norm{g}_{q}=0$ 或 $\alpha=0$ 的情形对称。以下设 $A=\norm{f}_{p}>0$，$B=\norm{g}_{q}>0$，令 $F=|f|/A$，$G=|g|/B$，
+\[
+H=\frac{F^{p}}{p}+\frac{G^{q}}{q}-FG .
+\]
+由 Young 不等式 $H\ge0$ a.e.，且由定理~\ref{thm:holder} 的证明，$\int H\dmu=1-\frac{\norm{fg}_{1}}{AB}$。因此等式成立 $\iff\int H=0\iff H=0$ a.e.（第 II 篇）$\iff F^{p}=G^{q}$ a.e.（Young 不等式的取等条件），即 $|f|^{p}/A^{p}=|g|^{q}/B^{q}$ a.e.，这是 $\alpha=A^{-p}$，$\beta=B^{-q}$ 时的条件。反之，若 $\alpha|f|^{p}=\beta|g|^{q}$ a.e. 且 $\alpha,\beta$ 不全为零，由 $A,B>0$ 知 $\alpha,\beta$ 都必须为正（例如 $\alpha=0$ 将迫使 $g=0$ a.e.），积分得 $\alpha A^{p}=\beta B^{q}$，从而 $|f|^{p}/A^{p}=|g|^{q}/B^{q}$ a.e.。
+
+(ii) 由 Hölder 不等式 $\norm{fg}_{1}<\infty$，且
+\[
+\norm{f}_{1}\norm{g}_{\infty}-\norm{fg}_{1}=\int_{X}|f|\bigl(\norm{g}_{\infty}-|g|\bigr)\dmu ,
+\]
+被积函数几乎处处非负（引理~\ref{lem:esssup}）。所以差为零当且仅当 $|f|(\norm{g}_{\infty}-|g|)=0$ a.e.，即在 $\{f\ne0\}$ 上几乎处处 $|g|=\norm{g}_{\infty}$。
+\end{proof}
+
+\begin{example}\label{ex:holder-eq}
+$p=1,q=\infty$ 时的取等条件有时被误述为“$f$ 与 $g$ 几乎处处有相同的支集”。这既不充分也不必要。在 $[0,1]$ 上取 $f\equiv1$，$g(x)=x$：$\{f\ne0\}$ 与 $\{g\ne0\}$ 只差零测集，但 $\norm{fg}_{1}=\tfrac12<1=\norm{f}_{1}\norm{g}_{\infty}$。反之取 $f=\ind_{[0,1/2]}$，$g\equiv1$：支集不同，但 $\norm{fg}_{1}=\tfrac12=\norm{f}_{1}\norm{g}_{\infty}$。又在 $1<p<\infty$ 的情形，条件“存在 $\lambda\ge0$ 使 $|f|^{p}=\lambda|g|^{q}$”遗漏了 $g=0$、$f\ne0$ 的情形（此时等式 $0=0$ 平凡成立），这正是定理中需要两个不全为零的系数 $\alpha,\beta$ 的原因。
+\end{example}
+
+\subsection{Minkowski 不等式}
+
+\begin{theorem}[Minkowski 不等式]\label{thm:minkowski}
+设 $1\le p\le\infty$，$f,g\in L^{p}(X,\mu)$。则 $f+g\in L^{p}$ 且
+\[
+\norm{f+g}_{p}\le\norm{f}_{p}+\norm{g}_{p}.
+\]
+因此当 $1\le p\le\infty$ 时 $\norm{\cdot}_{p}$ 是 $\mathcal{L}^{p}$ 上的半范数，$L^{p}(X,\mu)$ 是赋范空间。
+\end{theorem}
+
+\begin{proof}[证明]
+$p=1$：积分 $|f+g|\le|f|+|g|$ 即可。$p=\infty$：由引理~\ref{lem:esssup}，在一个零测集之外 $|f+g|\le|f|+|g|\le\norm{f}_{\infty}+\norm{g}_{\infty}$。
+
+设 $1<p<\infty$。由命题~\ref{prop:vector}，$f+g\in L^{p}$，即 $\norm{f+g}_{p}<\infty$；若 $\norm{f+g}_{p}=0$，结论平凡，故设 $0<\norm{f+g}_{p}<\infty$。由于 $(p-1)q=p$，
+\[
+\bigl\||f+g|^{p-1}\bigr\|_{q}=\Bigl(\int|f+g|^{p}\dmu\Bigr)^{1/q}=\norm{f+g}_{p}^{p/q}=\norm{f+g}_{p}^{p-1}<\infty .
+\]
+于是由 $|f+g|\le|f|+|g|$ 与 Hölder 不等式，
+\[
+\begin{aligned}
+\norm{f+g}_{p}^{p}&=\int|f+g|\,|f+g|^{p-1}\dmu
+\le\int|f|\,|f+g|^{p-1}\dmu+\int|g|\,|f+g|^{p-1}\dmu\\
+&\le\bigl(\norm{f}_{p}+\norm{g}_{p}\bigr)\,\norm{f+g}_{p}^{p-1}.
+\end{aligned}
+\]
+两边除以 $\norm{f+g}_{p}^{p-1}\in(0,\infty)$ 即得结论。
+\end{proof}
+
+\begin{remark}
+证明中“先证 $\norm{f+g}_{p}<\infty$”一步是必要的：若不知道 $\norm{f+g}_{p}$ 有限，最后一步就是以 $\infty$ 作除数。上面的证明对一般测度空间成立，有限和与级数的情形只是计数测度下的特例。
+\end{remark}
+
+\begin{corollary}[离散 Minkowski 不等式]\label{cor:mink-discrete}
+对 $1\le p<\infty$ 与 $\K$ 值序列（有限或无限）$(x_{k})$，$(y_{k})$，
+\[
+\Bigl(\sum_{k}|x_{k}+y_{k}|^{p}\Bigr)^{1/p}\le\Bigl(\sum_{k}|x_{k}|^{p}\Bigr)^{1/p}+\Bigl(\sum_{k}|y_{k}|^{p}\Bigr)^{1/p}.
+\]
+特别地，$(\K^{n},\norm{\cdot}_{p})$ 与 $\ell^{p}$（$1\le p\le\infty$）都是赋范空间。
+\end{corollary}
+
+\begin{proof}[证明]
+对 $\{1,\dots,n\}$ 或 $\N$ 上的计数测度应用定理~\ref{thm:minkowski}（例~\ref{ex:counting}）；若右端为 $\infty$ 则无需证明。
+\end{proof}
+
+常见的“积分形式”的 Minkowski 不等式 $\bigl(\int_{a}^{b}|f+g|^{p}\bigr)^{1/p}\le\bigl(\int_{a}^{b}|f|^{p}\bigr)^{1/p}+\bigl(\int_{a}^{b}|g|^{p}\bigr)^{1/p}$ 就是 $X=[a,b]$ 时的定理~\ref{thm:minkowski}，只需 $f,g\in L^{p}[a,b]$，$1\le p<\infty$。
+
+\begin{theorem}[Minkowski 不等式的取等条件]\label{thm:mink-eq}
+设 $1<p<\infty$，$f,g\in L^{p}$。则 $\norm{f+g}_{p}=\norm{f}_{p}+\norm{g}_{p}$ 当且仅当存在 $\lambda\ge0$，使得 $f=\lambda g$ a.e. 或 $g=\lambda f$ a.e.。
+\end{theorem}
+
+\begin{proof}[证明]
+充分性：若 $g=\lambda f$，则 $\norm{f+g}_{p}=(1+\lambda)\norm{f}_{p}=\norm{f}_{p}+\norm{g}_{p}$。
+
+必要性：若 $f=0$ a.e.，则 $f=0\cdot g$；$g=0$ 同理。设 $\norm{f}_{p},\norm{g}_{p}>0$，于是 $\norm{f+g}_{p}=\norm{f}_{p}+\norm{g}_{p}>0$。记 $h=|f+g|^{p-1}$，则 $\norm{h}_{q}=\norm{f+g}_{p}^{p-1}>0$。在定理~\ref{thm:minkowski} 的证明中，
+\[
+\norm{f+g}_{p}^{p}\le\int(|f|+|g|)h\dmu\le\bigl(\norm{f}_{p}+\norm{g}_{p}\bigr)\norm{h}_{q}=\norm{f+g}_{p}^{p},
+\]
+所以两处不等号都是等号。
+
+第一处取等给出 $\int(|f|+|g|-|f+g|)h\dmu=0$，被积函数非负，故在 $S=\{f+g\ne0\}$ 上几乎处处 $|f+g|=|f|+|g|$。第二处是两个 Hölder 不等式 $\int|f|h\le\norm{f}_{p}\norm{h}_{q}$ 与 $\int|g|h\le\norm{g}_{p}\norm{h}_{q}$ 之和，所以两者都取等。由定理~\ref{thm:holder-eq}(i)，
+\[
+\frac{|f|^{p}}{\norm{f}_{p}^{p}}=\frac{h^{q}}{\norm{h}_{q}^{q}}=\frac{|f+g|^{p}}{\norm{f+g}_{p}^{p}}\quad\text{a.e.},
+\]
+即 $|f|=s|f+g|$ a.e.，其中 $s=\norm{f}_{p}/\norm{f+g}_{p}>0$；同理 $|g|=t|f+g|$ a.e.，$t=\norm{g}_{p}/\norm{f+g}_{p}>0$。特别地，在 $X\setminus S$ 上 $f=g=0$ a.e.。
+
+在 $S$ 上，对复数 $z=f(x)$，$w=g(x)$，由 $|z+w|^{2}=|z|^{2}+|w|^{2}+2\operatorname{Re}(z\bar w)$，条件 $|z+w|=|z|+|w|$ 等价于 $z\bar w=|z||w|\ge0$，即 $z,w$ 中一个是另一个的非负倍数；由此 $z=\frac{|z|}{|z+w|}(z+w)$。因此在 $S$ 上几乎处处 $f=s(f+g)$，$g=t(f+g)$，而这两式在 $X\setminus S$ 上也几乎处处成立。于是 $tf=st(f+g)=sg$ a.e.，即 $f=\frac{s}{t}g$ a.e.。
+\end{proof}
+
+\begin{remark}
+$p=1$ 时，$\norm{f+g}_{1}=\norm{f}_{1}+\norm{g}_{1}$ 当且仅当 $|f+g|=|f|+|g|$ a.e.，即 $f\bar g\ge0$ a.e.；这不要求 $f,g$ 成比例，例如任意两个非负函数都取等。$p=\infty$ 时也没有比例刻画：$f=\ind_{[0,1]}$，$g=\ind_{[0,2]}$ 满足 $\norm{f+g}_{\infty}=2=\norm{f}_{\infty}+\norm{g}_{\infty}$。
+\end{remark}
+
+\subsection{$0<p<1$ 的情形}
+
+\begin{proposition}[反向 Minkowski 不等式]\label{prop:reverse}
+设 $0<p<1$，$f,g$ 是非负可测函数，则 $\norm{f+g}_{p}\ge\norm{f}_{p}+\norm{g}_{p}$。
+\end{proposition}
+
+\begin{proof}[证明]
+由于 $f+g\ge f$，$f+g\ge g$，若 $\norm{f}_{p}$ 或 $\norm{g}_{p}$ 为 $\infty$，左端也为 $\infty$；若其中之一为 $0$，结论也显然。设 $a=\norm{f}_{p}$，$b=\norm{g}_{p}$ 属于 $(0,\infty)$，令 $u=f/a$，$v=g/b$，$\lambda=\frac{a}{a+b}$，则
+\[
+f+g=(a+b)\bigl(\lambda u+(1-\lambda)v\bigr).
+\]
+函数 $t\mapsto t^{p}$ 在 $[0,\infty)$ 上是凹的，故 $(\lambda u+(1-\lambda)v)^{p}\ge\lambda u^{p}+(1-\lambda)v^{p}$。积分并利用 $\int u^{p}=\int v^{p}=1$，得 $\int(f+g)^{p}\dmu\ge(a+b)^{p}$。
+\end{proof}
+
+\begin{example}\label{ex:p-less-1-L}
+若 $X$ 中存在不交的可测集 $A,B$，$0<\mu(A),\mu(B)<\infty$，则对 $0<p<1$，
+\[
+\norm{\ind_{A}+\ind_{B}}_{p}=\bigl(\mu(A)+\mu(B)\bigr)^{1/p}>\mu(A)^{1/p}+\mu(B)^{1/p}=\norm{\ind_{A}}_{p}+\norm{\ind_{B}}_{p},
+\]
+严格不等号来自 $r=\frac1p>1$ 时 $(s+t)^{r}>s^{r}+t^{r}$（$s,t>0$）。所以此时 $\norm{\cdot}_{p}$ 不是半范数。
+\end{example}
+
+\begin{remark}
+需要注意：反向不等式只对\emph{非负}函数且 $0<p<1$ 成立（对一般函数，取 $g=-f$ 即得反例）；$p=1$ 时是通常的三角不等式；$p=0$ 时公式本身没有意义。另一方面，由命题~\ref{prop:vector}，对 $0<p<1$，
+\[
+d_{p}(f,g)=\int_{X}|f-g|^{p}\dmu
+\]
+满足三角不等式，是 $L^{p}$ 上的平移不变度量，并且用与定理~\ref{thm:riesz-fischer} 相同的方法可以证明 $(L^{p},d_{p})$ 是完备的。但一般而言 $L^{p}$（$0<p<1$）不能赋范；例如可以证明 $L^{p}[0,1]$ 上唯一的连续线性泛函是零泛函。本篇以下主要讨论 $1\le p\le\infty$。
+\end{remark}
+
+\subsection{平行四边形法则}
+
+\begin{proposition}\label{prop:parallelogram}
+设 $X$ 中存在不交的可测集 $A,B$，$0<\mu(A),\mu(B)<\infty$，$1\le p\le\infty$。则 $L^{p}(X,\mu)$ 的范数满足平行四边形法则
+\[
+\norm{f+g}_{p}^{2}+\norm{f-g}_{p}^{2}=2\norm{f}_{p}^{2}+2\norm{g}_{p}^{2}\qquad(\forall f,g\in L^{p})
+\]
+当且仅当 $p=2$。
+\end{proposition}
+
+\begin{proof}[证明]
+$p=2$ 时，展开 $\norm{f\pm g}_{2}^{2}=\norm{f}_{2}^{2}\pm2\operatorname{Re}\langle f,g\rangle+\norm{g}_{2}^{2}$ 相加即得。设 $p\ne2$。$p<\infty$ 时取 $f=\mu(A)^{-1/p}\ind_{A}$，$g=\mu(B)^{-1/p}\ind_{B}$；$p=\infty$ 时取 $f=\ind_{A}$，$g=\ind_{B}$。则 $\norm{f}_{p}=\norm{g}_{p}=1$，右端为 $4$。由于 $A,B$ 不交，$|f\pm g|^{p}=|f|^{p}+|g|^{p}$，故 $p<\infty$ 时 $\norm{f\pm g}_{p}=2^{1/p}$，左端为 $2\cdot2^{2/p}\ne4$；$p=\infty$ 时 $\norm{f\pm g}_{\infty}=1$，左端为 $2\ne4$。
+\end{proof}
+
+由 Jordan--von Neumann 定理（范数由内积诱导当且仅当满足平行四边形法则），在上述条件下，$L^{p}$ 空间中只有 $L^{2}$ 的范数来自内积。
+
+\section{完备性：Riesz--Fischer 定理}
+
+\begin{theorem}[Riesz--Fischer]\label{thm:riesz-fischer}
+设 $1\le p<\infty$，则 $L^{p}(X,\mu)$ 是 Banach 空间。
+\end{theorem}
+
+\begin{proof}[证明]
+由定理~\ref{thm:series}，只需证明 $L^{p}$ 中绝对收敛的级数收敛。设 $f_{k}\in L^{p}$，$\sum_{k=1}^{\infty}\norm{f_{k}}_{p}=S<\infty$。令
+\[
+G_{n}=\sum_{k=1}^{n}|f_{k}|,\qquad G=\sum_{k=1}^{\infty}|f_{k}|:X\to[0,\infty].
+\]
+由 Minkowski 不等式，$\norm{G_{n}}_{p}\le\sum_{k=1}^{n}\norm{f_{k}}_{p}\le S$。由于 $G_{n}^{p}\uparrow G^{p}$，单调收敛定理给出
+\[
+\int_{X}G^{p}\dmu=\lim_{n\to\infty}\int_{X}G_{n}^{p}\dmu\le S^{p}<\infty .
+\]
+因此 $G<\infty$ a.e.：令 $E=\{G<\infty\}$，则 $\mu(X\setminus E)=0$。对 $x\in E$，数项级数 $\sum_{k}f_{k}(x)$ 绝对收敛，由 $\K$ 的完备性收敛。令
+\[
+F(x)=\begin{cases}\sum_{k=1}^{\infty}f_{k}(x),&x\in E,\\ 0,&x\notin E.\end{cases}
+\]
+$F$ 是可测函数 $\ind_{E}\sum_{k\le n}f_{k}$ 的逐点极限，故可测；又 $|F|\le G$，所以 $F\in L^{p}$。最后，记 $S_{n}=\sum_{k=1}^{n}f_{k}$，则在 $E$ 上
+\[
+|F-S_{n}|=\Bigl|\sum_{k>n}f_{k}\Bigr|\le\sum_{k>n}|f_{k}|\le G,\qquad |F-S_{n}|\to0 .
+\]
+于是 $|F-S_{n}|^{p}\to0$ a.e. 且 $|F-S_{n}|^{p}\le G^{p}\in L^{1}$，由控制收敛定理 $\norm{F-S_{n}}_{p}\to0$。所以级数 $\sum f_{k}$ 在 $L^{p}$ 中收敛到 $F$。
+\end{proof}
+
+\begin{remark}
+证明中有两个步骤不可省略，并且不应混淆几乎处处收敛与 $L^{p}$ 收敛：(a) 用 Minkowski 不等式与单调收敛定理证明 $G=\sum|f_{k}|\in L^{p}$，从而级数几乎处处绝对收敛，极限函数才有定义；(b) 用控制收敛定理把几乎处处收敛提升为 $L^{p}$ 收敛。从 Cauchy 列出发的写法中，还需要“有收敛子列的 Cauchy 列收敛”这一步，它已包含在定理~\ref{thm:series} 的证明中。
+\end{remark}
+
+\begin{corollary}
+$\ell^{p}$（$1\le p<\infty$）是 Banach 空间；对任意测度空间，$L^{2}(X,\mu)$ 是 Hilbert 空间。
+\end{corollary}
+
+证明中的函数 $G$ 还给出以下有用的结论。
+
+\begin{theorem}[几乎处处收敛的子列]\label{thm:subseq}
+设 $1\le p<\infty$，$f_{n}\to f$ 于 $L^{p}$。则存在子列 $(f_{n_{k}})$ 与 $h\in L^{p}$，使得 $f_{n_{k}}\to f$ a.e.，并且对一切 $k$ 有 $|f_{n_{k}}|\le h$ a.e.。
+\end{theorem}
+
+\begin{proof}[证明]
+选取 $n_{1}<n_{2}<\cdots$ 使 $\norm{f_{n_{k}}-f}_{p}\le2^{-k}$。令 $G=\sum_{k}|f_{n_{k}}-f|$。与定理~\ref{thm:riesz-fischer} 的证明相同，$\norm{G}_{p}\le\sum_{k}2^{-k}=1$，于是 $G<\infty$ a.e.，从而收敛级数的通项 $|f_{n_{k}}-f|\to0$ a.e.。又 $|f_{n_{k}}|\le|f|+G=:h\in L^{p}$。
+\end{proof}
+
+下面两个例子说明，在有限测度空间上 $L^{p}$ 收敛与几乎处处收敛互不蕴含，因此定理~\ref{thm:subseq} 中取子列是必要的。
+
+\begin{example}[打字机序列]\label{ex:typewriter}
+在 $[0,1]$ 上，对 $n=2^{j}+i$（$j\ge0$，$0\le i<2^{j}$）令 $f_{n}=\ind_{[i2^{-j},(i+1)2^{-j}]}$。则 $\norm{f_{n}}_{p}^{p}=2^{-j}\to0$，即对每个 $1\le p<\infty$，$f_{n}\to0$ 于 $L^{p}$。但对每个 $x\in[0,1]$，第 $j$ 代的 $2^{j}$ 个区间覆盖 $[0,1]$，所以 $f_{n}(x)=1$ 对无穷多个 $n$ 成立；而当 $j\ge2$ 时 $x$ 至多属于第 $j$ 代中的两个区间，所以 $f_{n}(x)=0$ 也对无穷多个 $n$ 成立。因此 $(f_{n}(x))$ 在每一点都发散。另一方面，子列 $f_{2^{j}}=\ind_{[0,2^{-j}]}$ 在 $(0,1]$ 上趋于 $0$，与定理~\ref{thm:subseq} 一致。
+\end{example}
+
+\begin{example}\label{ex:ae-not-Lp}
+在 $[0,1]$ 上令 $g_{n}=n^{1/p}\ind_{(0,1/n)}$。则 $g_{n}\to0$ 处处成立，但 $\norm{g_{n}}_{p}=1$，$g_{n}$ 不在 $L^{p}$ 中收敛到 $0$。
+\end{example}
+
+几乎处处收敛加上一个 $L^{p}$ 控制函数可以推出 $L^{p}$ 收敛（控制收敛定理）；几乎处处（或依测度）收敛何时能提升为 $L^{1}$ 收敛的确切刻画是 Vitali 收敛定理，其关键条件是一致可积性，见补充篇《一致可积性与 $L^{1}$ 收敛》。下面是另一个常用的充分条件。
+
+\begin{proposition}\label{prop:riesz-scheffe}
+设 $1\le p<\infty$，$f_{n},f\in L^{p}$，$f_{n}\to f$ a.e.，且 $\norm{f_{n}}_{p}\to\norm{f}_{p}$。则 $\norm{f_{n}-f}_{p}\to0$。
+\end{proposition}
+
+\begin{proof}[证明]
+由命题~\ref{prop:vector}，$\Phi_{n}=2^{p-1}(|f_{n}|^{p}+|f|^{p})-|f_{n}-f|^{p}\ge0$，且 $\Phi_{n}\to2^{p}|f|^{p}$ a.e.。由 Fatou 引理，
+\[
+2^{p}\int|f|^{p}\le\liminf_{n\to\infty}\int\Phi_{n}=2^{p}\int|f|^{p}-\limsup_{n\to\infty}\int|f_{n}-f|^{p},
+\]
+这里用到了 $\int|f_{n}|^{p}\to\int|f|^{p}$。由于 $\int|f|^{p}<\infty$，得 $\limsup\int|f_{n}-f|^{p}\le0$。
+\end{proof}
+
+\section{$L^{\infty}$ 空间}
+
+\subsection{本质上确界的性质}
+
+\begin{proposition}\label{prop:cont-esssup}
+设 $U\subseteq\R^{n}$ 为开集，$f:U\to\K$ 连续。则 $\norm{f}_{L^{\infty}(U)}=\sup_{U}|f|$。
+\end{proposition}
+
+\begin{proof}[证明]
+“$\le$”显然。设 $t<\sup_{U}|f|$，则 $\{x\in U:|f(x)|>t\}$ 是非空开集，包含某个开球，因而测度为正；于是任何 $M\le t$ 都不是 $|f|$ 的几乎处处上界，$\norm{f}_{\infty}\ge t$。
+\end{proof}
+
+特别地，连续函数若几乎处处相等则处处相等，所以 $f\mapsto[f]$ 把 $(C[a,b],\norm{\cdot}_{u})$ 等距地嵌入 $L^{\infty}[a,b]$（对 $(a,b)$ 应用上述命题，并注意 $\sup_{(a,b)}|f|=\max_{[a,b]}|f|$）。
+
+\subsection{完备性}
+
+\begin{theorem}\label{thm:Linfty-complete}
+\begin{enumerate}
+\item $f_{n}\to f$ 于 $L^{\infty}$，当且仅当存在零测集 $N$，使得 $f_{n}\to f$ 在 $X\setminus N$ 上一致收敛。
+\item $L^{\infty}(X,\mu)$ 是 Banach 空间。
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[证明]
+(i) 若 $\norm{f_{n}-f}_{\infty}\to0$，令 $N=\bigcup_{n}\{|f_{n}-f|>\norm{f_{n}-f}_{\infty}\}$，由引理~\ref{lem:esssup} 它是可数个零测集之并，从而是零测集；在 $X\setminus N$ 上 $\sup|f_{n}-f|\le\norm{f_{n}-f}_{\infty}\to0$。反之，若 $f_{n}\to f$ 在 $X\setminus N$ 上一致收敛，则 $\norm{f_{n}-f}_{\infty}\le\sup_{X\setminus N}|f_{n}-f|\to0$。
+
+(ii) 设 $(f_{n})$ 是 $L^{\infty}$ 中的 Cauchy 列。令
+\[
+N=\bigcup_{m,n}\bigl\{|f_{m}-f_{n}|>\norm{f_{m}-f_{n}}_{\infty}\bigr\}\ \cup\ \bigcup_{n}\bigl\{|f_{n}|>\norm{f_{n}}_{\infty}\bigr\},
+\]
+这是可数个零测集之并，$\mu(N)=0$。在 $X\setminus N$ 上 $\sup|f_{m}-f_{n}|\le\norm{f_{m}-f_{n}}_{\infty}$，所以 $(f_{n})$ 在 $X\setminus N$ 上一致 Cauchy。令 $f=\lim f_{n}$ 于 $X\setminus N$，$f=0$ 于 $N$，则 $f$ 可测。给定 $\varepsilon>0$，取 $N_{\varepsilon}$ 使 $m,n\ge N_{\varepsilon}$ 时 $\norm{f_{m}-f_{n}}_{\infty}<\varepsilon$，令 $m\to\infty$ 得 $n\ge N_{\varepsilon}$ 时 $\sup_{X\setminus N}|f_{n}-f|\le\varepsilon$。于是 $|f|\le\norm{f_{N_{\varepsilon}}}_{\infty}+\varepsilon$ 于 $X\setminus N$，$f\in L^{\infty}$，并且 $\norm{f_{n}-f}_{\infty}\le\varepsilon$。
+\end{proof}
+
+\begin{remark}
+证明的关键在于：每个不等式 $|f_{m}-f_{n}|\le\norm{f_{m}-f_{n}}_{\infty}$ 只在一个零测集之外成立，而指标 $(m,n)$ 只有可数个，因此可以把所有例外集合并成一个零测集 $N$，在其补集上得到真正的一致收敛。这里可数性是本质的。
+\end{remark}
+
+由此 $\ell^{\infty}$ 是 Banach 空间。结合定理~\ref{thm:riesz-fischer}，对一切 $1\le p\le\infty$，$L^{p}(X,\mu)$ 都是 Banach 空间。
+
+\subsection{$\norm{f}_{p}$ 当 $p\to\infty$ 时的极限}
+
+\begin{theorem}\label{thm:p-to-infty}
+设存在 $0<r<\infty$ 使 $f\in L^{r}$。则 $\lim_{p\to\infty}\norm{f}_{p}=\norm{f}_{\infty}$（在 $[0,\infty]$ 中）。
+\end{theorem}
+
+\begin{proof}[证明]
+若 $f=0$ a.e.，结论平凡。设 $\norm{f}_{\infty}>0$。
+
+下界：取 $0<t<\norm{f}_{\infty}$，令 $A_{t}=\{|f|>t\}$。由本质上确界的定义 $\mu(A_{t})>0$；由 Chebyshev 不等式 $\mu(A_{t})\le t^{-r}\norm{f}_{r}^{r}<\infty$。于是
+\[
+\norm{f}_{p}\ge\Bigl(\int_{A_{t}}t^{p}\dmu\Bigr)^{1/p}=t\,\mu(A_{t})^{1/p}\xrightarrow[p\to\infty]{}t,
+\]
+故 $\liminf_{p\to\infty}\norm{f}_{p}\ge t$；令 $t\uparrow\norm{f}_{\infty}$ 得 $\liminf\norm{f}_{p}\ge\norm{f}_{\infty}$。
+
+上界：若 $\norm{f}_{\infty}=\infty$，已完成。否则对 $p>r$，$|f|^{p}=|f|^{p-r}|f|^{r}\le\norm{f}_{\infty}^{p-r}|f|^{r}$ a.e.，故
+\[
+\norm{f}_{p}\le\norm{f}_{\infty}^{1-r/p}\,\norm{f}_{r}^{r/p}\xrightarrow[p\to\infty]{}\norm{f}_{\infty},
+\]
+这里用到了 $0<\norm{f}_{r}<\infty$。
+\end{proof}
+
+若 $\mu(X)<\infty$，则 $L^{\infty}\subseteq L^{r}$（定理~\ref{thm:finite-inclusion}），上述定理适用于每个 $f\in L^{\infty}$。一般情形下假设 $f\in L^{r}$ 不能去掉：$f\equiv1$ 在 $\R$ 上满足 $\norm{f}_{p}=\infty$（$p<\infty$），而 $\norm{f}_{\infty}=1$。
+
+\subsection{不可分性}
+
+称度量空间是\textbf{可分的}，如果它有可数稠密子集。
+
+\begin{proposition}\label{prop:Linfty-nonsep}
+$L^{\infty}[0,1]$ 与 $\ell^{\infty}$ 都不可分。
+\end{proposition}
+
+\begin{proof}[证明]
+对 $t\in(0,1]$ 令 $f_{t}=\ind_{[0,t]}$。若 $s<t$，则 $|f_{s}-f_{t}|=1$ 于正测集 $(s,t]$ 上，故 $\norm{f_{s}-f_{t}}_{\infty}=1$。于是开球 $B(f_{t},\frac12)$（$t\in(0,1]$）两两不交，共有不可数个；任何稠密子集都必须与每个球相交，所以不可数。对 $\ell^{\infty}$，考虑子集 $A\subseteq\N$ 的示性序列 $\ind_{A}$，它们有不可数个，且两两距离为 $1$。
+\end{proof}
+
+\section{$L^{p}$ 空间之间的包含关系}
+
+\subsection{有限测度空间}
+
+\begin{theorem}\label{thm:finite-inclusion}
+设 $\mu(X)<\infty$，$0<p<q\le\infty$。则 $L^{q}(X,\mu)\subseteq L^{p}(X,\mu)$，并且
+\[
+\norm{f}_{p}\le\mu(X)^{\frac1p-\frac1q}\norm{f}_{q}.
+\]
+特别地，当 $1\le p<q\le\infty$ 时，包含映射 $L^{q}\hookrightarrow L^{p}$ 是有界线性映射，其算子范数等于 $\mu(X)^{1/p-1/q}$（在常数函数处取到）。
+\end{theorem}
+
+\begin{proof}[证明]
+$q=\infty$：$\int|f|^{p}\le\norm{f}_{\infty}^{p}\mu(X)$。$q<\infty$：对 $|f|^{p}$ 与 $1$ 以指数 $r=\frac qp>1$ 及其共轭指数 $r'=\frac{q}{q-p}$ 应用 Hölder 不等式：
+\[
+\int|f|^{p}\cdot1\dmu\le\Bigl(\int|f|^{q}\dmu\Bigr)^{p/q}\mu(X)^{1-p/q}.
+\]
+两边开 $p$ 次方即可。对常数函数 $f\equiv1$，$\norm{1}_{p}=\mu(X)^{1/p}$，两边相等。
+\end{proof}
+
+在概率空间（$\mu(X)=1$）上，$\norm{f}_{p}$ 关于 $p$ 单调不减，$L^{\infty}\subseteq L^{q}\subseteq L^{p}\subseteq L^{1}$（$1\le p<q\le\infty$）。
+
+\begin{remark}[关于闭图像定理]
+包含映射的连续性也可以用闭图像定理得到。闭图像定理的表述是：设 $V,W$ 是 Banach 空间，$T:V\to W$ 是定义在\emph{整个} $V$ 上的线性映射；若 $T$ 的图像 $\{(x,Tx):x\in V\}$ 在 $V\times W$ 中是闭的，则 $T$ 有界。论证如下：若已知 $L^{q}\subseteq L^{p}$（$1\le p,q\le\infty$），设 $f_{n}\to f$ 于 $L^{q}$ 且 $f_{n}\to g$ 于 $L^{p}$，由定理~\ref{thm:subseq}（$p$ 或 $q$ 为 $\infty$ 时由定理~\ref{thm:Linfty-complete}）先取子列使其几乎处处收敛到 $f$，再从中取子列几乎处处收敛到 $g$，得 $f=g$ a.e.，所以图像是闭的，包含映射有界。但这一论证预设了包含关系本身；而包含关系在一般测度空间中并不成立（例~\ref{ex:no-inclusion}）。在 $\mu(X)<\infty$ 时，Hölder 不等式直接给出了显式常数，无需闭图像定理。
+\end{remark}
+
+\subsection{一般情形不存在包含关系}
+
+\begin{example}\label{ex:no-inclusion}
+定理~\ref{thm:finite-inclusion} 中的有限测度假设不可去掉。在 $(\R,m)$ 上，设 $0<p<q<\infty$，由例~\ref{ex:power}：
+\[
+x^{-1/p}\ind_{(1,\infty)}\in L^{q}\setminus L^{p},\qquad x^{-1/q}\ind_{(0,1)}\in L^{p}\setminus L^{q}.
+\]
+（前者：$\frac{q}{p}>1$ 而 $\frac pp=1$；后者：$\frac pq<1$ 而 $\frac qq=1$。）又 $1\in L^{\infty}(\R)\setminus L^{p}(\R)$，$x^{-1/(2p)}\ind_{(0,1)}\in L^{p}(\R)\setminus L^{\infty}(\R)$。所以在 $\R$ 上任意两个不同指数的 $L^{p}$ 空间互不包含。
+\end{example}
+
+\subsection{序列空间：包含关系反向}
+
+\begin{theorem}\label{thm:lp-inclusion}
+设 $0<p<q\le\infty$。则 $\ell^{p}\subseteq\ell^{q}$，且 $\norm{x}_{q}\le\norm{x}_{p}$。包含是严格的。
+\end{theorem}
+
+\begin{proof}[证明]
+$q=\infty$：对每个 $n$，$|x_{n}|^{p}\le\sum_{k}|x_{k}|^{p}$。设 $q<\infty$，$x\ne0$。由齐次性不妨设 $\norm{x}_{p}=1$，则 $|x_{n}|\le1$，从而 $|x_{n}|^{q}\le|x_{n}|^{p}$，求和得 $\norm{x}_{q}^{q}\le1$。严格性：$x_{n}=n^{-1/p}$ 满足 $\sum n^{-q/p}<\infty$ 而 $\sum n^{-1}=\infty$，所以 $x\in\ell^{q}\setminus\ell^{p}$。
+\end{proof}
+
+比较例~\ref{ex:power}：有限测度排除了“在无穷远处太大”的现象，从而小指数的空间更大；计数测度下每个非空集合的测度至少为 $1$，排除了“局部奇性”，从而大指数的空间更大。在 $\R$ 上两种现象同时存在，于是没有任何包含关系。
+
+\subsection{插值不等式}
+
+\begin{theorem}[插值不等式]\label{thm:interpolation}
+设 $0<p<r<q\le\infty$，$\theta\in(0,1)$ 由
+\[
+\frac1r=\frac{\theta}{p}+\frac{1-\theta}{q}
+\]
+确定。则对 $f\in L^{p}\cap L^{q}$，
+\[
+\norm{f}_{r}\le\norm{f}_{p}^{\theta}\,\norm{f}_{q}^{1-\theta}.
+\]
+特别地，$L^{p}\cap L^{q}\subseteq L^{r}$。
+\end{theorem}
+
+\begin{proof}[证明]
+$q=\infty$ 时 $\theta=\frac pr$，且 $|f|^{r}=|f|^{p}|f|^{r-p}\le\norm{f}_{\infty}^{r-p}|f|^{p}$ a.e.，积分并开 $r$ 次方得 $\norm{f}_{r}\le\norm{f}_{p}^{p/r}\norm{f}_{\infty}^{1-p/r}$。设 $q<\infty$。把 $|f|$ 写成 $|f|^{\theta}\cdot|f|^{1-\theta}$，对指数 $\frac{p}{\theta}$、$\frac{q}{1-\theta}$ 应用广义 Hölder 不等式（推论~\ref{cor:gen-holder}，条件 $\frac1r=\frac{\theta}{p}+\frac{1-\theta}{q}$ 恰好满足）：
+\[
+\norm{f}_{r}\le\bigl\||f|^{\theta}\bigr\|_{p/\theta}\,\bigl\||f|^{1-\theta}\bigr\|_{q/(1-\theta)}=\norm{f}_{p}^{\theta}\,\norm{f}_{q}^{1-\theta}. \qedhere
+\]
+\end{proof}
+
+\begin{remark}
+插值不等式等价于说：函数 $\frac1p\mapsto\log\norm{f}_{p}$ 在它取有限值的区间上是凸函数。对线性算子的类似结论是 Riesz--Thorin 插值定理，这里不展开。
+\end{remark}
+
+\begin{corollary}\label{cor:sum}
+设 $0<p<r<q\le\infty$。则 $L^{r}\subseteq L^{p}+L^{q}$，即每个 $f\in L^{r}$ 可以写成 $f=g+h$，其中 $g\in L^{p}$，$h\in L^{q}$。
+\end{corollary}
+
+\begin{proof}[证明]
+令 $g=f\ind_{\{|f|>1\}}$，$h=f\ind_{\{|f|\le1\}}$。在 $\{|f|>1\}$ 上 $|f|^{p}\le|f|^{r}$，故 $g\in L^{p}$。若 $q=\infty$，则 $|h|\le1$；若 $q<\infty$，则在 $\{|f|\le1\}$ 上 $|f|^{q}\le|f|^{r}$，故 $h\in L^{q}$。
+\end{proof}
+
+直观上，$f$ 的“高峰”部分属于小指数空间，“低平”部分属于大指数空间。
+
+\section{稠密子集与可分性}
+
+\subsection{简单函数}
+
+回忆第 II 篇的逼近定理：对非负可测函数 $f:X\to[0,\infty]$，存在简单函数列 $0\le\varphi_{1}\le\varphi_{2}\le\cdots$ 逐点收敛到 $f$，并且在 $f$ 有界的任何集合上一致收敛。对 $\K$ 值可测函数 $f=u+iv$，分别对 $u^{\pm},v^{\pm}$ 应用此定理，得到简单函数 $\varphi_{n}=(a_{n}-b_{n})+i(c_{n}-d_{n})$，其中 $0\le a_{n}\uparrow u^{+}$ 等。由于 $a_{n}$ 与 $b_{n}$ 的支集不交，$|a_{n}-b_{n}|=a_{n}+b_{n}\le|u|$，同理 $|c_{n}-d_{n}|\le|v|$，故
+\[
+|\varphi_{n}|\le|f|,\qquad \varphi_{n}\to f\ \text{逐点},
+\]
+且在 $f$ 有界的集合上一致收敛。
+
+\begin{theorem}\label{thm:simple-dense}
+\begin{enumerate}
+\item 设 $1\le p<\infty$。形如 $\sum_{i=1}^{N}a_{i}\ind_{E_{i}}$（$a_{i}\in\K$，$\mu(E_{i})<\infty$）的简单函数全体在 $L^{p}(X,\mu)$ 中稠密。
+\item 简单函数全体在 $L^{\infty}(X,\mu)$ 中稠密。
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[证明]
+(i) 设 $f\in L^{p}$，取上述 $\varphi_{n}$。若 $\varphi_{n}$ 在集合 $E$ 上取非零值 $a$，则 $|f|\ge|a|$ 于 $E$，由 Chebyshev 不等式 $\mu(E)\le|a|^{-p}\norm{f}_{p}^{p}<\infty$，所以 $\varphi_{n}$ 属于所述的类。又 $|f-\varphi_{n}|^{p}\le(2|f|)^{p}\in L^{1}$，且 $|f-\varphi_{n}|^{p}\to0$ 逐点，由控制收敛定理 $\norm{f-\varphi_{n}}_{p}\to0$。
+
+(ii) 设 $f\in L^{\infty}$。在零测集 $\{|f|>\norm{f}_{\infty}\}$ 上把 $f$ 改为 $0$，得到处处有界的代表元；此时 $\varphi_{n}\to f$ 在 $X$ 上一致收敛，故 $\norm{f-\varphi_{n}}_{\infty}\le\sup_{X}|f-\varphi_{n}|\to0$。
+\end{proof}
+
+\begin{remark}
+在 (i) 中“$\mu(E_{i})<\infty$”是自动的：$L^{p}$（$p<\infty$）中的简单函数在每个非零取值的集合上测度有限。在 (ii) 中不能要求 $\mu(E_{i})<\infty$：若 $\mu(X)=\infty$，任何这样的简单函数 $\varphi$ 在一个无穷测度集上为零，于是 $\norm{1-\varphi}_{\infty}\ge1$。
+\end{remark}
+
+\subsection{$\R^{n}$ 上的连续紧支函数}
+
+以 $C_{c}(\R^{n})$ 记 $\R^{n}$ 上支集 $\supp f=\overline{\{f\ne0\}}$ 为紧集的 $\K$ 值连续函数全体。这样的函数有界且在一个有限测度集之外为零，因此 $C_{c}(\R^{n})\subseteq L^{p}(\R^{n})$ 对一切 $0<p\le\infty$ 成立。
+
+\begin{lemma}[$\R^{n}$ 中的 Urysohn 引理]\label{lem:urysohn}
+设 $K\subseteq U\subseteq\R^{n}$，$K$ 紧，$U$ 开。则存在 $g\in C_{c}(\R^{n})$，$0\le g\le1$，$g=1$ 于 $K$，且 $\supp g\subseteq U$。
+\end{lemma}
+
+\begin{proof}[证明]
+若 $U=\R^{n}$，令 $\delta=1$；否则令 $\delta=\inf_{x\in K}d(x,U^{c})$。函数 $x\mapsto d(x,U^{c})$ 连续且在 $K$ 上为正，在紧集 $K$ 上取到最小值，所以 $\delta>0$（$K=\varnothing$ 时取 $g=0$）。令
+\[
+g(x)=\max\Bigl(0,\ 1-\frac{2\,d(x,K)}{\delta}\Bigr).
+\]
+$d(\cdot,K)$ 是 $1$-Lipschitz 的，故 $g$ 连续，$0\le g\le1$，$g=1$ 于 $K$。$\supp g\subseteq\{x:d(x,K)\le\delta/2\}$，后者是有界闭集，因而是紧集；并且其中的点到 $K$ 的距离小于 $\delta$，不可能属于 $U^{c}$，所以它包含于 $U$。
+\end{proof}
+
+\begin{theorem}\label{thm:Cc-dense}
+设 $1\le p<\infty$。则 $C_{c}(\R^{n})$ 在 $L^{p}(\R^{n})$ 中稠密。
+\end{theorem}
+
+\begin{proof}[证明]
+由定理~\ref{thm:simple-dense}(i) 与 Minkowski 不等式，只需证明：对每个满足 $m(E)<\infty$ 的可测集 $E$ 与 $\varepsilon>0$，存在 $g\in C_{c}(\R^{n})$ 使 $\norm{\ind_{E}-g}_{p}<\varepsilon$。（若 $\norm{\ind_{E_{i}}-g_{i}}_{p}<\varepsilon$，则 $\norm{\sum a_{i}\ind_{E_{i}}-\sum a_{i}g_{i}}_{p}<\varepsilon\sum|a_{i}|$。）由 Lebesgue 测度的正则性（第 I 篇），存在紧集 $K$ 与开集 $U$，$K\subseteq E\subseteq U$，$m(U\setminus K)<\varepsilon^{p}$。取引理~\ref{lem:urysohn} 中的 $g$，则 $\ind_{K}\le g\le\ind_{U}$，从而 $|g-\ind_{E}|\le\ind_{U\setminus K}$：在 $K$ 上两者都为 $1$，在 $U$ 外两者都为 $0$，在 $U\setminus K$ 上两者都在 $[0,1]$ 中。于是
+\[
+\norm{g-\ind_{E}}_{p}\le m(U\setminus K)^{1/p}<\varepsilon. \qedhere
+\]
+\end{proof}
+
+\begin{remark}
+\begin{enumerate}
+\item 这一结论的一般形式是：$X$ 为局部紧 Hausdorff 空间，$\mu$ 为 $X$ 上的 Radon 测度时，$C_{c}(X)$ 在 $L^{p}(X,\mu)$（$1\le p<\infty$）中稠密；本篇只证明了 $\R^{n}$ 的情形。同样的证明对开集 $U\subseteq\R^{n}$ 上的 $C_{c}(U)$ 与 $L^{p}(U)$ 也成立。
+\item 结论对 $p=\infty$ 不成立。事实上 $\ind_{[0,1]}$ 到 $C_{c}(\R)$ 的 $L^{\infty}$ 距离至少为 $\frac12$：若连续函数 $g$ 满足 $\norm{g-\ind_{[0,1]}}_{\infty}=c<\frac12$，则集合 $\{x\in(0,1):|g(x)-1|>c\}$ 是零测的开集，从而为空集，即 $|g-1|\le c$ 于 $(0,1)$，由连续性 $g(1)\ge1-c>\frac12$；同理 $|g|\le c$ 于 $(1,2)$，$g(1)\le c<\frac12$，矛盾。
+\item 由定理~\ref{thm:riesz-fischer} 与定理~\ref{thm:Cc-dense}，$L^{p}(\R^{n})$ 是一个包含 $C_{c}(\R^{n})$ 作为稠密子空间的 Banach 空间，即 $(C_{c}(\R^{n}),\norm{\cdot}_{p})$ 的完备化。同理 $L^{1}[0,2]$ 是例~\ref{ex:C-L1} 中不完备空间 $(C[0,2],\norm{\cdot}_{1})$ 的完备化。
+\end{enumerate}
+\end{remark}
+
+作为稠密性的典型应用，我们证明平移在 $L^{p}$ 中是连续的。对 $h\in\R^{n}$ 令 $(\tau_{h}f)(x)=f(x-h)$。由 Lebesgue 测度的平移不变性（第 I 篇），对示性函数、从而对简单函数、再由单调收敛定理对非负可测函数有 $\int f(x-h)\dx=\int f(x)\dx$，因此 $\norm{\tau_{h}f}_{p}=\norm{f}_{p}$。
+
+\begin{theorem}[平移的连续性]\label{thm:translation}
+设 $1\le p<\infty$，$f\in L^{p}(\R^{n})$。则 $\lim_{h\to0}\norm{\tau_{h}f-f}_{p}=0$。
+\end{theorem}
+
+\begin{proof}[证明]
+给定 $\varepsilon>0$，由定理~\ref{thm:Cc-dense} 取 $g\in C_{c}(\R^{n})$ 使 $\norm{f-g}_{p}<\varepsilon$，设 $\supp g\subseteq B(0,R)$。$g$ 在紧集上连续、在其外为零，因而在 $\R^{n}$ 上一致连续，所以 $\sup_{x}|g(x-h)-g(x)|\to0$（$h\to0$）。当 $|h|\le1$ 时 $\tau_{h}g-g$ 在 $B(0,R+1)$ 之外为零，故
+\[
+\norm{\tau_{h}g-g}_{p}\le\sup_{x}|g(x-h)-g(x)|\cdot m\bigl(B(0,R+1)\bigr)^{1/p}\xrightarrow[h\to0]{}0 .
+\]
+于是
+\[
+\norm{\tau_{h}f-f}_{p}\le\norm{\tau_{h}(f-g)}_{p}+\norm{\tau_{h}g-g}_{p}+\norm{g-f}_{p}<2\varepsilon+\norm{\tau_{h}g-g}_{p},
+\]
+所以 $\limsup_{h\to0}\norm{\tau_{h}f-f}_{p}\le2\varepsilon$。
+\end{proof}
+
+$p=\infty$ 时结论不成立：对 $f=\ind_{[0,1]}$ 与任意 $0<|h|<1$，$\tau_{h}f-f$ 在一个正测集上取值 $\pm1$，故 $\norm{\tau_{h}f-f}_{\infty}=1$。
+
+\subsection{可分性}
+
+\begin{theorem}\label{thm:separable}
+设 $1\le p<\infty$。则 $L^{p}(\R^{n})$ 是可分的。
+\end{theorem}
+
+\begin{proof}[证明]
+对 $j\ge0$，称形如 $\prod_{i=1}^{n}[k_{i}2^{-j},(k_{i}+1)2^{-j})$（$k\in\mathbb{Z}^{n}$）的集合为 $j$ 阶二进方体。令 $\mathcal{D}$ 为系数属于 $\Q+i\Q$（实情形为 $\Q$）的二进方体示性函数的有限线性组合全体，它是可数集。
+
+给定 $f\in L^{p}$ 与 $\varepsilon>0$，取 $g\in C_{c}(\R^{n})$ 使 $\norm{f-g}_{p}<\varepsilon$，并取正整数 $R$ 使 $\supp g\subseteq Q_{R}=[-R,R)^{n}$。由 $g$ 的一致连续性，存在 $j$ 使同一个 $j$ 阶二进方体中任意两点 $x,y$ 满足 $|g(x)-g(y)|<\eta$，其中 $\eta>0$ 待定。$Q_{R}$ 恰被有限个 $j$ 阶二进方体 $Q$ 所铺满；对每个这样的 $Q$，取其中一点 $x_{Q}$ 与 $c_{Q}\in\Q+i\Q$ 使 $|c_{Q}-g(x_{Q})|<\eta$，令 $\psi=\sum_{Q}c_{Q}\ind_{Q}\in\mathcal{D}$。则在 $Q_{R}$ 上 $|g-\psi|<2\eta$，在 $Q_{R}$ 之外 $g=\psi=0$，于是
+\[
+\norm{g-\psi}_{p}\le2\eta\,(2R)^{n/p}.
+\]
+取 $\eta$ 使右端小于 $\varepsilon$，得 $\norm{f-\psi}_{p}<2\varepsilon$。
+\end{proof}
+
+\begin{remark}
+可分性不是一般测度空间上 $L^{p}$（$1\le p<\infty$）的性质。设 $X$ 为不可数集（例如 $\R$），$\mu$ 为计数测度，则函数 $e_{x}=\ind_{\{x\}}$（$x\in X$）满足 $\norm{e_{x}-e_{y}}_{p}=2^{1/p}$（$x\ne y$），与命题~\ref{prop:Linfty-nonsep} 的论证相同，$L^{p}(X,\mu)$ 不可分。一个常用的充分条件是：$\mu$ 为 $\sigma$-有限，且 $\M$ 由可数个集合生成（模零测集）；此时 $L^{p}(X,\mu)$（$1\le p<\infty$）可分。$L^{\infty}$ 则在几乎所有有意义的无穷情形下都不可分（命题~\ref{prop:Linfty-nonsep}）。
+\end{remark}
+
+\section{对偶空间简介}
+
+本节只做简要讨论，完整的表示定理需要 Radon--Nikodym 定理，留待以后。
+
+\begin{proposition}\label{prop:dual-isometry}
+设 $1\le p\le\infty$，$q$ 为其共轭指数，$g\in L^{q}(X,\mu)$。则
+\[
+\Lambda_{g}(f)=\int_{X}fg\dmu\qquad(f\in L^{p})
+\]
+定义了 $L^{p}$ 上的有界线性泛函，且 $\norm{\Lambda_{g}}\le\norm{g}_{q}$。若 $1<p\le\infty$，或 $p=1$ 且 $\mu$ 为 $\sigma$-有限，则 $\norm{\Lambda_{g}}=\norm{g}_{q}$。于是在这些情形下 $g\mapsto\Lambda_{g}$ 是从 $L^{q}$ 到 $(L^{p})^{*}$ 的线性等距（特别地是单射）。
+\end{proposition}
+
+\begin{proof}[证明]
+$\Lambda_{g}(f)$ 与代表元的选取无关，关于 $f$ 线性，并由 Hölder 不等式 $|\Lambda_{g}(f)|\le\norm{f}_{p}\norm{g}_{q}$。下面设 $g\ne0$，证明反向不等式。令 $\sgn z=z/|z|$（$z\ne0$），$\sgn0=0$，则 $g\,\overline{\sgn g}=|g|$。
+
+$1<p<\infty$：令 $f=|g|^{q-1}\overline{\sgn g}$。则 $|f|^{p}=|g|^{(q-1)p}=|g|^{q}$，$\norm{f}_{p}=\norm{g}_{q}^{q/p}<\infty$，且 $\Lambda_{g}(f)=\int|g|^{q}=\norm{g}_{q}^{q}$。于是
+\[
+\norm{\Lambda_{g}}\ge\frac{\norm{g}_{q}^{q}}{\norm{g}_{q}^{q/p}}=\norm{g}_{q}^{q(1-1/p)}=\norm{g}_{q}.
+\]
+
+$p=\infty$（$q=1$）：令 $f=\overline{\sgn g}$，则 $\norm{f}_{\infty}\le1$，$\Lambda_{g}(f)=\norm{g}_{1}$。
+
+$p=1$（$q=\infty$），$\mu$ 为 $\sigma$-有限：取 $0<t<\norm{g}_{\infty}$，则 $A=\{|g|>t\}$ 满足 $\mu(A)>0$。设 $X=\bigcup_{k}X_{k}$，$X_{k}$ 递增且 $\mu(X_{k})<\infty$，则 $\mu(A\cap X_{k})\uparrow\mu(A)>0$，故存在 $k$ 使 $B=A\cap X_{k}$ 满足 $0<\mu(B)<\infty$。令 $f=\mu(B)^{-1}\ind_{B}\overline{\sgn g}$，则 $\norm{f}_{1}=1$，且
+\[
+\Lambda_{g}(f)=\frac{1}{\mu(B)}\int_{B}|g|\dmu\ge t .
+\]
+所以 $\norm{\Lambda_{g}}\ge t$；令 $t\uparrow\norm{g}_{\infty}$ 即可。
+\end{proof}
+
+\begin{theorem}[$L^{p}$ 的 Riesz 表示定理]\label{thm:riesz-rep}
+\begin{enumerate}
+\item 设 $1<p<\infty$。则对每个 $\Lambda\in(L^{p})^{*}$，存在唯一的 $g\in L^{q}$ 使 $\Lambda=\Lambda_{g}$；从而 $(L^{p})^{*}$ 与 $L^{q}$ 等距同构。
+\item 设 $\mu$ 为 $\sigma$-有限。则 $(L^{1})^{*}$ 与 $L^{\infty}$ 等距同构（同样通过 $g\mapsto\Lambda_{g}$）。
+\end{enumerate}
+\end{theorem}
+
+证明需要 Radon--Nikodym 定理（或者对 (i) 使用 $L^{p}$ 的一致凸性），此处从略。唯一性与等距性已由命题~\ref{prop:dual-isometry} 给出；困难在于满射性。注意表示泛函的函数 $g$ 属于 $L^{q}$ 而不是 $L^{p}$。
+
+\begin{example}[$\sigma$-有限性不可省略]\label{ex:non-sigma}
+设 $X=\{a\}$，$\mu(\{a\})=\infty$。则 $\int|f|\dmu=|f(a)|\cdot\infty$，故 $L^{1}=\{0\}$，$(L^{1})^{*}=\{0\}$；但 $X$ 没有非空零测集，$L^{\infty}=\K$。映射 $g\mapsto\Lambda_{g}$ 是零映射，不是单射。
+\end{example}
+
+\begin{remark}[$p=\infty$ 的情形]
+由命题~\ref{prop:dual-isometry}，$L^{1}$ 等距地嵌入 $(L^{\infty})^{*}$，但一般不是满射，因此“$(L^{p})^{*}=L^{q}$”对 $p=\infty$ 一般不成立。以 $\ell^{\infty}$ 为例：在收敛序列构成的子空间 $c$ 上，$\ell(x)=\lim_{n}x_{n}$ 是范数为 $1$ 的有界线性泛函；由 Hahn--Banach 定理，它可以保范延拓为 $\ell^{\infty}$ 上的 $\Lambda$。若 $\Lambda=\Lambda_{y}$，$y\in\ell^{1}$，则 $y_{k}=\Lambda(e_{k})=\lim_{n}(e_{k})_{n}=0$ 对每个 $k$ 成立，于是 $\Lambda=0$，与 $\Lambda(1,1,\dots)=1$ 矛盾。
+\end{remark}
+
+\begin{remark}
+当 $\mu$ 为 $\sigma$-有限时，$L^{\infty}=(L^{1})^{*}$，由 Banach--Alaoglu 定理，$L^{\infty}$ 的闭单位球在弱$^{*}$拓扑 $\sigma(L^{\infty},L^{1})$ 下是紧的。对 $1<p<\infty$，定理~\ref{thm:riesz-rep} 说明 $(L^{p})^{**}\cong(L^{q})^{*}\cong L^{p}$，即 $L^{p}$ 是自反的。这些将在泛函分析部分讨论。
+\end{remark}
+
+\section*{小结}
+
+下表总结了本篇关于 $L^{p}(X,\mu)$ 的主要结论（“$\R^{n}$”表示结论在 $(\R^{n},m)$ 上成立，但在一般测度空间中可能不成立）。$0<p<1$ 一列第 2--5 行的结论，可用度量 $d_{p}$ 代替范数、按 $p\ge1$ 时的相同证明得到。
+
+\begin{center}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+性质 & $0<p<1$ & $1\le p<\infty$ & $p=\infty$\\
+\midrule
+$\norm{\cdot}_{p}$ 是范数 & 否 & 是 & 是\\
+完备 & 是（度量 $d_{p}$） & 是 & 是\\
+简单函数稠密 & 是 & 是 & 是\\
+$C_{c}$ 稠密 & 是（$\R^{n}$） & 是（$\R^{n}$） & 否\\
+可分 & 是（$\R^{n}$） & 是（$\R^{n}$） & 否\\
+对偶 & 平凡（$\R^{n}$） & $L^{q}$（$p=1$ 需 $\sigma$-有限） & 一般真包含 $L^{1}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+主要的证明工具只有三件：Young 不等式（由凸性得到）导出 Hölder 不等式，Hölder 不等式导出 Minkowski 不等式；Minkowski 不等式配合单调收敛与控制收敛定理给出完备性；而 Lebesgue 测度的正则性给出 $C_{c}$ 的稠密性与可分性。不同 $L^{p}$ 空间之间的关系则完全取决于测度在“局部”和“无穷远处”的行为。
+
+\begin{thebibliography}{9}
+\bibitem{folland} G.~B.~Folland, \emph{Real Analysis: Modern Techniques and Their Applications}, 2nd ed., Wiley, 1999.
+\bibitem{rudin} W.~Rudin, \emph{Real and Complex Analysis}, 3rd ed., McGraw--Hill, 1987.
+\bibitem{brezis} H.~Brezis, \emph{Functional Analysis, Sobolev Spaces and Partial Differential Equations}, Springer, 2011.
+\bibitem{stein} E.~M.~Stein and R.~Shakarchi, \emph{Real Analysis: Measure Theory, Integration, and Hilbert Spaces}, Princeton University Press, 2005.
+\end{thebibliography}
+
+\end{CJK*}
+\end{document}

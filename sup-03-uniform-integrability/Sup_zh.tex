@@ -110,7 +110,7 @@ m(\{|f_n|>\varepsilon\})
 所以
 
 \[
-|f_n|_{L^1}=1
+\|f_n\|_{L^1}=1
 \]
 
 始终不变，更不可能有
@@ -139,7 +139,7 @@ f_n\to0
 因此，单纯知道
 
 \[
-\sup_n|f_n|_1<\infty
+\sup_n\|f_n\|_1<\infty
 \]
 
 是不够的。
@@ -173,7 +173,6 @@ f_n\to0
 |f_n|\,d\mu
 =
 0.
-
 \]
 
 这个定义关注的不是整个积分
@@ -214,7 +213,7 @@ f_n\to0
 
 \[
 \sup_{f\in\mathcal G}
-|f|_1<\infty.
+\|f\|_1<\infty.
 \]
 
 证明并不复杂。
@@ -248,7 +247,7 @@ K\mu(X).
 于是
 
 \[
-|f|_1
+\|f\|_1
 \leq
 K\mu(X)+1.
 \]
@@ -256,7 +255,7 @@ K\mu(X)+1.
 因此
 
 \[
-\sup_{f\in\mathcal G}|f|_1<\infty.
+\sup_{f\in\mathcal G}\|f\|_1<\infty.
 \]
 
 但反方向不成立。
@@ -270,7 +269,7 @@ f_n=n\mathbf1_{(0,1/n)}
 已经给出了反例。虽然
 
 \[
-\sup_n|f_n|_1=1,
+\sup_n\|f_n\|_1=1,
 \]
 
 但只要 $n>K$，
@@ -287,7 +286,6 @@ f_n=n\mathbf1_{(0,1/n)}
 \int_{\{|f_n|>K\}}|f_n|\,dx
 =
 1.
-
 \]
 
 于是对任何 $K$，
@@ -297,7 +295,6 @@ f_n=n\mathbf1_{(0,1/n)}
 \int_{\{|f_n|>K\}}|f_n|\,dx
 =
 1.
-
 \]
 
 它并不一致可积。
@@ -416,7 +413,7 @@ K\mu(E),
 并且函数族 $\mathcal G$ 满足
 
 \[
-\sup_{f\in\mathcal G}|f|_p\leq C.
+\sup_{f\in\mathcal G}\|f\|_p\leq C.
 \]
 
 那么 $\mathcal G$ 在 $L^1$ 意义下是一致可积的。
@@ -432,7 +429,7 @@ A_K=\{|f|>K\}
 \[
 |f|
 \leq
-\frac\{|f|^p\}{K^{p-1}},
+\frac{|f|^p}{K^{p-1}},
 \]
 
 因此
@@ -443,7 +440,7 @@ A_K=\{|f|>K\}
 \frac1{K^{p-1}}
 \int_{A_K}|f|^p\,d\mu
 \leq
-\frac\{|f|_p^p\}{K^{p-1}}.
+\frac{\|f\|_p^p}{K^{p-1}}.
 \]
 
 所以
@@ -468,7 +465,7 @@ K^{1-p}\to0,
 若只有
 
 \[
-\sup_n|f_n|_1<\infty,
+\sup_n\|f_n\|_1<\infty,
 \]
 
 右侧不会产生任何随 $K\to\infty$ 消失的因子。
@@ -661,7 +658,7 @@ f_n\to f
 最后先令 $n\to\infty$，再令 $\eta\to0$，便得到
 
 \[
-|f_n-f|_1\to0.
+\|f_n-f\|_1\to0.
 \]
 
 这个证明揭示了 Vitali 定理真正的结构：
@@ -669,14 +666,14 @@ f_n\to f
 \[
 \boxed{
 \begin{array}{c}
-\text{依测度收敛}\
-\Downarrow\
+\text{依测度收敛}\\
+\Downarrow\\
 \text{坏集的测度趋于 }0
 \end{array}
 \qquad+\qquad
 \begin{array}{c}
-\text{一致可积}\
-\Downarrow\
+\text{一致可积}\\
+\Downarrow\\
 \text{小集合无法携带大量积分}
 \end{array}
 }
@@ -758,13 +755,13 @@ f_n(x)
 显然
 
 \[
-|f_n|_1=1.
+\|f_n\|_1=1.
 \]
 
 并且由于
 
 \[
-|f_n|_\infty=\frac1n,
+\|f_n\|_\infty=\frac1n,
 \]
 
 实际上
@@ -786,7 +783,7 @@ f_n\to0
 但是
 
 \[
-|f_n|_1=1
+\|f_n\|_1=1
 \]
 
 仍然没有趋于零。
@@ -816,7 +813,7 @@ f_n\to0
 \begin{aligned}
 \text{concentration}
 &:\quad
-\text{质量挤进越来越小的集合},\
+\text{质量挤进越来越小的集合},\\
 \text{escape}
 &:\quad
 \text{质量跑向越来越大的空间区域}.
@@ -848,7 +845,7 @@ f_n\to0
 因此，
 
 \[
-\sup_n|f_n|_1<\infty
+\sup_n\|f_n\|_1<\infty
 \]
 
 本身并不足够，而任意 $p>1$ 的统一 $L^p$ 控制都会自动给出一致可积性。
